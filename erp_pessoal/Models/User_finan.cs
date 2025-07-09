@@ -84,3 +84,22 @@ public class Investimento_fim
     public DateTime data_resgate { get; set; }
     public decimal vlr_resgate { get; set; }
 }
+
+public class Extrato
+{
+    public string historico { get; set; }
+    public decimal valor { get; set; }
+    public string tipo { get; set; } 
+    public DateTime data { get; set; }
+    public int id_ref { get; set; }
+}
+
+public class Extrato_update
+{
+    public int id { get; set; }
+    public string historico { get; set; }
+    public decimal valor { get; set; }
+    public string tipo { get; set; }
+    public DateTime data { get; set; }
+    public int id_ref { get; set; }
+}
