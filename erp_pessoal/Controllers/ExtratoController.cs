@@ -4,6 +4,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using erp_pessoal.Models.User_finan;
+using System.Diagnostics.Eventing.Reader;
+using System.Diagnostics;
 namespace erp_pessoal.Controllers
 {
     [Authorize]
@@ -103,14 +105,15 @@ namespace erp_pessoal.Controllers
             {
                 case "gasto":
                     var gastoInsert = new NpgsqlCommand(
-                        "INSERT INTO pagamentos (historico, vlr, data, gasto_id, user_id) " +
-                        "VALUES (@historico, @vlr, @data, @gasto_id, @user_id) " +
+                        "INSERT INTO pagamentos (historico, vlr, data, gasto_id, user_id, lcto_id) " +
+                        "VALUES (@historico, @vlr, @data, @gasto_id, @user_id, @lcto_id) " +
                         "RETURNING id_gasto_geral;", conn);
                     gastoInsert.Parameters.AddWithValue("@historico", extData.historico);
                     gastoInsert.Parameters.AddWithValue("@vlr", extData.valor);
                     gastoInsert.Parameters.AddWithValue("@data", extData.data);
                     gastoInsert.Parameters.AddWithValue("@gasto_id", extData.id_ref);
                     gastoInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
+                    gastoInsert.Parameters.AddWithValue("@lcto_id", idLcto);
                     var idGasto = await gastoInsert.ExecuteScalarAsync();
                     if (idGasto == null)
                         return BadRequest("Erro ao incluir gasto.");
@@ -118,14 +121,15 @@ namespace erp_pessoal.Controllers
                         return Ok(idGasto);
                 case "divida":
                     var dividaInsert = new NpgsqlCommand(
-                        "INSERT INTO pagamentos (historico, vlr, data, divida_id, user_id) " +
-                        "VALUES (@historico, @vlr, @data, @divida_id, @user_id) " +
+                        "INSERT INTO pagamentos (historico, vlr, data, divida_id, user_id, lcto_id) " +
+                        "VALUES (@historico, @vlr, @data, @divida_id, @user_id, @lcto_id) " +
                         "RETURNING id_pgto_divida;", conn);
                     dividaInsert.Parameters.AddWithValue("@historico", extData.historico);
                     dividaInsert.Parameters.AddWithValue("@vlr", extData.valor);
                     dividaInsert.Parameters.AddWithValue("@data", extData.data);
                     dividaInsert.Parameters.AddWithValue("@divida_id", extData.id_ref);
                     dividaInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
+                    dividaInsert.Parameters.AddWithValue("@lcto_id", idLcto);
                     var idDivida = await dividaInsert.ExecuteScalarAsync();
                     if (idDivida == null)
                         return BadRequest("Erro ao incluir pagamento de dívida.");
@@ -133,14 +137,15 @@ namespace erp_pessoal.Controllers
                         return Ok(idDivida);
                 case "meta":
                     var metaInsert = new NpgsqlCommand(
-                        "INSERT INTO meta_pgto (historico, vlr, data, meta_invest_id, user_id) " +
-                        "VALUES (@historico, @vlr, @data, @meta_id, @user_id) " +
+                        "INSERT INTO meta_pgto (historico, vlr, data, meta_invest_id, user_id, lcto_id) " +
+                        "VALUES (@historico, @vlr, @data, @meta_id, @user_id, @lcto_id) " +
                         "RETURNING id_pgto_meta;", conn);
                     metaInsert.Parameters.AddWithValue("@historico", extData.historico);
                     metaInsert.Parameters.AddWithValue("@vlr", extData.valor);
                     metaInsert.Parameters.AddWithValue("@data", extData.data);
                     metaInsert.Parameters.AddWithValue("@meta_id", extData.id_ref);
                     metaInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
+                    metaInsert.Parameters.AddWithValue("@lcto_id", idLcto);
                     var idMeta = await metaInsert.ExecuteScalarAsync();
                     if (idMeta == null)
                         return BadRequest("Erro ao incluir pagamento de meta.");
@@ -148,14 +153,15 @@ namespace erp_pessoal.Controllers
                         return Ok(idMeta);
                 case "investimento":
                     var investimentoInsert = new NpgsqlCommand(
-                        "INSERT INTO investimento_pgto (historico, vlr, data, invest_id, user_id) " +
-                        "VALUES (@historico, @vlr, @data, @invest_id, @user_id) " +
+                        "INSERT INTO investimento_pgto (historico, vlr, data, invest_id, user_id, lcto_id) " +
+                        "VALUES (@historico, @vlr, @data, @invest_id, @user_id, @lcto_id) " +
                         "RETURNING id_invest;", conn);
                     investimentoInsert.Parameters.AddWithValue("@historico", extData.historico);
                     investimentoInsert.Parameters.AddWithValue("@vlr", extData.valor);
                     investimentoInsert.Parameters.AddWithValue("@data", extData.data);
                     investimentoInsert.Parameters.AddWithValue("@invest_id", extData.id_ref);
                     investimentoInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
+                    investimentoInsert.Parameters.AddWithValue("@lcto_id", idLcto);
                     var idInvestimento = await investimentoInsert.ExecuteScalarAsync();
                     if (idInvestimento == null)
                         return BadRequest("Erro ao incluir pagamento de investimento.");
@@ -163,14 +169,15 @@ namespace erp_pessoal.Controllers
                         return Ok(idInvestimento);
                 case "renda":
                     var rendaInsert = new NpgsqlCommand(
-                        "INSERT INTO renda_pgto (historico, vlr, data, renda_id, user_id) " +
-                        "VALUES (@historico, @vlr, @data, @renda_id, @user_id) " +
+                        "INSERT INTO renda_pgto (historico, vlr, data, renda_id, user_id, lcto_id) " +
+                        "VALUES (@historico, @vlr, @data, @renda_id, @user_id, @lcto_id) " +
                         "RETURNING id_renda;", conn);
                     rendaInsert.Parameters.AddWithValue("@historico", extData.historico);
                     rendaInsert.Parameters.AddWithValue("@vlr", extData.valor);
                     rendaInsert.Parameters.AddWithValue("@data", extData.data);
                     rendaInsert.Parameters.AddWithValue("@renda_id", extData.id_ref);
                     rendaInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
+                    rendaInsert.Parameters.AddWithValue("@lcto_id", idLcto);
                     var idRenda = await rendaInsert.ExecuteScalarAsync();
                     if (idRenda == null)
                         return BadRequest("Erro ao incluir pagamento de renda.");
@@ -203,11 +210,53 @@ namespace erp_pessoal.Controllers
             if (rowsAffected == 0)
                 return NotFound("Lançamento não encontrado ou não pertence ao usuário.");
             await AtualizarSaldosAsync(conn, int.Parse(usuarioId), extData.data);
+            string sql;
+
+            switch (extData.tipo)
+            {
+                case "gasto":
+                    sql = @"UPDATE pagamentos 
+                SET historico = @historico, vlr = @vlr, data = @data 
+                WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                    break;
+
+                case "divida":
+                    sql = @"UPDATE divida_pgto 
+                SET historico = @historico, vlr = @vlr, data = @data 
+                WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                    break;
+
+                case "meta":
+                    sql = @"UPDATE meta_pgto 
+                    SET historico = @historico, vlr = @vlr, data = @data 
+                    WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                    break;
+                case "investimento":
+                    sql = @"UPDATE investimento_pgto 
+                    SET historico = @historico, vlr = @vlr, data = @data 
+                    WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                    break;
+                case "renda":
+                    sql = @"UPDATE renda_pgto 
+                    SET historico = @historico, vlr = @vlr, data = @data 
+                    WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                    break;
+
+                default:
+                    return BadRequest("Tipo inválido para atualização.");
+            }
+            var updt_especific = new NpgsqlCommand(sql, conn);
+            updt_especific.Parameters.AddWithValue("@historico", extData.historico);
+            updt_especific.Parameters.AddWithValue("@vlr", extData.valor);
+            updt_especific.Parameters.AddWithValue("@data", extData.data);
+            updt_especific.Parameters.AddWithValue("@id_lcto", extData.id);
+            updt_especific.Parameters.AddWithValue("@usuario_id", int.Parse(usuarioId));
+            var rowsAffectedEspecific = await updt_especific.ExecuteNonQueryAsync();
             return Ok("Lançamento atualizado com sucesso.");
         }
 
-        [HttpDelete("remover_lancamento/{id}")]
-        public async Task<IActionResult> RemoverLcto(int id)
+        [HttpDelete("remover_lancamento")]
+        public async Task<IActionResult> RemoverLcto([FromBody] Extrato_delete extData)
         {
             // Obtendo ID do usuário
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -218,14 +267,38 @@ namespace erp_pessoal.Controllers
             // Marcar lançamento como inativo
             var cmdDelete = new NpgsqlCommand(
                 @"UPDATE extrato SET ativo = FALSE WHERE id_lcto = @id_lcto AND user_id = @usuario_id;", conn);
-            cmdDelete.Parameters.AddWithValue("@id_lcto", id);
+            cmdDelete.Parameters.AddWithValue("@id_lcto", extData.id);
             cmdDelete.Parameters.AddWithValue("@usuario_id", int.Parse(usuarioId));
             var rowsAffected = await cmdDelete.ExecuteNonQueryAsync();
             if (rowsAffected == 0)
                 return NotFound("Lançamento não encontrado ou não pertence ao usuário.");
+            string sql;
+            switch (extData.tipo)
+                {
+                    case "gasto":
+                        sql = @"UPDATE pagamentos SET ativo = FALSE WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                        break;
+                    case "divida":
+                        sql = @"UPDATE divida_pgto SET ativo = FALSE WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                        break;
+                    case "meta":
+                        sql = @"UPDATE meta_pgto SET ativo = FALSE WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                        break;
+                    case "investimento":
+                        sql = @"UPDATE investimento_pgto SET ativo = FALSE WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                        break;
+                    case "renda":
+                        sql = @"UPDATE renda_pgto SET ativo = FALSE WHERE lcto_id = @id_lcto AND user_id = @usuario_id;";
+                        break;    
+                    default:
+                            return BadRequest("Tipo de lançamento inválido.");
+                    }
+            var cmdDeleteall = new NpgsqlCommand(sql, conn);
+            cmdDeleteall.Parameters.AddWithValue("@id_lcto", extData.id);
+            cmdDeleteall.Parameters.AddWithValue("@usuario_id", int.Parse(usuarioId));
+            await cmdDeleteall.ExecuteNonQueryAsync();
             return Ok("Lançamento removido com sucesso.");
-        }
-        
+        }        
         //Visualização com os joins
         //Meta_pgto
         [HttpGet("obter_meta_pgto")]
@@ -236,15 +309,14 @@ namespace erp_pessoal.Controllers
             conn.Open();
             // Realização do select
             var cmdSelect = new NpgsqlCommand(
-                "SELECT mp.id_pgto_meta, e.data, e.historico, mp.vlr, m.id_meta," +
-                "m.nome, m.vlr as meta_valor, m.data_meta, m.progresso, e.saldo" +
-                "FROM meta_pgto mp" +
-                "JOIN extrato e ON e.id_lcto = mp.lcto_id" +
-                "JOIN meta m ON m.id_meta = mp.meta_invest_id" +
-                "JOIN usuarios u ON u.id = @user_id" +
-                "WHERE mp.ativo = TRUE" +
-                "AND e.ativo = TRUE" +
-                "AND u.id = 2" +
+                "SELECT mp.id_pgto_meta, e.data, e.historico, mp.vlr, m.id_meta, " +
+                "m.nome, m.vlr as meta_valor, m.data_meta, m.progresso, e.saldo " +
+                "FROM meta_pgto mp " +
+                "JOIN extrato e ON e.id_lcto = mp.lcto_id " +
+                "JOIN meta m ON m.id_meta = mp.meta_invest_id " +
+                "JOIN usuarios u ON u.id = @user_id " +
+                "WHERE mp.ativo = TRUE " +
+                "AND e.ativo = TRUE " +
                 "ORDER BY e.data desc;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             await cmdSelect.PrepareAsync();
@@ -281,16 +353,15 @@ namespace erp_pessoal.Controllers
             conn.Open();
             // Realização do select
             var cmdSelect = new NpgsqlCommand(
-                "SELECT p.id_gasto_geral, e.data, e.historico, p.vlr, g.id_gasto," +
-                "g.nome, (g.vlr_min + g.vlr_max)/2 as gasto_valor, g.data_venc, g.fixvar, e.saldo" +
-                "FROM pagamentos p" +
-                "JOIN extrato e ON e.id_lcto = p.lcto_id" + 
-                "JOIN gastos g ON g.id_gasto = p.gasto_id" + 
-                "JOIN usuarios u ON u.id = @user_id" +
-                "where p.ativo = TRUE" +
-                "AND e.ativo = TRUE" +
-                "AND u.id = 2" +
-                "ORDER BY e.data desc;", conn);
+                "SELECT p.id_gasto_geral, e.data, e.historico, p.vlr, g.id_gasto, " +
+                "g.nome, (g.vlr_min + g.vlr_max)/2 as gasto_valor, g.data_venc, g.fixvar, e.saldo " +
+                "FROM pagamentos p " +
+                "JOIN extrato e ON e.id_lcto = p.lcto_id " + 
+                "JOIN gastos g ON g.id_gasto = p.gasto_id " + 
+                "JOIN usuarios u ON u.id = @user_id " +
+                "where p.ativo = TRUE " +
+                "AND e.ativo = TRUE " +
+                "ORDER BY e.data desc; ", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             await cmdSelect.PrepareAsync();
             var reader = await cmdSelect.ExecuteReaderAsync();
@@ -326,15 +397,14 @@ namespace erp_pessoal.Controllers
             conn.Open();
             // Realização do select
             var cmdSelect = new NpgsqlCommand(
-                "SELECT dp.id_pgto_divida, e.data, e.historico, dp.vlr, d.id_invest," +
-                "d.nome, d.vlr as divida_valor, d.data , d.data_prev, e.saldo" +
-                "FROM divida_pgto dp" +
-                "JOIN extrato e ON e.id_lcto = dp.lcto_id" +
-                "JOIN divida d ON d.id_invest = dp.divida_id" +
-                "JOIN usuarios u ON u.id = @user_id" +
-                "where dp.ativo = TRUE" +
-                "AND e.ativo = TRUE" +
-                "AND u.id = 2" +
+                "SELECT dp.id_pgto_divida, e.data, e.historico, dp.vlr, d.id_invest, " +
+                "d.nome, d.vlr as divida_valor, d.data , d.data_prev, e.saldo " +
+                "FROM divida_pgto dp " +
+                "JOIN extrato e ON e.id_lcto = dp.lcto_id " +
+                "JOIN divida d ON d.id_invest = dp.divida_id " +
+                "JOIN usuarios u ON u.id = @user_id " +
+                "where dp.ativo = TRUE " +
+                "AND e.ativo = TRUE " +
                 "ORDER BY e.data desc;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             await cmdSelect.PrepareAsync();
@@ -372,13 +442,13 @@ namespace erp_pessoal.Controllers
             // Realização do select
             var cmdSelect = new NpgsqlCommand(
                 "SELECT rp.id_renda, e.data, e.historico, rp.vlr, r.id_renda as renda_id, " +
-                "r.nome, (r.vlr_min+ r.vlr_max)/2 as renda_valor, r.data_pag, e.saldo" + 
-                "FROM renda_pgto rp" +
-                "JOIN rendas r ON r.id_renda = rp.renda_id" +
-                "JOIN extrato e ON e.id_lcto = rp.lcto_id" +
-                "JOIN usuarios u ON u.id = @user_id" +
-                "where rp.ativo = TRUE" +
-                "AND e.ativo = TRUE" +
+                "r.nome, (r.vlr_min+ r.vlr_max)/2 as renda_valor, r.data_pag, e.saldo " + 
+                "FROM renda_pgto rp " +
+                "JOIN rendas r ON r.id_renda = rp.renda_id " +
+                "JOIN extrato e ON e.id_lcto = rp.lcto_id " +
+                "JOIN usuarios u ON u.id = @user_id " +
+                "where rp.ativo = TRUE " +
+                "AND e.ativo = TRUE " +
                 "ORDER BY e.data desc;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             await cmdSelect.PrepareAsync();
@@ -415,14 +485,13 @@ namespace erp_pessoal.Controllers
             // Realização do select
             var cmdSelect = new NpgsqlCommand(
                 "SELECT ip.id_invest, e.data, e.historico, ip.vlr, i.id_invest as invest_id," +
-                "i.nome, i.vlr as invest_valor, i.juro, i.data_init, e.saldo" +
-                "FROM investimento_pgto ip" +
-                "JOIN extrato e ON e.id_lcto = ip.lcto_id" +
-                "JOIN investimentos i ON i.id_invest = ip.invest_id" +
-                "JOIN usuarios u ON u.id = @user_id" +
-                "where ip.ativo = TRUE" +
-                "AND e.ativo = TRUE" +
-                "AND u.id = 2" +
+                "i.nome, i.vlr as invest_valor, i.juro, i.data_init, e.saldo " +
+                "FROM investimento_pgto ip " +
+                "JOIN extrato e ON e.id_lcto = ip.lcto_id " +
+                "JOIN investimentos i ON i.id_invest = ip.invest_id " +
+                "JOIN usuarios u ON u.id = @user_id " +
+                "where ip.ativo = TRUE " +
+                "AND e.ativo = TRUE " +
                 "ORDER BY e.data desc;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             await cmdSelect.PrepareAsync();

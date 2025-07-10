@@ -103,3 +103,9 @@ public class Extrato_update
     public DateTime data { get; set; }
     public int id_ref { get; set; }
 }
+
+public class Extrato_delete
+{
+    public int id { get; set; }
+    public string tipo { get; set; } // "gasto", "divida", "meta", "investimento", "extrato"
+}
