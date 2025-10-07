@@ -3,7 +3,7 @@ using Npgsql;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using erp_pessoal.Models.User_finan;
+using erp_pessoal.Models;
 using System.Diagnostics.Eventing.Reader;
 using System.Diagnostics;
 namespace erp_pessoal.Controllers
@@ -73,7 +73,7 @@ namespace erp_pessoal.Controllers
 
         //Inclusão de informações de extrato
         [HttpPost("incluir_lancamento")]
-        public async Task<IActionResult> IncluirLcto([FromBody] Extrato extData)
+        public async Task<IActionResult> IncluirLcto([FromBody] ExtratoModel extData)
         {
             // Obtendo ID do usuário
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -189,7 +189,7 @@ namespace erp_pessoal.Controllers
         }
 
         [HttpPut("atualizar_lancamento")]
-        public async Task<IActionResult> AtualizarLcto([FromBody] Extrato_update extData)
+        public async Task<IActionResult> AtualizarLcto([FromBody] ExtratoUpdateModel extData)
         {
             // Obtendo ID do usuário
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -256,7 +256,7 @@ namespace erp_pessoal.Controllers
         }
 
         [HttpDelete("remover_lancamento")]
-        public async Task<IActionResult> RemoverLcto([FromBody] Extrato_delete extData)
+        public async Task<IActionResult> RemoverLcto([FromBody] ExtratoDeleteModel extData)
         {
             // Obtendo ID do usuário
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
