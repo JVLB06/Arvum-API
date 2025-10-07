@@ -7,7 +7,7 @@ namespace erp_pessoal.Controllers
 
     public static class Essentials
     {
-        public static readonly string _connectionString = "Host=192.168.0.200;Port=5433;Database=erp;Username=postgres;Password=2006;";
+        public static readonly string _connectionString = "Host=192.168.0.200;Port=5433;Database=erp;Username=postgres;Password=2006;SSL Mode=Disable;";
         public static readonly string _jwtSecret = "DFr9@27!KmLp38_ZxYQwErTyUiOp12345"; // mesma do Program.cs
 
         // Função auxiliar para gerar o JWT
