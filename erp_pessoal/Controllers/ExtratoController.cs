@@ -220,7 +220,7 @@ namespace erp_pessoal.Controllers
             // Marcar lançamento como inativo
             var cmdDelete = new NpgsqlCommand(
                 @"UPDATE extrato SET ativo = FALSE WHERE id_lcto = @id_lcto AND user_id = @usuario_id;", conn);
-            cmdDelete.Parameters.AddWithValue("@id_lcto", id);
+            cmdDelete.Parameters.AddWithValue("@id_lcto", extData.id);
             cmdDelete.Parameters.AddWithValue("@usuario_id", int.Parse(usuarioId));
             var rowsAffected = await cmdDelete.ExecuteNonQueryAsync();
             if (rowsAffected == 0)

@@ -1,0 +1,510 @@
+[
+  {
+    "ContainingType": "erp_pessoal.Controllers.ContasController",
+    "Method": "CriarConta",
+    "RelativePath": "contas/cadastro",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "signIn",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ContasController",
+    "Method": "Login",
+    "RelativePath": "contas/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "logIn",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ContasController",
+    "Method": "VerificarConexao",
+    "RelativePath": "contas/verificar-conexao",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "AtualizarLcto",
+    "RelativePath": "extrato/atualizar_lancamento",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "extData",
+        "Type": "erp_pessoal.Models.User_finan.Extrato_update",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "IncluirLcto",
+    "RelativePath": "extrato/incluir_lancamento",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "extData",
+        "Type": "erp_pessoal.Models.User_finan.Extrato",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "GetDivida",
+    "RelativePath": "extrato/obter_divida_pgto",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "GetGastos",
+    "RelativePath": "extrato/obter_gastos_pgto",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "GetInvestimento",
+    "RelativePath": "extrato/obter_investimento_pgto",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "GetMeta",
+    "RelativePath": "extrato/obter_meta_pgto",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "GetRenda",
+    "RelativePath": "extrato/obter_renda_pgto",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.ExtratoController",
+    "Method": "RemoverLcto",
+    "RelativePath": "extrato/remover_lancamento",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "extData",
+        "Type": "erp_pessoal.Models.User_finan.Extrato_delete",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "AtualizarDivida",
+    "RelativePath": "user_plan/atualizar_divida",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dividaData",
+        "Type": "erp_pessoal.Models.User_finan.Divida_update",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "AtualizarGasto",
+    "RelativePath": "user_plan/atualizar_gasto",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "gastoData",
+        "Type": "erp_pessoal.Models.User_finan.Gasto_update",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "AtualizarInvestimento",
+    "RelativePath": "user_plan/atualizar_investimento",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "investimentoData",
+        "Type": "erp_pessoal.Models.User_finan.Investimento_update",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "AtualizarMeta",
+    "RelativePath": "user_plan/atualizar_meta",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "metaData",
+        "Type": "erp_pessoal.Models.User_finan.Metas_update",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "AtualizarRenda",
+    "RelativePath": "user_plan/atualizar_renda",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rendaData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "ConcluirInvestimento",
+    "RelativePath": "user_plan/concluir_investimento",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "investimentoData",
+        "Type": "erp_pessoal.Models.User_finan.Investimento_fim",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "ConcluirMeta",
+    "RelativePath": "user_plan/concluir_meta",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "metaData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "CriarDivida",
+    "RelativePath": "user_plan/criar_divida",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dividaData",
+        "Type": "erp_pessoal.Models.User_finan.Divida",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "CriarGasto",
+    "RelativePath": "user_plan/criar_gasto",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "gastoData",
+        "Type": "erp_pessoal.Models.User_finan.Gasto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "CriarInvestimento",
+    "RelativePath": "user_plan/criar_investimento",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "investimentoData",
+        "Type": "erp_pessoal.Models.User_finan.Investimento",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "CriarMeta",
+    "RelativePath": "user_plan/criar_meta",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "metaData",
+        "Type": "erp_pessoal.Models.User_finan.Metas",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "CriarRenda",
+    "RelativePath": "user_plan/criar_renda",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rendaData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "InativarDivida",
+    "RelativePath": "user_plan/inativar_divida",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dividaData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "InativarGasto",
+    "RelativePath": "user_plan/inativar_gasto",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "gastoData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "InativarInvestimento",
+    "RelativePath": "user_plan/inativar_investimento",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "investimentoData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "InativarMeta",
+    "RelativePath": "user_plan/inativar_meta",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "metaData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "InativarRenda",
+    "RelativePath": "user_plan/inativar_renda",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rendaData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetDividas",
+    "RelativePath": "user_plan/ler_dividas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetDividasQuitadas",
+    "RelativePath": "user_plan/ler_dividas_quitadas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetGastos",
+    "RelativePath": "user_plan/ler_gastos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetInvestimentosAtivos",
+    "RelativePath": "user_plan/ler_investimentos_ativos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetInvestimentosEncerrados",
+    "RelativePath": "user_plan/ler_investimentos_encerrados",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetMetas",
+    "RelativePath": "user_plan/ler_metas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetMetasConcluidas",
+    "RelativePath": "user_plan/ler_metas_concluidas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "GetRenda",
+    "RelativePath": "user_plan/ler_renda",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "erp_pessoal.Controllers.FinanDataController",
+    "Method": "PagarDivida",
+    "RelativePath": "user_plan/pagar_divida",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dividaData",
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
