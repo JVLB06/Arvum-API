@@ -3,7 +3,7 @@ using Npgsql;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using erp_pessoal.Models.User_finan;
+using erp_pessoal.Models;
 namespace erp_pessoal.Controllers {
     [Authorize]
     [ApiController]
@@ -153,7 +153,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { invest });
         }
         [HttpPost("criar_investimento")]
-        public IActionResult CriarInvestimento([FromBody] Investimento investimentoData)
+        public IActionResult CriarInvestimento([FromBody] InvestimentoModel investimentoData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -169,7 +169,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { message = "Investimento criado com sucesso" });
         }
         [HttpPut("atualizar_investimento")]
-        public IActionResult AtualizarInvestimento([FromBody] Investimento_update investimentoData)
+        public IActionResult AtualizarInvestimento([FromBody] InvestimentoUpdateModel investimentoData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -199,7 +199,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { message = "Investimento inativado com sucesso" });
         }
         [HttpPut("concluir_investimento")]
-        public IActionResult ConcluirInvestimento([FromBody] Investimento_fim investimentoData)
+        public IActionResult ConcluirInvestimento([FromBody] InvestimentoFimModel investimentoData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -241,7 +241,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { divida});
         }
         [HttpPost("criar_divida")]
-        public IActionResult CriarDivida([FromBody] Divida dividaData)
+        public IActionResult CriarDivida([FromBody] DividaModel dividaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -257,7 +257,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { message = "Dívida criada com sucesso" });
         }
         [HttpPut("atualizar_divida")]
-        public IActionResult AtualizarDivida([FromBody] Divida_update dividaData)
+        public IActionResult AtualizarDivida([FromBody] DividaUpdateModel dividaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -351,7 +351,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { meta });
         }
         [HttpPost("criar_meta")]
-        public IActionResult CriarMeta([FromBody] Metas metaData)
+        public IActionResult CriarMeta([FromBody] MetasModel metaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -366,7 +366,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { message = "Meta criada com sucesso" });
         }
         [HttpPut("atualizar_meta")]
-        public IActionResult AtualizarMeta([FromBody] Metas_update metaData)
+        public IActionResult AtualizarMeta([FromBody] MetasUpdateModel metaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -461,7 +461,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { gasto });
         }
         [HttpPost("criar_gasto")]
-        public IActionResult CriarGasto([FromBody] Gasto gastoData)
+        public IActionResult CriarGasto([FromBody] GastoModel gastoData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -479,7 +479,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { message = "Gasto criado com sucesso" });
         }
         [HttpPut("atualizar_gasto")]
-        public IActionResult AtualizarGasto([FromBody] Gasto_update gastoData)
+        public IActionResult AtualizarGasto([FromBody] GastoUpdateModel gastoData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);

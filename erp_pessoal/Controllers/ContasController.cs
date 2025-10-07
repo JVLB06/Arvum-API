@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using erp_pessoal.Models;
 namespace erp_pessoal.Controllers
 {
     [ApiController]
@@ -58,16 +59,20 @@ namespace erp_pessoal.Controllers
             if (!reader.Read())
                 return Unauthorized(new { message = "Credenciais inválidas" });
 
-            int id = reader.GetInt32(0);
-            string senhaHash = reader.GetString(1);
-            string nome = reader.GetString(2);
+            UsuarioModel user = new UsuarioModel
+            {
+                Id = reader.GetInt32(0),
+                Password = reader.GetString(1),
+                Username = reader.GetString(2),
+                Email = reader.GetString(3)
+            };
 
             reader.Close();
 
-            if (!BCrypt.Net.BCrypt.Verify(password, senhaHash))
+            if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
                 return Unauthorized(new { message = "Credenciais inválidas" });
 
-            var token = Essentials.GerarJwt(id, nome);
+            var token = Essentials.GerarJwt(user.Id, user.Username);
             return Ok(new { access_token = token, token_type = "bearer" });
         }
         //        [HttpPost("recuperar-senha")]
