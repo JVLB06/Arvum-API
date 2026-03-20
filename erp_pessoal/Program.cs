@@ -5,12 +5,25 @@ using erp_pessoal.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Adiciona suporte a Controllers (MVC)
+// Controllers
 builder.Services.AddControllers();
 
-// 2. Configuração do JWT
-var chaveJwt = Essentials._jwtSecret; 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// JWT
+var chaveJwt = Essentials._jwtSecret;
 var key = Encoding.ASCII.GetBytes(chaveJwt);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -32,11 +45,14 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-// 3. Middlewares da aplicação
-app.UseHttpsRedirection();
+// Middlewares
+app.UseRouting();
+
+app.UseCors("Frontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 4. Mapeia controllers
 app.MapControllers();
+
 app.Run();
