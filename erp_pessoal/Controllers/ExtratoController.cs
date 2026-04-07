@@ -458,13 +458,13 @@ namespace erp_pessoal.Controllers
             {
                 rendas.Add(new
                 {
-                    id_divida = reader.GetInt32(reader.GetOrdinal("id_renda")),
+                    id_renda = reader.GetInt32(reader.GetOrdinal("id_renda")),
                     data = reader.GetDateTime(reader.GetOrdinal("data")),
                     historico = reader.GetString(reader.GetOrdinal("historico")),
                     vlr_pagamento = reader.GetDouble(reader.GetOrdinal("vlr")),
                     divida_item = new
                     {
-                        id_divida_item = reader.GetInt32(reader.GetOrdinal("renda_id")),
+                        id_renda_item = reader.GetInt32(reader.GetOrdinal("renda_id")),
                         nome = reader.GetString(reader.GetOrdinal("nome")),
                         valor = reader.GetDouble(reader.GetOrdinal("renda_valor")),
                         data_init = reader.GetDateTime(reader.GetOrdinal("data_pag"))
