@@ -20,6 +20,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSwaggerGen();
+
 // JWT
 var chaveJwt = Essentials._jwtSecret;
 var key = Encoding.ASCII.GetBytes(chaveJwt);
@@ -45,8 +47,14 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger(); 
+    app.UseSwaggerUI(); 
+}
+
 // Middlewares
-app.UseRouting();
+app.UseHttpsRedirection();
 
 app.UseCors("Frontend");
 
