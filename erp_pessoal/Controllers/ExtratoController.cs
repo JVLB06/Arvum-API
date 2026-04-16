@@ -71,6 +71,42 @@ namespace erp_pessoal.Controllers
             }
         }
 
+        [HttpGet("ler_extrato")]
+         public async Task<IActionResult> LerExtrato()
+        {
+            // Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado");
+
+            // Estabelecendo conexão com o banco de dados
+            using var conn = new NpgsqlConnection(Essentials._connectionString);
+            await conn.OpenAsync();
+
+            var cmdSelect = new NpgsqlCommand(
+                "SELECT ;", conn);
+            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
+            
+            await cmdSelect.PrepareAsync();
+            
+            var reader = await cmdSelect.ExecuteReaderAsync();
+            var extrato = new List<object>();
+            
+            while (await reader.ReadAsync())
+            {
+                extrato.Add(new ExtratoModel
+                {
+                    extrato_id = reader.GetString(reader.GetOrdinal("id_extrato")),
+                    historico = reader.GetString(reader.GetOrdinal("historico")),
+                    valor = reader.GetInt32(reader.GetOrdinal("valor")),
+                    tipo = reader.GetString(reader.GetOrdinal("tipo")),
+                    data = reader.GetDateTime(reader.GetOrdinal("data")),
+                    id_ref = reader.GetInt32(reader.GetOrdinal("id"))
+                });
+            }
+            return Ok(new { extrato });
+        }
+
         //Inclusão de informações de extrato
         [HttpPost("incluir_lancamento")]
         public async Task<IActionResult> IncluirLcto([FromBody] ExtratoModel extData)
@@ -458,13 +494,13 @@ namespace erp_pessoal.Controllers
             {
                 rendas.Add(new
                 {
-                    id_divida = reader.GetInt32(reader.GetOrdinal("id_renda")),
+                    id_renda = reader.GetInt32(reader.GetOrdinal("id_renda")),
                     data = reader.GetDateTime(reader.GetOrdinal("data")),
                     historico = reader.GetString(reader.GetOrdinal("historico")),
                     vlr_pagamento = reader.GetDouble(reader.GetOrdinal("vlr")),
                     divida_item = new
                     {
-                        id_divida_item = reader.GetInt32(reader.GetOrdinal("renda_id")),
+                        id_renda_item = reader.GetInt32(reader.GetOrdinal("renda_id")),
                         nome = reader.GetString(reader.GetOrdinal("nome")),
                         valor = reader.GetDouble(reader.GetOrdinal("renda_valor")),
                         data_init = reader.GetDateTime(reader.GetOrdinal("data_pag"))

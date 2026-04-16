@@ -2,6 +2,7 @@
 {
     public class ExtratoModel
     {
+        public string ?extrato_id { get; set; }
         public string historico { get; set; }
         public decimal valor { get; set; }
         public string tipo { get; set; }
