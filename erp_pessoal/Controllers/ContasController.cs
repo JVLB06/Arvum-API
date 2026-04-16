@@ -11,19 +11,14 @@ namespace erp_pessoal.Controllers
     {
 
         [HttpPost("cadastro")]
-        public IActionResult CriarConta([FromBody] Dictionary<string, string> signIn)
+        public IActionResult CriarConta([FromBody] SignUpModel signIn)
         {
-            string username = signIn["username"];
-            string password = signIn["password"];
-            string nasceStr = signIn["nasce"];
-            DateTime nasce = DateTime.Parse(nasceStr);
-            string email = signIn["email"];
 
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
 
             var cmdCheck = new NpgsqlCommand("SELECT id FROM usuarios WHERE email = @nome", conn);
-            cmdCheck.Parameters.AddWithValue("@nome", email);
+            cmdCheck.Parameters.AddWithValue("@nome", signIn.email);
 
             var reader = cmdCheck.ExecuteReader();
             if (reader.HasRows)
@@ -31,29 +26,27 @@ namespace erp_pessoal.Controllers
 
             reader.Close();
 
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signIn.password);
 
             var cmdInsert = new NpgsqlCommand("INSERT INTO usuarios (nome, senha, nascimento, email, tipo, ativo) VALUES (@nome, @senha, @nasce, @email, 'user', TRUE)", conn);
-            cmdInsert.Parameters.AddWithValue("@nome", username);
+            cmdInsert.Parameters.AddWithValue("@nome", signIn.username);
             cmdInsert.Parameters.AddWithValue("@senha", hashedPassword);
-            cmdInsert.Parameters.AddWithValue("@nasce", nasce);
-            cmdInsert.Parameters.AddWithValue("@email", email);
+            cmdInsert.Parameters.AddWithValue("@nasce", signIn.nasce);
+            cmdInsert.Parameters.AddWithValue("@email", signIn.email);
 
             cmdInsert.ExecuteNonQuery();
             return Ok(new { message = "Usuário cadastrado com sucesso" });
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] Dictionary<string, string> logIn)
+        public IActionResult Login([FromBody] SignInModel logIn)
         {
-            string username = logIn["username"];
-            string password = logIn["password"];
 
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
 
             var cmd = new NpgsqlCommand("SELECT id, senha, nome, email FROM usuarios WHERE email = @login AND ativo = TRUE", conn);
-            cmd.Parameters.AddWithValue("@login", username);
+            cmd.Parameters.AddWithValue("@login", logIn.username);
 
             var reader = cmd.ExecuteReader();
             if (!reader.Read())
@@ -69,7 +62,7 @@ namespace erp_pessoal.Controllers
 
             reader.Close();
 
-            if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+            if (!BCrypt.Net.BCrypt.Verify(logIn.password, user.Password))
                 return Unauthorized(new { message = "Credenciais inválidas" });
 
             var token = Essentials.GerarJwt(user.Id, user.Username);

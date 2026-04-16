@@ -497,15 +497,15 @@ namespace erp_pessoal.Controllers {
             cmdUpdate.ExecuteNonQuery();
             return Ok(new { message = "Gasto atualizado com sucesso" });
         }
-        [HttpDelete("inativar_gasto")]
-        public IActionResult InativarGasto([FromBody] Dictionary<string, string> gastoData)
+        [HttpDelete("inativar_gasto/{gastoData}")]
+        public IActionResult InativarGasto([FromRoute] string gastoData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de gasto
             var cmdDelete = new NpgsqlCommand("UPDATE gastos SET ativo = FALSE WHERE id_gasto = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(gastoData["id_gasto"]));
+            cmdDelete.Parameters.AddWithValue("@id", int.Parse(gastoData));
             cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             cmdDelete.ExecuteNonQuery();
             return Ok(new { message = "Gasto inativado com sucesso" });

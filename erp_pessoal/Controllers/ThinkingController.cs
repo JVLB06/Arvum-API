@@ -12,8 +12,8 @@ namespace erp_pessoal.Controllers
     {
         private readonly ThinkingUtils _thinkingUtils;
 
-        [HttpGet("indicadores{id}")]
-        public IActionResult GetIndicadores([FromQuery] string id)
+        [HttpGet("indicadores/{id}")]
+        public IActionResult GetIndicadores([FromRoute] string id)
         {
             Tuple<EstruturaSugestaoModel, IndicadoresModel> indicadores = _thinkingUtils.GerarSugestoes(id);
             return Ok(indicadores);
@@ -64,8 +64,8 @@ namespace erp_pessoal.Controllers
 
             return Ok("Preferencias atualizadas com sucesso");
         }
-        [HttpGet("ler_preferencias{id}")]
-        public IActionResult LerPreferencias([FromQuery] string id)
+        [HttpGet("ler_preferencias/{id}")]
+        public IActionResult LerPreferencias([FromRoute] string id)
         {
             List<PreferenciasUsuarioModel> preferenciasList = new List<PreferenciasUsuarioModel>();
             using var conn = new NpgsqlConnection(Essentials._connectionString);
