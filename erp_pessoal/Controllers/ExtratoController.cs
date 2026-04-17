@@ -72,7 +72,9 @@ namespace erp_pessoal.Controllers
         }
 
         [HttpGet("ler_extrato")]
-         public async Task<IActionResult> LerExtrato()
+         public async Task<IActionResult> LerExtrato(
+         [FromQuery(Name = "data_ini")] DateTime dataIni, 
+        [FromQuery(Name = "data_fim")] DateTime dataEnd)
         {
             // Obtendo ID do usuário
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -84,8 +86,12 @@ namespace erp_pessoal.Controllers
             await conn.OpenAsync();
 
             var cmdSelect = new NpgsqlCommand(
-                "SELECT ;", conn);
+                "SELECT id_lcto, historico, vlr, user_id, data FROM
+                extrato WHERE ativo = True 
+                AND data BETWEEN(@dataIni, @dataEnd) AND user_id = @user_id;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
+            cmdSelect.Parameters.AddWithValue("@dataIni", int.Parse(dataIni));
+            cmdSelect.Parameters.AddWithValue("@dataEnd", int.Parse(dataEnd));
             
             await cmdSelect.PrepareAsync();
             
@@ -96,12 +102,11 @@ namespace erp_pessoal.Controllers
             {
                 extrato.Add(new ExtratoModel
                 {
-                    extrato_id = reader.GetString(reader.GetOrdinal("id_extrato")),
+                    extrato_id = reader.GetString(reader.GetOrdinal("id_lcto")),
                     historico = reader.GetString(reader.GetOrdinal("historico")),
-                    valor = reader.GetInt32(reader.GetOrdinal("valor")),
-                    tipo = reader.GetString(reader.GetOrdinal("tipo")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data")),
-                    id_ref = reader.GetInt32(reader.GetOrdinal("id"))
+                    valor = reader.GetInt32(reader.GetOrdinal("vlr")),
+                    tipo = reader.GetString(reader.GetOrdinal("user_id")),
+                    data = reader.GetDateTime(reader.GetOrdinal("data"))
                 });
             }
             return Ok(new { extrato });
