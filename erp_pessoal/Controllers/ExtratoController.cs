@@ -90,8 +90,8 @@ namespace erp_pessoal.Controllers
                 extrato WHERE ativo = True 
                 AND data BETWEEN(@dataIni, @dataEnd) AND user_id = @user_id;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdSelect.Parameters.AddWithValue("@dataIni", int.Parse(dataIni));
-            cmdSelect.Parameters.AddWithValue("@dataEnd", int.Parse(dataEnd));
+            cmdSelect.Parameters.AddWithValue("@dataIni", dataIni);
+            cmdSelect.Parameters.AddWithValue("@dataEnd", dataEnd);
             
             await cmdSelect.PrepareAsync();
             
