@@ -86,7 +86,7 @@ namespace erp_pessoal.Controllers
             await conn.OpenAsync();
 
             var cmdSelect = new NpgsqlCommand(
-                "SELECT id_lcto, historico, vlr, user_id, data FROM
+                @"SELECT id_lcto, historico, vlr, user_id, data FROM
                 extrato WHERE ativo = True 
                 AND data BETWEEN(@dataIni, @dataEnd) AND user_id = @user_id;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
