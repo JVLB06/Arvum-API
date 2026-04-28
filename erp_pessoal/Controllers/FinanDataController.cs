@@ -37,7 +37,7 @@ namespace erp_pessoal.Controllers {
             return Ok(new { rendas });
         }
         [HttpPost("criar_renda")]
-        public IActionResult CriarRenda([FromBody] Dictionary<string, string> rendaData)
+        public IActionResult CriarRenda([FromBody] RendaModel rendaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -45,27 +45,27 @@ namespace erp_pessoal.Controllers {
             // Inserção de nova renda 
             var cmdInsert = new NpgsqlCommand("INSERT INTO rendas (user_id, nome, vlr_min, vlr_max, data_pag, ativo) VALUES (@user_id, @descricao, @vlr_min, @vlr_max, @data, TRUE)", conn);
             cmdInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdInsert.Parameters.AddWithValue("@descricao", rendaData["descricao"]);
-            cmdInsert.Parameters.AddWithValue("@vlr_min", decimal.Parse(rendaData["vlr_min"]));
-            cmdInsert.Parameters.AddWithValue("@vlr_max", decimal.Parse(rendaData["vlr_max"]));
-            cmdInsert.Parameters.AddWithValue("@data", DateTime.Parse(rendaData["data"]));
+            cmdInsert.Parameters.AddWithValue("@descricao", rendaData.descricao);
+            cmdInsert.Parameters.AddWithValue("@vlr_min", rendaData.vlr_min);
+            cmdInsert.Parameters.AddWithValue("@vlr_max", rendaData.vlr_max);
+            cmdInsert.Parameters.AddWithValue("@data", rendaData.data);
             cmdInsert.ExecuteNonQuery();
             return Ok(new { message = "Renda criada com sucesso" });
         }
         [HttpPut("atualizar_renda")]
-        public IActionResult AtualizarRenda([FromBody] Dictionary<string, string> rendaData)
+        public IActionResult AtualizarRenda([FromBody] RendaUpdateModel rendaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Atualização de renda
             var cmdUpdate = new NpgsqlCommand("UPDATE rendas SET nome = @descricao, vlr_min = @vlr_min, vlr_max = @vlr_max, data_pag = @data WHERE id_renda = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", int.Parse(rendaData["id_renda"]));
+            cmdUpdate.Parameters.AddWithValue("@id", rendaData.id_renda);
             cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.Parameters.AddWithValue("@descricao", rendaData["descricao"]);
-            cmdUpdate.Parameters.AddWithValue("@vlr_min", decimal.Parse(rendaData["vlr_min"]));
-            cmdUpdate.Parameters.AddWithValue("@vlr_max", decimal.Parse(rendaData["vlr_max"]));
-            cmdUpdate.Parameters.AddWithValue("@data", DateTime.Parse(rendaData["data"]));
+            cmdUpdate.Parameters.AddWithValue("@descricao", rendaData.descricao);
+            cmdUpdate.Parameters.AddWithValue("@vlr_min", rendaData.vlr_min);
+            cmdUpdate.Parameters.AddWithValue("@vlr_max", rendaData.vlr_max);
+            cmdUpdate.Parameters.AddWithValue("@data", rendaData.data);
             cmdUpdate.ExecuteNonQuery();
             return Ok(new { message = "Renda atualizada com sucesso" });
         }
