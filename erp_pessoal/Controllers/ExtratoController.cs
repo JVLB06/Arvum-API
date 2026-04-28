@@ -13,6 +13,23 @@ namespace erp_pessoal.Controllers
     [Route("extrato")]
     public class ExtratoController : ControllerBase
     {
+        //Tratamento de valores do extrato
+        private decimal NormalizarValor(decimal valor, string tipo)
+        {
+            // garante valor positivo de base
+            valor = Math.Abs(valor);
+
+            return tipo switch
+            {
+                "gasto" => -valor,
+                "divida" => -valor,
+                "meta" => -valor,
+                "investimento" => -valor,
+                "renda" => valor,
+                _ => valor
+            };
+        }
+
         //Recálculo de saldos
         private async Task AtualizarSaldosAsync(NpgsqlConnection conn, int userId, DateTime data)
         {
@@ -88,7 +105,8 @@ namespace erp_pessoal.Controllers
             var cmdSelect = new NpgsqlCommand(
                 @"SELECT id_lcto, historico, vlr, user_id, data FROM
                 extrato WHERE ativo = True 
-                AND data BETWEEN(@dataIni, @dataEnd) AND user_id = @user_id;", conn);
+                AND data BETWEEN @dataIni AND @dataEnd 
+                AND user_id = @user_id;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             cmdSelect.Parameters.AddWithValue("@dataIni", dataIni);
             cmdSelect.Parameters.AddWithValue("@dataEnd", dataEnd);
@@ -104,7 +122,7 @@ namespace erp_pessoal.Controllers
                 {
                     extrato_id = reader.GetString(reader.GetOrdinal("id_lcto")),
                     historico = reader.GetString(reader.GetOrdinal("historico")),
-                    valor = reader.GetInt32(reader.GetOrdinal("vlr")),
+                    valor = reader.GetDecimal(reader.GetOrdinal("vlr")),
                     tipo = reader.GetString(reader.GetOrdinal("user_id")),
                     data = reader.GetDateTime(reader.GetOrdinal("data"))
                 });
@@ -133,7 +151,7 @@ namespace erp_pessoal.Controllers
 
             cmdInsert.Parameters.AddWithValue("@data", extData.data);
             cmdInsert.Parameters.AddWithValue("@historico", extData.historico);
-            cmdInsert.Parameters.AddWithValue("@vlr", extData.valor);
+            cmdInsert.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
             cmdInsert.Parameters.AddWithValue("@usuario_id", int.Parse(usuarioId));
 
             var idLcto = await cmdInsert.ExecuteScalarAsync();
@@ -150,7 +168,7 @@ namespace erp_pessoal.Controllers
                         "VALUES (@historico, @vlr, @data, @gasto_id, @user_id, @lcto_id) " +
                         "RETURNING id_gasto_geral;", conn);
                     gastoInsert.Parameters.AddWithValue("@historico", extData.historico);
-                    gastoInsert.Parameters.AddWithValue("@vlr", extData.valor);
+                    gastoInsert.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
                     gastoInsert.Parameters.AddWithValue("@data", extData.data);
                     gastoInsert.Parameters.AddWithValue("@gasto_id", extData.id_ref);
                     gastoInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
@@ -166,7 +184,7 @@ namespace erp_pessoal.Controllers
                         "VALUES (@historico, @vlr, @data, @divida_id, @user_id, @lcto_id) " +
                         "RETURNING id_pgto_divida;", conn);
                     dividaInsert.Parameters.AddWithValue("@historico", extData.historico);
-                    dividaInsert.Parameters.AddWithValue("@vlr", extData.valor);
+                    dividaInsert.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
                     dividaInsert.Parameters.AddWithValue("@data", extData.data);
                     dividaInsert.Parameters.AddWithValue("@divida_id", extData.id_ref);
                     dividaInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
@@ -182,7 +200,7 @@ namespace erp_pessoal.Controllers
                         "VALUES (@historico, @vlr, @data, @meta_id, @user_id, @lcto_id) " +
                         "RETURNING id_pgto_meta;", conn);
                     metaInsert.Parameters.AddWithValue("@historico", extData.historico);
-                    metaInsert.Parameters.AddWithValue("@vlr", extData.valor);
+                    metaInsert.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
                     metaInsert.Parameters.AddWithValue("@data", extData.data);
                     metaInsert.Parameters.AddWithValue("@meta_id", extData.id_ref);
                     metaInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
@@ -198,7 +216,7 @@ namespace erp_pessoal.Controllers
                         "VALUES (@historico, @vlr, @data, @invest_id, @user_id, @lcto_id) " +
                         "RETURNING id_invest;", conn);
                     investimentoInsert.Parameters.AddWithValue("@historico", extData.historico);
-                    investimentoInsert.Parameters.AddWithValue("@vlr", extData.valor);
+                    investimentoInsert.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
                     investimentoInsert.Parameters.AddWithValue("@data", extData.data);
                     investimentoInsert.Parameters.AddWithValue("@invest_id", extData.id_ref);
                     investimentoInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
@@ -214,7 +232,7 @@ namespace erp_pessoal.Controllers
                         "VALUES (@historico, @vlr, @data, @renda_id, @user_id, @lcto_id) " +
                         "RETURNING id_renda;", conn);
                     rendaInsert.Parameters.AddWithValue("@historico", extData.historico);
-                    rendaInsert.Parameters.AddWithValue("@vlr", extData.valor);
+                    rendaInsert.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
                     rendaInsert.Parameters.AddWithValue("@data", extData.data);
                     rendaInsert.Parameters.AddWithValue("@renda_id", extData.id_ref);
                     rendaInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
@@ -244,7 +262,7 @@ namespace erp_pessoal.Controllers
                 WHERE id_lcto = @id_lcto AND user_id = @usuario_id AND ativo = TRUE;", conn);
             cmdUpdate.Parameters.AddWithValue("@data", extData.data);
             cmdUpdate.Parameters.AddWithValue("@historico", extData.historico);
-            cmdUpdate.Parameters.AddWithValue("@vlr", extData.valor);
+            cmdUpdate.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
             cmdUpdate.Parameters.AddWithValue("@id_lcto", extData.id);
             cmdUpdate.Parameters.AddWithValue("@usuario_id", int.Parse(usuarioId));
             var rowsAffected = await cmdUpdate.ExecuteNonQueryAsync();
@@ -288,7 +306,7 @@ namespace erp_pessoal.Controllers
             }
             var updt_especific = new NpgsqlCommand(sql, conn);
             updt_especific.Parameters.AddWithValue("@historico", extData.historico);
-            updt_especific.Parameters.AddWithValue("@vlr", extData.valor);
+            updt_especific.Parameters.AddWithValue("@vlr", NormalizarValor(extData.valor, extData.tipo));
             updt_especific.Parameters.AddWithValue("@data", extData.data);
             updt_especific.Parameters.AddWithValue("@id_lcto", extData.id);
             updt_especific.Parameters.AddWithValue("@usuario_id", int.Parse(usuarioId));
