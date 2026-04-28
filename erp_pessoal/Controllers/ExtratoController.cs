@@ -139,7 +139,7 @@ namespace erp_pessoal.Controllers
             {
                 extrato.Add(new ExtratoModel
                 {
-                    extrato_id = reader.GetString(reader.GetOrdinal("id_lcto")),
+                    extrato_id = reader.GetInt32(reader.GetOrdinal("id_lcto")),
                     historico = reader.GetString(reader.GetOrdinal("historico")),
                     valor = reader.GetDecimal(reader.GetOrdinal("vlr")),
                     tipo = reader.GetString(reader.GetOrdinal("tipo")),
