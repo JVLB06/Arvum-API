@@ -26,3 +26,5 @@
 /erp_pessoal/obj/Debug/net9.0/erp_pessoal.csproj.AssemblyReference.cache
 /erp_pessoal/obj/erp_pessoal.csproj.nuget.dgspec.json
 /erp_pessoal/obj/erp_pessoal.csproj.nuget.g.targets
+*.json
+*.wsuo

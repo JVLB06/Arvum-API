@@ -69,15 +69,15 @@ namespace erp_pessoal.Controllers {
             cmdUpdate.ExecuteNonQuery();
             return Ok(new { message = "Renda atualizada com sucesso" });
         }
-        [HttpDelete("inativar_renda")]
-        public IActionResult InativarRenda([FromBody] Dictionary<string, string> rendaData)
+        [HttpDelete("inativar_renda/{rendaData}")]
+        public IActionResult InativarRenda([FromRoute] string rendaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de renda
             var cmdDelete = new NpgsqlCommand("UPDATE rendas SET ativo = FALSE WHERE id_renda = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(rendaData["id_renda"]));
+            cmdDelete.Parameters.AddWithValue("@id", int.Parse(rendaData));
             cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             cmdDelete.ExecuteNonQuery();
             return Ok(new { message = "Renda inativada com sucesso" });
@@ -185,15 +185,15 @@ namespace erp_pessoal.Controllers {
             cmdUpdate.ExecuteNonQuery();
             return Ok(new { message = "Investimento atualizado com sucesso" });
         }
-        [HttpDelete("inativar_investimento")]
-        public IActionResult InativarInvestimento([FromBody] Dictionary<string, string> investimentoData)
+        [HttpDelete("inativar_investimento/{investimentoData}")]
+        public IActionResult InativarInvestimento([FromRoute] string investimentoData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de investimento
             var cmdDelete = new NpgsqlCommand("UPDATE investimentos SET ativo = FALSE WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(investimentoData["id_invest"]));
+            cmdDelete.Parameters.AddWithValue("@id", int.Parse(investimentoData));
             cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             cmdDelete.ExecuteNonQuery();
             return Ok(new { message = "Investimento inativado com sucesso" });
@@ -273,15 +273,15 @@ namespace erp_pessoal.Controllers {
             cmdUpdate.ExecuteNonQuery();
             return Ok(new { message = "Dívida atualizada com sucesso" });
         }
-        [HttpDelete("inativar_divida")]
-        public IActionResult InativarDivida([FromBody] Dictionary<string, string> dividaData)
+        [HttpDelete("inativar_divida/{dividaData}")]
+        public IActionResult InativarDivida([FromRoute] string dividaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de dívida
             var cmdDelete = new NpgsqlCommand("UPDATE divida SET ativo = FALSE WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(dividaData["id_divida"]));
+            cmdDelete.Parameters.AddWithValue("@id", int.Parse(dividaData));
             cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             cmdDelete.ExecuteNonQuery();
             return Ok(new { message = "Dívida inativada com sucesso" });
@@ -382,15 +382,15 @@ namespace erp_pessoal.Controllers {
             cmdUpdate.ExecuteNonQuery();
             return Ok(new { message = "Meta atualizada com sucesso" });
         }
-        [HttpDelete("inativar_meta")]
-        public IActionResult InativarMeta([FromBody] Dictionary<string, string> metaData)
+        [HttpDelete("inativar_meta/{metaData}")]
+        public IActionResult InativarMeta([FromRoute] string metaData)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de meta
             var cmdDelete = new NpgsqlCommand("UPDATE meta SET ativo = FALSE WHERE id_meta = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(metaData["id_meta"]));
+            cmdDelete.Parameters.AddWithValue("@id", int.Parse(metaData));
             cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             cmdDelete.ExecuteNonQuery();
             return Ok(new { message = "Meta inativada com sucesso" });
