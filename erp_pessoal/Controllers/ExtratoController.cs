@@ -103,10 +103,29 @@ namespace erp_pessoal.Controllers
             await conn.OpenAsync();
 
             var cmdSelect = new NpgsqlCommand(
-                @"SELECT id_lcto, historico, vlr, user_id, data FROM
-                extrato WHERE ativo = True 
-                AND data BETWEEN @dataIni AND @dataEnd 
-                AND user_id = @user_id;", conn);
+                @"SELECT 
+                    e.id_lcto,
+                    e.historico,
+                    e.vlr,
+                    e.data,
+                    CASE 
+                        WHEN p.lcto_id IS NOT NULL THEN 'gasto'
+                        WHEN dp.lcto_id IS NOT NULL THEN 'divida'
+                        WHEN mp.lcto_id IS NOT NULL THEN 'meta'
+                        WHEN ip.lcto_id IS NOT NULL THEN 'investimento'
+                        WHEN rp.lcto_id IS NOT NULL THEN 'renda'
+                        ELSE 'desconhecido'
+                    END AS tipo
+                FROM extrato e
+                LEFT JOIN pagamentos p ON p.lcto_id = e.id_lcto AND p.ativo = TRUE
+                LEFT JOIN divida_pgto dp ON dp.lcto_id = e.id_lcto AND dp.ativo = TRUE
+                LEFT JOIN meta_pgto mp ON mp.lcto_id = e.id_lcto AND mp.ativo = TRUE
+                LEFT JOIN investimento_pgto ip ON ip.lcto_id = e.id_lcto AND ip.ativo = TRUE
+                LEFT JOIN renda_pgto rp ON rp.lcto_id = e.id_lcto AND rp.ativo = TRUE
+                WHERE 
+                    e.ativo = TRUE
+                    AND e.data BETWEEN @dataIni AND @dataEnd
+                    AND e.user_id = @user_id;", conn);
             cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
             cmdSelect.Parameters.AddWithValue("@dataIni", dataIni);
             cmdSelect.Parameters.AddWithValue("@dataEnd", dataEnd);
@@ -123,7 +142,7 @@ namespace erp_pessoal.Controllers
                     extrato_id = reader.GetString(reader.GetOrdinal("id_lcto")),
                     historico = reader.GetString(reader.GetOrdinal("historico")),
                     valor = reader.GetDecimal(reader.GetOrdinal("vlr")),
-                    tipo = reader.GetString(reader.GetOrdinal("user_id")),
+                    tipo = reader.GetString(reader.GetOrdinal("tipo")),
                     data = reader.GetDateTime(reader.GetOrdinal("data"))
                 });
             }
