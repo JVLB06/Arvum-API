@@ -115,7 +115,8 @@ namespace erp_pessoal.Controllers
                         WHEN ip.lcto_id IS NOT NULL THEN 'investimento'
                         WHEN rp.lcto_id IS NOT NULL THEN 'renda'
                         ELSE 'desconhecido'
-                    END AS tipo
+                    END AS tipo,
+                    e.saldo
                 FROM extrato e
                 LEFT JOIN pagamentos p ON p.lcto_id = e.id_lcto AND p.ativo = TRUE
                 LEFT JOIN divida_pgto dp ON dp.lcto_id = e.id_lcto AND dp.ativo = TRUE
@@ -143,7 +144,8 @@ namespace erp_pessoal.Controllers
                     historico = reader.GetString(reader.GetOrdinal("historico")),
                     valor = reader.GetDecimal(reader.GetOrdinal("vlr")),
                     tipo = reader.GetString(reader.GetOrdinal("tipo")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data"))
+                    data = reader.GetDateTime(reader.GetOrdinal("data")),
+                    saldo = reader.GetDecimal(reader.GetOrdinal("saldo"))
                 });
             }
             return Ok(new { extrato });

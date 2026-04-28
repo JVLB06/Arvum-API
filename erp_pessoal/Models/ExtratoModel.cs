@@ -8,5 +8,6 @@
         public string tipo { get; set; }
         public DateTime data { get; set; }
         public int id_ref { get; set; }
+        public decimal ?saldo { get; set; }
     }
 }
