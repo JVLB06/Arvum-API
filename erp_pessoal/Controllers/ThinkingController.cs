@@ -11,8 +11,7 @@ namespace erp_pessoal.Controllers
     [Route("thinking")]
     public class ThinkingController : ControllerBase
     {
-        private readonly ThinkingUtils _thinkingUtils;
-        _thinkingUtils = new ThinkingUtils();
+        private readonly ThinkingUtils _thinkingUtils = new ThinkingUtils();
 
         [HttpGet("indicadores")]
         public IActionResult GetIndicadores()
