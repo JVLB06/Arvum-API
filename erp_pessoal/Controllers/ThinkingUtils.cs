@@ -20,8 +20,8 @@ namespace erp_pessoal.Controllers
             dividas_cmd.Parameters.AddWithValue("@id", id);
             rendas_cmd.Parameters.AddWithValue("@id", id);
 
-            var dividas = dividas_cmd.ExecuteReader();
-            var rendas = rendas_cmd.ExecuteReader();
+            var dividas = dividas_cmd.ExecuteScalar();
+            var rendas = rendas_cmd.ExecuteScalar();
             return (float)dividas["sum"] / (float)rendas["sum"] * 100;
         }
         public RelacaoGastosModel RelacaoGastos(string id)
@@ -357,7 +357,7 @@ namespace erp_pessoal.Controllers
             {
                 if (divida.ValorFaltante > 5000) 
                 {
-                    previsaoDivida.Append($"Você ainda deve R${divida.ValorFaltante:N2}. Tente aumentar o pagamento mensal para reduzir juros.");
+                    previsaoDivida.Add($"Você ainda deve R${divida.ValorFaltante:N2}. Tente aumentar o pagamento mensal para reduzir juros.");
                 }
             }
 
@@ -365,7 +365,7 @@ namespace erp_pessoal.Controllers
             {
                 if (meta.Progresso < 50) 
                 {
-                    previsaoMeta.Append($"Seu progresso na meta está em {meta.Progresso:N2}%. Tente contribuir mais para alcançar seus objetivos.");
+                    previsaoMeta.Add($"Seu progresso na meta está em {meta.Progresso:N2}%. Tente contribuir mais para alcançar seus objetivos.");
                 }
             }
 
