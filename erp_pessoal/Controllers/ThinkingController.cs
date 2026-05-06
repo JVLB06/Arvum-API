@@ -6,11 +6,13 @@ using erp_pessoal.Models;
 using erp_pessoal.Controllers;
 namespace erp_pessoal.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("thinking")]
     public class ThinkingController : ControllerBase
     {
         private readonly ThinkingUtils _thinkingUtils;
+        _thinkingUtils = new ThinkingUtils();
 
         [HttpGet("indicadores")]
         public IActionResult GetIndicadores()
