@@ -12,10 +12,15 @@ namespace erp_pessoal.Controllers
     {
         private readonly ThinkingUtils _thinkingUtils;
 
-        [HttpGet("indicadores/{id}")]
-        public IActionResult GetIndicadores([FromRoute] string id)
+        [HttpGet("indicadores")]
+        public IActionResult GetIndicadores()
         {
-            Tuple<EstruturaSugestaoModel, IndicadoresModel> indicadores = _thinkingUtils.GerarSugestoes(id);
+            // Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado");
+                
+            Tuple<EstruturaSugestaoModel, IndicadoresModel> indicadores = _thinkingUtils.GerarSugestoes(usuarioId);
             return Ok(indicadores);
         }
 
@@ -64,15 +69,20 @@ namespace erp_pessoal.Controllers
 
             return Ok("Preferencias atualizadas com sucesso");
         }
-        [HttpGet("ler_preferencias/{id}")]
-        public IActionResult LerPreferencias([FromRoute] string id)
+        [HttpGet("ler_preferencias")]
+        public IActionResult LerPreferencias()
         {
+            // Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado");
+            
             List<PreferenciasUsuarioModel> preferenciasList = new List<PreferenciasUsuarioModel>();
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             var preferencias_cmd = new NpgsqlCommand(@"SELECT USER_ID, PREFERENCIA_ID, GASTO_ID, EXCLUIR, REDUZIR, BLOQUEADO 
                 FROM RESTRICOES_USUARIO WHERE USER_ID = @user AND ATIVO = TRUE", conn);
-            preferencias_cmd.Parameters.AddWithValue("@user", id);
+            preferencias_cmd.Parameters.AddWithValue("@user", usuarioId);
             var reader = preferencias_cmd.ExecuteReader();
             while (reader.Read())
             {
