@@ -43,9 +43,9 @@ namespace erp_pessoal.Controllers
             gastos_var_cmd.Parameters.AddWithValue("@id", id);
             rendas_cmd.Parameters.AddWithValue("@id", id);
 
-            var gastos_fix = gastos_fix_cmd.ExecuteReader();
-            var gastos_var = gastos_var_cmd.ExecuteReader();
-            var rendas = rendas_cmd.ExecuteReader();
+            var gastos_fix = gastos_fix_cmd.executeScalar();
+            var gastos_var = gastos_var_cmd.executeScalar();
+            var rendas = rendas_cmd.executeScalar();
 
             float media_fix = ((float)gastos_fix["min"] + (float)gastos_fix["max"]) / 2;
             float media_var = ((float)gastos_var["min"] + (float)gastos_var["max"]) / 2;
@@ -75,8 +75,8 @@ namespace erp_pessoal.Controllers
             pgto_cmd.Parameters.AddWithValue("@datafim", DateTime.Parse(dataFim));
             gastos_cmd.Parameters.AddWithValue("@id", id);
 
-            var gastos = gastos_cmd.ExecuteReader();
-            var pgto = pgto_cmd.ExecuteReader();
+            var gastos = gastos_cmd.executeScalar();
+            var pgto = pgto_cmd.executeScalar();
 
             float indice = (float)pgto["total"] / (float)gastos["max"];
             float indice_media = (float)pgto["total"] / (((float)gastos["max"] + (float)gastos["min"]) / 2);
@@ -125,8 +125,8 @@ namespace erp_pessoal.Controllers
             gastos_cmd.Parameters.AddWithValue("@id", id);
             rendas_cmd.Parameters.AddWithValue("@id", id);
 
-            var gastos = gastos_cmd.ExecuteReader();
-            var rendas = rendas_cmd.ExecuteReader();
+            var gastos = gastos_cmd.executeScalar();
+            var rendas = rendas_cmd.executeScalar();
 
             float indice = ((((float)gastos["max"] + (float)gastos["min"]) / 2) / (float)rendas["sum"]) * 100;
 
@@ -170,9 +170,9 @@ namespace erp_pessoal.Controllers
             pgto_3_cmd.Parameters.AddWithValue("@data_inicio", DateTime.Now.AddMonths(-3));
             pgto_3_cmd.Parameters.AddWithValue("@data_fim", DateTime.Now);
 
-            var dividas = dividas_cmd.ExecuteReader();
-            var pgtos_all = pgto_cmd.ExecuteReader();
-            var pgtos_3 = pgto_3_cmd.ExecuteReader();
+            var dividas = dividas_cmd.executeScalar();
+            var pgtos_all = pgto_cmd.executeScalar();
+            var pgtos_3 = pgto_3_cmd.executeScalar();
 
             float expectativaPgto = ((float)dividas["sum"] - (float)pgtos_all["sum"]) / (((float)pgtos_3["sum"]) / 3);
             float valorFaltante = (float)dividas["sum"] - (float)pgtos_all["sum"];
@@ -201,9 +201,9 @@ namespace erp_pessoal.Controllers
             pgto_3_cmd.Parameters.AddWithValue("@data_inicio", DateTime.Now.AddMonths(-3));
             pgto_3_cmd.Parameters.AddWithValue("@data_fim", DateTime.Now);
 
-            var dividas = dividas_cmd.ExecuteReader();
-            var pgtos_all = pgto_cmd.ExecuteReader();
-            var pgtos_3 = pgto_3_cmd.ExecuteReader();
+            var dividas = dividas_cmd.executeScalar();
+            var pgtos_all = pgto_cmd.executeScalar();
+            var pgtos_3 = pgto_3_cmd.executeScalar();
 
             float expectativaPgto = ((float)dividas["sum"] - (float)pgtos_all["sum"]) / (((float)pgtos_3["sum"]) / 3);
             float valorFaltante = (float)dividas["sum"] - (float)pgtos_all["sum"];
@@ -243,7 +243,7 @@ namespace erp_pessoal.Controllers
 
             var sugest = new SugestoesModel();
 
-            using (var rd = cmd.ExecuteReader())
+            using (var rd = cmd.executeScalar())
             {
                 if (rd.Read())
                 {
@@ -261,7 +261,7 @@ namespace erp_pessoal.Controllers
             ValidaReducao_cmd.Parameters.AddWithValue("@id", id);
             ValidaReducao_cmd.Parameters.AddWithValue("@gasto_id", sugest.GastoId);
 
-            var ValidaReducao = ValidaReducao_cmd.ExecuteReader();
+            var ValidaReducao = ValidaReducao_cmd.executeScalar();
 
             if (sugest.Prioridade <= Referencia)
             {
@@ -293,7 +293,18 @@ namespace erp_pessoal.Controllers
             IEnumerable<string> previsaoMeta = new List<string>();
 
             //Definir indicadores
+            indicadores.Endividamento = IndiceEndividamento(id_user);
 
+            indicadores.Gastos = RelacaoGastos(id_user);
+
+            indicadores.IndiceSaude = SaudeRenda(id_user);
+
+            indicadores.AvaliacaoGastoMensal =
+                GastoMensal(
+                    DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd"),
+                    DateTime.Now.ToString("yyyy-MM-dd"),
+                    id_user
+                );
             if (indicadores.Endividamento >= 50)
             {
                 resultado.Endividamento = "Seu índice de endividamento está alto. Priorize pagar dívidas antes de novos gastos.";
