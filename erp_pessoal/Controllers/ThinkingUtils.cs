@@ -40,14 +40,14 @@ namespace erp_pessoal.Controllers
             conn.Open();
 
             var rendaCmd = new NpgsqlCommand(@"
-                SELECT COALESCE(SUM(valor),0)
+                SELECT COALESCE(SUM((vlr_min + vlr_max)/2),0)
                 FROM rendas
                 WHERE user_id = @id
                 AND ativo = TRUE
             ", conn);
 
             var dividaCmd = new NpgsqlCommand(@"
-                SELECT COALESCE(SUM(valor),0)
+                SELECT COALESCE(SUM(vlr),0)
                 FROM divida
                 WHERE user_id = @id
                 AND ativo = TRUE
@@ -78,7 +78,7 @@ namespace erp_pessoal.Controllers
             RelacaoGastosModel model = new();
 
             var rendaCmd = new NpgsqlCommand(@"
-                SELECT COALESCE(SUM(valor),0)
+                SELECT COALESCE(SUM((vlr_min + vlr_max)/2),0)
                 FROM rendas
                 WHERE user_id = @id
                 AND ativo = TRUE
@@ -108,8 +108,8 @@ namespace erp_pessoal.Controllers
             {
                 if (rd.Read())
                 {
-                    fixMin = rd.GetFloat(0);
-                    fixMax = rd.GetFloat(1);
+                    fixMin = Convert.ToSingle(rd.GetDecimal(0));
+                    fixMax = Convert.ToSingle(rd.GetDecimal(1));
                 }
             }
 
@@ -132,8 +132,8 @@ namespace erp_pessoal.Controllers
             {
                 if (rd.Read())
                 {
-                    varMin = rd.GetFloat(0);
-                    varMax = rd.GetFloat(1);
+                    varMin = Convert.ToSingle(rd.GetDecimal(0));
+                    varMax = Convert.ToSingle(rd.GetDecimal(1));
                 }
             }
 
@@ -160,7 +160,7 @@ namespace erp_pessoal.Controllers
             conn.Open();
 
             var rendaCmd = new NpgsqlCommand(@"
-                SELECT COALESCE(SUM(valor),0)
+                SELECT COALESCE(SUM((vlr_min + vlr_max)/2),0)
                 FROM rendas
                 WHERE user_id = @id
                 AND ativo = TRUE
@@ -189,8 +189,8 @@ namespace erp_pessoal.Controllers
             {
                 if (rd.Read())
                 {
-                    min = rd.GetFloat(0);
-                    max = rd.GetFloat(1);
+                    min = Convert.ToSingle(rd.GetDecimal(0));
+                    max = Convert.ToSingle(rd.GetDecimal(1));
                 }
             }
 
@@ -283,7 +283,7 @@ namespace erp_pessoal.Controllers
 
             var cmd = new NpgsqlCommand(@"
                 SELECT
-                    gasto_id,
+                    id_gasto,
                     nome,
                     vlr_min,
                     vlr_max
@@ -308,7 +308,7 @@ namespace erp_pessoal.Controllers
 
                 lista.Add(new ReducaoModel
                 {
-                    GastoId = rd["gasto_id"].ToString(),
+                    GastoId = rd["id_gasto"].ToString(),
                     Nome = rd["nome"].ToString(),
                     ValorAtual = media,
                     ValorSugerido = media * 0.8f
