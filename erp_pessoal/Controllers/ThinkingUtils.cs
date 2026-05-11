@@ -5,7 +5,7 @@ namespace erp_pessoal.Controllers
 {
     public class ThinkingUtils
     {
-        public ThinkingResponseModel GerarSugestoes(integer userId)
+        public ThinkingResponseModel GerarSugestoes(int userId)
         {
             ThinkingResponseModel response = new();
 
@@ -32,7 +32,7 @@ namespace erp_pessoal.Controllers
             return response;
         }
 
-        public float IndiceEndividamento(integer id)
+        public float IndiceEndividamento(int id)
         {
             using var conn =
                 new NpgsqlConnection(Essentials._connectionString);
@@ -68,7 +68,7 @@ namespace erp_pessoal.Controllers
             return (divida / renda) * 100;
         }
 
-        public RelacaoGastosModel RelacaoGastos(integer id)
+        public RelacaoGastosModel RelacaoGastos(int id)
         {
             using var conn =
                 new NpgsqlConnection(Essentials._connectionString);
@@ -152,7 +152,7 @@ namespace erp_pessoal.Controllers
             return model;
         }
 
-        public SaudeRendaModel SaudeRenda(integer id)
+        public SaudeRendaModel SaudeRenda(int id)
         {
             using var conn =
                 new NpgsqlConnection(Essentials._connectionString);
@@ -272,7 +272,7 @@ namespace erp_pessoal.Controllers
             return pensamentos;
         }
 
-        public List<ReducaoModel> GerarReducoes(integer id)
+        public List<ReducaoModel> GerarReducoes(int id)
         {
             List<ReducaoModel> lista = new();
 
@@ -318,7 +318,7 @@ namespace erp_pessoal.Controllers
             return lista;
         }
 
-        public List<ExclusaoModel> GerarExclusoes(integer id)
+        public List<ExclusaoModel> GerarExclusoes(int id)
         {
             List<ExclusaoModel> lista = new();
 
