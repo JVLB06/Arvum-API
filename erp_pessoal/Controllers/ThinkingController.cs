@@ -21,7 +21,7 @@ namespace erp_pessoal.Controllers
             if (string.IsNullOrEmpty(usuarioId))
                 return Unauthorized("Usuário não autenticado");
 
-            var resultado = _thinkingUtils.GerarSugestoes(usuarioId);
+            var resultado = _thinkingUtils.GerarSugestoes(int.Parse(usuarioId));
 
             return Ok(resultado);
         }
@@ -53,7 +53,7 @@ namespace erp_pessoal.Controllers
                 AND ATIVO = TRUE
             ", conn);
 
-            cmd.Parameters.AddWithValue("@user", usuarioId);
+            cmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
 
             using var reader = cmd.ExecuteReader();
 
@@ -81,6 +81,11 @@ namespace erp_pessoal.Controllers
 
             conn.Open();
 
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado");
+
             var cmd = new NpgsqlCommand(@"
                 INSERT INTO RESTRICOES_USUARIO
                 (
@@ -104,7 +109,7 @@ namespace erp_pessoal.Controllers
                 )
             ", conn);
 
-            cmd.Parameters.AddWithValue("@user", preferencias.IdUsuario);
+            cmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
             cmd.Parameters.AddWithValue("@preferencia", preferencias.IdPreferencia);
             cmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
             cmd.Parameters.AddWithValue("@excluir", preferencias.Excluir);
@@ -127,6 +132,11 @@ namespace erp_pessoal.Controllers
 
             conn.Open();
 
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado");
+
             var cmd = new NpgsqlCommand(@"
                 UPDATE RESTRICOES_USUARIO
                 SET
@@ -139,7 +149,7 @@ namespace erp_pessoal.Controllers
                     AND GASTO_ID = @gasto
             ", conn);
 
-            cmd.Parameters.AddWithValue("@user", preferencias.IdUsuario);
+            cmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
             cmd.Parameters.AddWithValue("@preferencia", preferencias.IdPreferencia);
             cmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
             cmd.Parameters.AddWithValue("@excluir", preferencias.Excluir);
