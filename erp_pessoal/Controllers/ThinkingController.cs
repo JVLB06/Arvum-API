@@ -21,7 +21,7 @@ namespace erp_pessoal.Controllers
             if (string.IsNullOrEmpty(usuarioId))
                 return Unauthorized("Usuário não autenticado");
 
-            var resultado = _thinkingUtils.GerarSugestoes(usuarioId);
+            var resultado = _thinkingUtils.GerarSugestoes(int.Parse(usuarioId));
 
             return Ok(resultado);
         }
@@ -53,7 +53,7 @@ namespace erp_pessoal.Controllers
                 AND ATIVO = TRUE
             ", conn);
 
-            cmd.Parameters.AddWithValue("@user", usuarioId);
+            cmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
 
             using var reader = cmd.ExecuteReader();
 
