@@ -75,82 +75,106 @@ namespace erp_pessoal.Controllers
 
         [HttpPost("criar_preferencias")]
         public IActionResult CriarPreferencias(
-            [FromBody] PreferenciasUsuarioModel preferencias)
+            [FromBody] NovaPreferenciaModel preferencias)
         {
+
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado");
+
+            List<PreferenciasUsuarioModel> preferenciasList = new();
+
             using var conn = new NpgsqlConnection(Essentials._connectionString);
 
             conn.Open();
-
-            var cmd = new NpgsqlCommand(@"
-                INSERT INTO RESTRICOES_USUARIO
-                (
+            
+            var readCmd = new NpgsqlCommand(@"
+                SELECT
                     USER_ID,
-                    PREFERENCIA_ID,
+                    ID_PREF,
                     GASTO_ID,
                     EXCLUIR,
                     REDUZIR,
-                    BLOQUEADO,
+                    BLOQUEADO
+                FROM RESTRICOES_USUARIO
+                WHERE USER_ID = @user
+                AND GASTO_ID = @gasto
+                LIMIT 1
+            ", conn);
+
+            var insertCmd = new NpgsqlCommand(@"
+                INSERT INTO RESTRICOES_USUARIO
+                (
+                    USER_ID,
+                    GASTO_ID,
+                    EXCLUIR,
+                    REDUZIR,
                     ATIVO
                 )
                 VALUES
                 (
                     @user,
-                    @preferencia,
                     @gasto,
                     @excluir,
                     @reduzir,
-                    @bloqueado,
                     TRUE
                 )
             ", conn);
 
-            cmd.Parameters.AddWithValue("@user", preferencias.IdUsuario);
-            cmd.Parameters.AddWithValue("@preferencia", preferencias.IdPreferencia);
-            cmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
-            cmd.Parameters.AddWithValue("@excluir", preferencias.Excluir);
-            cmd.Parameters.AddWithValue("@reduzir", preferencias.Reduzir);
-            cmd.Parameters.AddWithValue("@bloqueado", preferencias.Bloqueado);
-
-            cmd.ExecuteNonQuery();
-
-            return Ok(new
-            {
-                mensagem = "Preferência criada com sucesso"
-            });
-        }
-
-        [HttpPut("atualizar_preferencias")]
-        public IActionResult AtualizarPreferencias(
-            [FromBody] PreferenciasUsuarioModel preferencias)
-        {
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-
-            conn.Open();
-
-            var cmd = new NpgsqlCommand(@"
+            var updateCmd = new NpgsqlCommand(@"
                 UPDATE RESTRICOES_USUARIO
                 SET
                     EXCLUIR = @excluir,
                     REDUZIR = @reduzir,
-                    BLOQUEADO = @bloqueado
+                    ATIVO = TRUE
                 WHERE
                     USER_ID = @user
                     AND PREFERENCIA_ID = @preferencia
                     AND GASTO_ID = @gasto
             ", conn);
 
-            cmd.Parameters.AddWithValue("@user", preferencias.IdUsuario);
-            cmd.Parameters.AddWithValue("@preferencia", preferencias.IdPreferencia);
-            cmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
-            cmd.Parameters.AddWithValue("@excluir", preferencias.Excluir);
-            cmd.Parameters.AddWithValue("@reduzir", preferencias.Reduzir);
-            cmd.Parameters.AddWithValue("@bloqueado", preferencias.Bloqueado);
+            readCmd.Parameters.AddWithValue("@user", usuarioId);
+            readCmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
 
-            cmd.ExecuteNonQuery();
+            PreferenciasUsuarioModel? preferenciaExistente = null;
+
+            using var reader = readCmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                preferenciaExistente = new PreferenciasUsuarioModel
+                {
+                    IdUsuario = reader["USER_ID"].ToString(),
+                    IdPreferencia = reader["PREFERENCIA_ID"].ToString(),
+                    IdGasto = reader["GASTO_ID"].ToString(),
+                    Excluir = Convert.ToBoolean(reader["EXCLUIR"]),
+                    Reduzir = Convert.ToBoolean(reader["REDUZIR"]),
+                    Bloqueado = Convert.ToBoolean(reader["BLOQUEADO"])
+                };
+            }
+
+            if (preferenciaExistente == null)
+            {
+                insertCmd.Parameters.AddWithValue("@user", usuarioId);
+                insertCmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
+                insertCmd.Parameters.AddWithValue("@excluir", preferencias.Excluir ? true : false); //Se verdadeiro exclusão bloqueada
+                insertCmd.Parameters.AddWithValue("@reduzir", preferencias.Excluir ? false : true); //Se falso redução bloqueada
+                insertCmd.ExecuteNonQuery();
+            }
+            else
+            {
+                updateCmd.Parameters.AddWithValue("@user", usuarioId);
+                updateCmd.Parameters.AddWithValue("@preferencia", preferenciaExistente.IdPreferencia);
+                updateCmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
+                updateCmd.Parameters.AddWithValue("@excluir", preferencias.Excluir ? true : false); //Se verdadeiro exclusão bloqueada
+                updateCmd.Parameters.AddWithValue("@reduzir", preferencias.Excluir ? false : true); //Se falso redução bloqueada
+                updateCmd.ExecuteNonQuery();
+            }
 
             return Ok(new
             {
-                mensagem = "Preferência atualizada com sucesso"
+                mensagem = "Preferência adicionada com sucesso"
             });
         }
 
