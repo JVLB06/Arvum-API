@@ -8,5 +8,6 @@
         public bool Excluir { get; set; }
         public bool Reduzir { get; set; }
         public bool Bloqueado { get; set; }
+        public string? GastoNome { get; set; }
     }
 }

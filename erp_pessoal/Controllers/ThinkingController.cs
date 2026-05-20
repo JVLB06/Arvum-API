@@ -42,13 +42,15 @@ namespace erp_pessoal.Controllers
 
             var cmd = new NpgsqlCommand(@"
                 SELECT 
-                    USER_ID,
-                    ID_PREF,
-                    GASTO_ID,
-                    EXCLUIR,
-                    REDUZIR,
-                    BLOQUEADO
-                FROM RESTRICOES_USUARIO
+                    RU.USER_ID,
+                    RU.ID_PREF,
+                    RU.GASTO_ID,
+                    RU.EXCLUIR,
+                    RU.REDUZIR,
+                    RU.BLOQUEADO,
+                    G.NOME
+                FROM RESTRICOES_USUARIO RU
+                INNER JOIN GASTOS G
                 WHERE USER_ID = @user
                 AND ATIVO = TRUE
             ", conn);
@@ -66,7 +68,8 @@ namespace erp_pessoal.Controllers
                     IdGasto = reader.GetString(2),
                     Excluir = reader.GetBoolean(3),
                     Reduzir = reader.GetBoolean(4),
-                    Bloqueado = reader.GetBoolean(5)
+                    Bloqueado = reader.GetBoolean(5),
+                    GastoNome = reader.GetString(6)
                 });
             }
 
