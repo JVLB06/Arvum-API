@@ -130,7 +130,7 @@ namespace erp_pessoal.Controllers
                     ATIVO = TRUE
                 WHERE
                     USER_ID = @user
-                    AND PREFERENCIA_ID = @preferencia
+                    AND ID_PREF = @preferencia
                     AND GASTO_ID = @gasto
             ", conn);
 
@@ -139,19 +139,20 @@ namespace erp_pessoal.Controllers
 
             PreferenciasUsuarioModel? preferenciaExistente = null;
 
-            using var reader = readCmd.ExecuteReader();
-
-            if (reader.Read())
+            using (var reader = readCmd.ExecuteReader())
             {
-                preferenciaExistente = new PreferenciasUsuarioModel
+                if (reader.Read())
                 {
-                    IdUsuario = reader["USER_ID"].ToString(),
-                    IdPreferencia = reader["PREFERENCIA_ID"].ToString(),
-                    IdGasto = reader["GASTO_ID"].ToString(),
-                    Excluir = Convert.ToBoolean(reader["EXCLUIR"]),
-                    Reduzir = Convert.ToBoolean(reader["REDUZIR"]),
-                    Bloqueado = Convert.ToBoolean(reader["BLOQUEADO"])
-                };
+                   preferenciaExistente = new PreferenciasUsuarioModel
+                   {
+                       IdUsuario = reader.GetInt32(0).ToString(),
+                       IdPreferencia = reader.GetInt32(1).ToString(),
+                       IdGasto = reader.GetInt32(2).ToString(),
+                       Excluir = reader.GetBoolean(3),
+                       Reduzir = reader.GetBoolean(4),
+                       Bloqueado = reader.GetBoolean(5)
+                    };
+                 }
             }
 
             if (preferenciaExistente == null)
