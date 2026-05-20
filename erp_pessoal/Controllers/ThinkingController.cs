@@ -135,7 +135,7 @@ namespace erp_pessoal.Controllers
             ", conn);
 
             readCmd.Parameters.AddWithValue("@user", usuarioId);
-            readCmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
+            readCmd.Parameters.AddWithValue("@gasto", int.Parse(preferencias.IdGasto));
 
             PreferenciasUsuarioModel? preferenciaExistente = null;
 
@@ -157,7 +157,7 @@ namespace erp_pessoal.Controllers
             if (preferenciaExistente == null)
             {
                 insertCmd.Parameters.AddWithValue("@user", usuarioId);
-                insertCmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
+                insertCmd.Parameters.AddWithValue("@gasto", int.Parse(preferencias.IdGasto));
                 insertCmd.Parameters.AddWithValue("@excluir", preferencias.Excluir ? true : false); //Se verdadeiro exclusão bloqueada
                 insertCmd.Parameters.AddWithValue("@reduzir", preferencias.Excluir ? false : true); //Se falso redução bloqueada
                 insertCmd.ExecuteNonQuery();
@@ -166,7 +166,7 @@ namespace erp_pessoal.Controllers
             {
                 updateCmd.Parameters.AddWithValue("@user", usuarioId);
                 updateCmd.Parameters.AddWithValue("@preferencia", preferenciaExistente.IdPreferencia);
-                updateCmd.Parameters.AddWithValue("@gasto", preferencias.IdGasto);
+                updateCmd.Parameters.AddWithValue("@gasto", int.Parse(preferencias.IdGasto));
                 updateCmd.Parameters.AddWithValue("@excluir", preferencias.Excluir ? true : false); //Se verdadeiro exclusão bloqueada
                 updateCmd.Parameters.AddWithValue("@reduzir", preferencias.Excluir ? false : true); //Se falso redução bloqueada
                 updateCmd.ExecuteNonQuery();
