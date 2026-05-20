@@ -283,13 +283,16 @@ namespace erp_pessoal.Controllers
 
             var cmd = new NpgsqlCommand(@"
                 SELECT
-                    id_gasto,
-                    nome,
-                    vlr_min,
-                    vlr_max
-                FROM gastos
-                WHERE user_id = @id
-                AND ativo = TRUE
+                    G.id_gasto,
+                    G.nome,
+                    G.vlr_min,
+                    G.vlr_max
+                FROM gastos G
+                LEFT JOIN RESTRICOES_USUARIO RU ON RU.gasto_id = G.id_gasto
+                WHERE G.user_id = @id
+                AND G.ativo = TRUE
+                AND RU.reduzir <> TRUE OR RU.reduzir is null
+                AND G.prioridade >= 4
             ", conn);
 
             cmd.Parameters.AddWithValue("@id", id);
@@ -329,14 +332,16 @@ namespace erp_pessoal.Controllers
 
             var cmd = new NpgsqlCommand(@"
                 SELECT
-                    id_gasto,
-                    nome,
-                    vlr_min,
-                    vlr_max
-                FROM gastos
-                WHERE user_id = @id
-                AND ativo = TRUE
-                AND prioridade >= 4
+                    G.id_gasto,
+                    G.nome,
+                    G.vlr_min,
+                    G.vlr_max
+                FROM gastos G
+                LEFT JOIN RESTRICOES_USUARIO RU ON RU.gasto_id = G.id_gasto
+                WHERE G.user_id = @id
+                AND RU.excluir <> TRUE OR RU.excluir is null
+                AND G.ativo = TRUE
+                AND G.prioridade >= 4
             ", conn);
 
             cmd.Parameters.AddWithValue("@id", id);
