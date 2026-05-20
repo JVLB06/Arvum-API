@@ -181,7 +181,7 @@ namespace erp_pessoal.Controllers
 
         [HttpDelete("deletar_preferencia")]
         public IActionResult DeletarPreferencia(
-            [FromQuery] string gastoId)
+            [FromQuery] string preferenciaId)
         {
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -195,12 +195,14 @@ namespace erp_pessoal.Controllers
             var cmd = new NpgsqlCommand(@"
                 UPDATE RESTRICOES_USUARIO
                 SET ATIVO = FALSE
+                EXCLUIR = FALSE
+                REDUZIR = FALSE
                 WHERE USER_ID = @user
-                AND GASTO_ID = @gasto
+                AND ID_PREF = @preferencia
             ", conn);
 
             cmd.Parameters.AddWithValue("@user", usuarioId);
-            cmd.Parameters.AddWithValue("@gasto", gastoId);
+            cmd.Parameters.AddWithValue("@preferencia", preferenciaId);
 
             cmd.ExecuteNonQuery();
 
