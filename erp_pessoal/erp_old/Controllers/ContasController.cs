@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using Presentation.WebModels;
-namespace Presentation.Controllers
+using erp_pessoal.Models;
+namespace erp_pessoal.Controllers
 {
     [ApiController]
     [Route("contas")]
-    public class AuthController : ControllerBase
+    public class ContasController : ControllerBase
     {
+
         [HttpPost("cadastro")]
-        public IActionResult CreateAccount([FromBody] NewUserModel new)
+        public IActionResult CriarConta([FromBody] SignUpModel signIn)
         {
 
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -20,7 +22,7 @@ namespace Presentation.Controllers
 
             var reader = cmdCheck.ExecuteReader();
             if (reader.HasRows)
-                return BadRequest(new { message = "Usu·rio j· existe" });
+                return BadRequest(new { message = "Usu√°rio j√° existe" });
 
             reader.Close();
 
@@ -33,11 +35,11 @@ namespace Presentation.Controllers
             cmdInsert.Parameters.AddWithValue("@email", signIn.email);
 
             cmdInsert.ExecuteNonQuery();
-            return Ok(new { message = "Usu·rio cadastrado com sucesso" });
+            return Ok(new { message = "Usu√°rio cadastrado com sucesso" });
         }
 
         [HttpPost("login")]
-        public IActionResult AccessAccount([FromBody] LoginModel login)
+        public IActionResult Login([FromBody] SignInModel logIn)
         {
 
             using var conn = new NpgsqlConnection(Essentials._connectionString);
@@ -48,7 +50,7 @@ namespace Presentation.Controllers
 
             var reader = cmd.ExecuteReader();
             if (!reader.Read())
-                return Unauthorized(new { message = "Credenciais inv·lidas" });
+                return Unauthorized(new { message = "Credenciais inv√°lidas" });
 
             UsuarioModel user = new UsuarioModel
             {
@@ -61,31 +63,31 @@ namespace Presentation.Controllers
             reader.Close();
 
             if (!BCrypt.Net.BCrypt.Verify(logIn.password, user.Password))
-                return Unauthorized(new { message = "Credenciais inv·lidas" });
+                return Unauthorized(new { message = "Credenciais inv√°lidas" });
 
             var token = Essentials.GerarJwt(user.Id, user.Username);
             return Ok(new { access_token = token, token_type = "bearer" });
         }
         //        [HttpPost("recuperar-senha")]
 
-        // Rota de verificaÁ„o de conex„o
+        // Rota de verifica√ß√£o de conex√£o
         [HttpGet("verificar-conexao")]
         [Authorize]
-        public IActionResult VerifyConection()
+        public IActionResult VerificarConexao()
         {
-            // Recupera o ID e nome do usu·rio do token
+            // Recupera o ID e nome do usu√°rio do token
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var nome = User.Identity?.Name;
             if (string.IsNullOrEmpty(usuarioId))
             {
-                return Unauthorized(new { message = "Usu·rio n„o autenticado" });
+                return Unauthorized(new { message = "Usu√°rio n√£o autenticado" });
             }
             return Ok(new
             {
                 autenticado = true,
                 usuario_id = usuarioId,
                 user = nome
-            });
-        };
-    };
+            }); 
+        }
+    }
 }

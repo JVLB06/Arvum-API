@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTOs
+namespace Infrastructure.Persistence.Writers
 {
-    internal class UserModel
+    internal class AuthWriter
     {
     }
 }
