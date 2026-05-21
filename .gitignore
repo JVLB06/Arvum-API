@@ -28,3 +28,4 @@
 /erp_pessoal/obj/erp_pessoal.csproj.nuget.g.targets
 *.json
 *.wsuo
+/erp_pessoal/obj/Debug/net9.0/erp_pessoal.genruntimeconfig.cache
