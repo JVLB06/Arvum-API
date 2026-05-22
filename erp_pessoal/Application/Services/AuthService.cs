@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Domain.Entities;
 
 public class AuthService : IAuthService
 {
@@ -17,22 +18,18 @@ public class AuthService : IAuthService
 
     public async Task RegisterAsync(UserDTO newUser)
     {
-        // verifica se já existe
-        var exists = await _reader.GetUsersAsync();
+        var exists = await _reader.GetUserByEmailAsync(newUser.Email);
 
-        if (exists)
-        {
+        if (exists is not null)
             throw new Exception("Email já cadastrado");
-        }
 
-        // processa entidade
-        var user = new UserDTO(
+        var user = new AuthEntity(
             newUser.UserName,
             newUser.Email,
-            newUser.PasswordHash
+            newUser.Password,
+            newUser.BornDate
         );
 
-        // salva
-        await _writer.CreateAsync(user);
+        await _writer.CreateUserAsync(user);
     }
 }

@@ -10,7 +10,7 @@ namespace Domain.Helpers
         public static readonly string _jwtSecret = "DFr9@27!KmLp38_ZxYQwErTyUiOp12345"; // mesma do Program.cs
 
         // Função auxiliar para gerar o JWT
-        public static string GerarJwt(int idUsuario, string nomeUsuario)
+        public static string GenerateJwt(int idUsuario, string nomeUsuario)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSecret);

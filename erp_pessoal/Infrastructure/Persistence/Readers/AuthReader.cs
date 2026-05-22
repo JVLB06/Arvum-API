@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
-using Infrastructure.BaseMappers;
 using Application.Interfaces;
 using Dapper;
+using Infrastructure.BaseMappers;
 using Infrastructure.BaseModels;
 using Infrastructure.Repositories;
 
@@ -9,7 +9,7 @@ namespace Infrastructure.Persistence.Readers
 {
     public class AuthReader : IAuthReader
     {
-        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
+        public async Task<IEnumerable<UserDTO>> GetUserByEmailAsync(string email)
         {
             using var conn = MainRepository.CreateConnection();
 
@@ -19,13 +19,17 @@ namespace Infrastructure.Persistence.Readers
                     nome AS UserName, 
                     email AS Email,
                     senha AS PasswordHash
-                FROM usuarios";
+                FROM usuarios
+                WHERE email = @Email";
 
+            var user = await conn.QueryFirstOrDefaultAsync<UserBaseModel>(
+                sql,
+            new { Email = email });
 
-            //Nome da coluna no Select deve ser igual ao nome da Model (mesma ordem também)
-            var users = await conn.QueryAsync<UserBaseModel>(sql);
+            if (user is null)
+                return null;
 
-            return users.Select(UserMapper.ToInput);
+            return (IEnumerable<UserDTO>)UserMapper.ToInput(user);
         }
     }
 }

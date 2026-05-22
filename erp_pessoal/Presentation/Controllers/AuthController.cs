@@ -2,28 +2,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Presentation.WebModels;
+using Application.Interfaces;
+using Presentation.InputMappers;
 namespace Presentation.Controllers
 {
     [ApiController]
     [Route("contas")]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthService _service;
+
+        public AuthController(IAuthService service)
+        {
+            _service = service;
+        }
+
         [HttpPost("cadastro")]
-        public IActionResult CreateAccount([FromBody] NewUserModel newUser)
+        public async Task<IActionResult> CreateAccount([FromBody] NewUserModel newUser)
         {
 
-            //Chama service
+            try
+            {
+                await _service.RegisterAsync(NewUserMapper.ToDTO(newUser));
 
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signIn.password);
+                return Ok(new { message = "Usuário cadastrado com sucesso" });
+            }
 
-            var cmdInsert = new NpgsqlCommand("INSERT INTO usuarios (nome, senha, nascimento, email, tipo, ativo) VALUES (@nome, @senha, @nasce, @email, 'user', TRUE)", conn);
-            cmdInsert.Parameters.AddWithValue("@nome", signIn.username);
-            cmdInsert.Parameters.AddWithValue("@senha", hashedPassword);
-            cmdInsert.Parameters.AddWithValue("@nasce", signIn.nasce);
-            cmdInsert.Parameters.AddWithValue("@email", signIn.email);
-
-            cmdInsert.ExecuteNonQuery();
-            return Ok(new { message = "Usuário cadastrado com sucesso" });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }   
         }
 
         [HttpPost("login")]

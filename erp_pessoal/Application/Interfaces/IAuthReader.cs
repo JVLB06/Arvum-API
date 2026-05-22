@@ -4,6 +4,6 @@ namespace Application.Interfaces
 {
     public interface IAuthReader
     {
-        Task<IEnumerable<UserDTO>> GetUsersAsync();
+        Task<IEnumerable<UserDTO>> GetUserByEmailAsync(string Email);
     }
 }
