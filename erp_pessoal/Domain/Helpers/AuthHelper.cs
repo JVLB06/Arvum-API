@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Domain.Helpers
 {
-    internal class AuthHelper
+    public class AuthHelper
     {
         public static readonly string _jwtSecret = "DFr9@27!KmLp38_ZxYQwErTyUiOp12345"; // mesma do Program.cs
 

@@ -1,4 +1,5 @@
 ﻿using Domain.Helpers;
+using System;
 
 namespace Domain.Entities
 {
@@ -7,15 +8,18 @@ namespace Domain.Entities
         public string Email { get; private set; }
         public string Token { get; private set; }
 
-        public LoginEntity(int? id, string email, string password)
+        public LoginEntity(int? id, string email, string passwordReceived, string passwordRegistered)
         {
-            if (password.Length < 6)
-                throw new Exception("Senha fraca");
+            if (BCrypt.Net.BCrypt.Verify(passwordReceived, passwordRegistered))
+            {
+                Email = email.Trim().ToLower();
 
-            Email = email.Trim().ToLower();
-
-            Token = AuthHelper.GenerateJwt(id, email);
-
+                Token = AuthHelper.GenerateJwt(id, email);
+            }
+            else
+            {
+                throw new Exception("Email ou senha inválidos");
+            }
         }
     }
 }

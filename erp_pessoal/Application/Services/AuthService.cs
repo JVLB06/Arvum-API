@@ -38,17 +38,14 @@ public class AuthService : IAuthService
     {
         var connect = await _reader.GetLoginAsync(login);
 
-        if (BCrypt.Net.BCrypt.Verify(connect.Password, login.Password))
-        {
-            var acces = new LoginEntity(
-                login.Id,
+        var acces = new LoginEntity(
+                connect.Id,
                 login.Email,
-                login.Password);
+                login.Password,
+                connect.Password);
 
-            return acces;
-        }
-
-        throw new Exception("Email ou senha inválidos");
+        return acces;
+        
     }
 
     public ConnectionEntity ValidateConnection(ConnectionDTO connection)

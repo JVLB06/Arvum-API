@@ -44,7 +44,7 @@ namespace Infrastructure.Persistence.Readers
                     senha AS Password
                 FROM usuarios 
                 WHERE 1=1
-                    AND email = @login 
+                    AND email = @Email 
                     AND ativo = TRUE
             ";
 
