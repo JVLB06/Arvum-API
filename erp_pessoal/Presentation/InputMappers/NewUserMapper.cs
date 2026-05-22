@@ -11,7 +11,7 @@ namespace Presentation.InputMappers
             {
                 UserName = model.UserName,
                 Email = model.Email,
-                BornDate = model.BornDate,
+                BirthDate = model.BirthDate,
                 PasswordHash = model.Password
             };
         }

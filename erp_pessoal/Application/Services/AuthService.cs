@@ -23,11 +23,11 @@ public class AuthService : IAuthService
         if (exists is not null)
             throw new Exception("Email já cadastrado");
 
-        var user = new AuthEntity(
+        var user = new UserEntity(
             newUser.UserName,
             newUser.Email,
             newUser.Password,
-            newUser.BornDate
+            newUser.BirthDate
         );
 
         await _writer.CreateUserAsync(user);

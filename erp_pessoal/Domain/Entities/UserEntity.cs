@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class AuthEntity
+    public class UserEntity
     {
         public string UserName { get; private set; }
-        public DateTime? BornDate { get; private set; }
+        public DateTime? BirthDate { get; private set; }
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
 
-        public AuthEntity(string userName,string email,string password, DateTime? bornDate)
+        public UserEntity(string userName,string email,string password, DateTime? birthDate)
         {
             if (string.IsNullOrWhiteSpace(userName))
                 throw new Exception("Usuário inválido");
@@ -31,7 +31,7 @@ namespace Domain.Entities
 
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
                 
-            BornDate = bornDate;
+            BirthDate = birthDate;
         }
     }
 }

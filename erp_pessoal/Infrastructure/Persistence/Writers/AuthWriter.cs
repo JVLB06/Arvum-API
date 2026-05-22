@@ -9,7 +9,7 @@ namespace Infrastructure.Persistence.Writers
 {
     public class AuthWriter : IAuthWriter
     {
-        public async Task CreateUserAsync(AuthEntity user)
+        public async Task CreateUserAsync(UserEntity user)
         {
             using var conn = MainRepository.CreateConnection();
 
@@ -27,7 +27,7 @@ namespace Infrastructure.Persistence.Writers
                 (
                     @UserName,
                     @PasswordHash,
-                    @BornDate,
+                    @BirthDate,
                     @Email,
                     'user',
                     TRUE
@@ -37,7 +37,7 @@ namespace Infrastructure.Persistence.Writers
             {
                 user.UserName,
                 user.PasswordHash,
-                user.BornDate,
+                user.BirthDate,
                 user.Email
             });
         }

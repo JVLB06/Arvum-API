@@ -5,6 +5,6 @@ namespace Application.Interfaces
 {
     public interface IAuthWriter
     {
-        Task CreateUserAsync(AuthEntity user);
+        Task CreateUserAsync(UserEntity user);
     }
 }
