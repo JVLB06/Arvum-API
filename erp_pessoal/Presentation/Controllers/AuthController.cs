@@ -9,20 +9,10 @@ namespace Presentation.Controllers
     public class AuthController : ControllerBase
     {
         [HttpPost("cadastro")]
-        public IActionResult CreateAccount([FromBody] NewUserModel new)
+        public IActionResult CreateAccount([FromBody] NewUserModel newUser)
         {
 
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-
-            var cmdCheck = new NpgsqlCommand("SELECT id FROM usuarios WHERE email = @nome", conn);
-            cmdCheck.Parameters.AddWithValue("@nome", signIn.email);
-
-            var reader = cmdCheck.ExecuteReader();
-            if (reader.HasRows)
-                return BadRequest(new { message = "Usuário já existe" });
-
-            reader.Close();
+            //Chama service
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(signIn.password);
 

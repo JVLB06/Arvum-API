@@ -1,36 +1,31 @@
 ﻿using Application.DTOs;
+using Infrastructure.BaseMappers;
+using Application.Interfaces;
 using Dapper;
 using Infrastructure.BaseModels;
-using Infrastructure.BaseModels;
 using Infrastructure.Repositories;
-using Npgsql;
-using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Readers
 {
-    internal class AuthReader
+    public class AuthReader : IAuthReader
     {
-        public async Task<IEnumerable<UserModel>> GetUsersAsync()
+        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
         {
             using var conn = MainRepository.CreateConnection();
 
             const string sql = @"
                 SELECT 
                     id AS Id, 
-                    nome AS Nome, 
-                    email AS Email 
+                    nome AS UserName, 
+                    email AS Email,
+                    senha AS PasswordHash
                 FROM usuarios";
 
 
             //Nome da coluna no Select deve ser igual ao nome da Model (mesma ordem também)
-            var usuarios = await conn.QueryAsync<UserModel>(sql);
+            var users = await conn.QueryAsync<UserBaseModel>(sql);
 
-            return usuarios;
+            return users.Select(UserMapper.ToInput);
         }
     }
 }
