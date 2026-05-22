@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using System.Security.Claims;
 
 public class AuthService : IAuthService
 {
@@ -48,5 +49,10 @@ public class AuthService : IAuthService
         }
 
         throw new Exception("Email ou senha inválidos");
+    }
+
+    public ConnectionEntity ValidateConnection(ConnectionDTO connection)
+    {
+        return new ConnectionEntity(connection.Id, connection.Email);
     }
 }

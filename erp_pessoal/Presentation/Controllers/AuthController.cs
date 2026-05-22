@@ -35,7 +35,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("login")]
-        public async IActionResult AccessAccount([FromBody] LoginModel login)
+        public async Task<IActionResult> AccessAccount([FromBody] LoginModel login)
         {
             try
             {
@@ -52,21 +52,24 @@ namespace Presentation.Controllers
         // Rota de verificação de conexão
         [HttpGet("verificar-conexao")]
         [Authorize]
-        public IActionResult VerifyConection()
+        public async Task <IActionResult> VerifyConection()
         {
-            // Recupera o ID e nome do usuário do token
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var nome = User.Identity?.Name;
-            if (string.IsNullOrEmpty(usuarioId))
+            var validate = new ConnectionModel
             {
-                return Unauthorized(new { message = "Usuário não autenticado" });
-            }
-            return Ok(new
+                Id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value),
+                Name = User.Identity?.Name
+            };
+
+            var connectionResult = _service.ValidateConnection(ConnectionMapper.ToDTO(validate));
+           
+            if (!connectionResult.Authenticated)
             {
-                autenticado = true,
-                usuario_id = usuarioId,
-                user = nome
-            });
-        };
+                return Unauthorized();
+
+            } else
+            {
+                return Ok(connectionResult);
+            }  
+        }
     };
 }

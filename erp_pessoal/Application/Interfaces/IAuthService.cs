@@ -1,5 +1,4 @@
 ﻿using Application.DTOs;
-using Application.Models;
 using Domain.Entities;
 
 namespace Application.Interfaces
@@ -8,5 +7,6 @@ namespace Application.Interfaces
     {
         Task RegisterAsync(UserDTO newUser);
         Task<LoginEntity> LoginAsync(LoginDTO login);
+        ConnectionEntity ValidateConnection(ConnectionDTO connection);
     }
 }
