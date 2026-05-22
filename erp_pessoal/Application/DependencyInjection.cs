@@ -1,9 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {
@@ -12,7 +8,7 @@ namespace Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
 
-            services.AddScoped<IUsuarioService, UsuarioService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }

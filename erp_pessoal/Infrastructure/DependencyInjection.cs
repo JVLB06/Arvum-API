@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Infrastructure.Persistence.Readers;
+using Infrastructure.Persistence.Writers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ namespace Infrastructure
             this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IAuthReader, AuthReader>();
+            services.AddScoped<IAuthWriter, AuthWriter>();
 
             return services;
         }

@@ -4,6 +4,7 @@ using Dapper;
 using Infrastructure.BaseMappers;
 using Infrastructure.BaseModels;
 using Infrastructure.Repositories;
+using Npgsql;
 
 namespace Infrastructure.Persistence.Readers
 {
@@ -30,6 +31,30 @@ namespace Infrastructure.Persistence.Readers
                 return null;
 
             return (IEnumerable<UserDTO>)UserMapper.ToInput(user);
+        }
+
+        public async Task<LoginDTO> GetLoginAsync(LoginDTO login)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT 
+                    id AS Id,
+                    email AS Email, 
+                    senha AS Password
+                FROM usuarios 
+                WHERE 1=1
+                    AND email = @login 
+                    AND ativo = TRUE
+            ";
+
+            var user = await conn.QueryFirstOrDefaultAsync<LoginBaseModel>(sql,login);
+
+            if (user is null)
+                return null;
+
+            return LoginMapper.ToInput(user);
+
         }
     }
 }

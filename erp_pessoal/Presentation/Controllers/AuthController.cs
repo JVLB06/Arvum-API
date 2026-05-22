@@ -35,34 +35,17 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult AccessAccount([FromBody] LoginModel login)
+        public async IActionResult AccessAccount([FromBody] LoginModel login)
         {
-
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-
-            var cmd = new NpgsqlCommand("SELECT id, senha, nome, email FROM usuarios WHERE email = @login AND ativo = TRUE", conn);
-            cmd.Parameters.AddWithValue("@login", logIn.username);
-
-            var reader = cmd.ExecuteReader();
-            if (!reader.Read())
-                return Unauthorized(new { message = "Credenciais inválidas" });
-
-            UsuarioModel user = new UsuarioModel
+            try
             {
-                Id = reader.GetInt32(0),
-                Password = reader.GetString(1),
-                Username = reader.GetString(2),
-                Email = reader.GetString(3)
-            };
+                return Ok(await _service.LoginAsync(LoginMapper.ToDTO(login)));
+            }
 
-            reader.Close();
-
-            if (!BCrypt.Net.BCrypt.Verify(logIn.password, user.Password))
-                return Unauthorized(new { message = "Credenciais inválidas" });
-
-            var token = Essentials.GerarJwt(user.Id, user.Username);
-            return Ok(new { access_token = token, token_type = "bearer" });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message});
+            }
         }
         //        [HttpPost("recuperar-senha")]
 

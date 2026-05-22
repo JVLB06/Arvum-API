@@ -12,7 +12,7 @@ namespace Infrastructure.BaseMappers
                 Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
-                PasswordHash = user.PasswordHash
+                Password = user.PasswordHash
             };
         }
     }

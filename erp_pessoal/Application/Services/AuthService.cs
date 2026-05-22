@@ -32,4 +32,21 @@ public class AuthService : IAuthService
 
         await _writer.CreateUserAsync(user);
     }
+
+    public async Task<LoginEntity> LoginAsync(LoginDTO login)
+    {
+        var connect = await _reader.GetLoginAsync(login);
+
+        if (BCrypt.Net.BCrypt.Verify(connect.Password, login.Password))
+        {
+            var acces = new LoginEntity(
+                login.Id,
+                login.Email,
+                login.Password);
+
+            return acces;
+        }
+
+        throw new Exception("Email ou senha inválidos");
+    }
 }
