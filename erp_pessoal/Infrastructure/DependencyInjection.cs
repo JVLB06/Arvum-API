@@ -13,6 +13,7 @@ namespace Infrastructure
             services.AddScoped<IAuthReader, AuthReader>();
             services.AddScoped<IAuthWriter, AuthWriter>();
             services.AddScoped<IGeneralRegistersReader, GeneralRegistersReader>();
+            services.AddScoped<IGeneralRegistersWriter, GeneralRegistersWriter>();
 
             return services;
         }

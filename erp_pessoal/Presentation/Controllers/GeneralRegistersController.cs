@@ -18,7 +18,7 @@ namespace Presentation.Controllers
             _service = service;
         }
 
-        //Renda
+        #region Rendas
         [HttpGet("ler_renda")]
         public async Task<IActionResult> GetRenda()
         {
@@ -78,8 +78,8 @@ namespace Presentation.Controllers
             cmdDelete.ExecuteNonQuery();
             return Ok(new { message = "Renda inativada com sucesso" });
         }
-
-        //Investimentos
+        #endregion
+        #region Investimentos
         [HttpGet("ler_investimentos_ativos")]
         public IActionResult GetInvestimentosAtivos()
         {
@@ -209,8 +209,8 @@ namespace Presentation.Controllers
             cmdUpdate.ExecuteNonQuery();
             return Ok(new { message = "Investimento concluído com sucesso" });
         }
-
-        //Dividas
+        #endregion
+        #region Dividas
         [HttpGet("ler_dividas")]
         public IActionResult GetDividas()
         {
@@ -320,8 +320,8 @@ namespace Presentation.Controllers
             }
             return Ok(new { divida });
         }
-
-        //Metas
+        #endregion
+        #region Metas
         [HttpGet("ler_metas")]
         public IActionResult GetMetas()
         {
@@ -428,7 +428,8 @@ namespace Presentation.Controllers
             }
             return Ok(new { meta });
         }
-
+        #endregion
+        #region Gastos
         //Gastos
         [HttpGet("ler_gastos")]
         public IActionResult GetGastos()
@@ -506,5 +507,6 @@ namespace Presentation.Controllers
             cmdDelete.ExecuteNonQuery();
             return Ok(new { message = "Gasto inativado com sucesso" });
         }
+        #endregion
     }
 }
