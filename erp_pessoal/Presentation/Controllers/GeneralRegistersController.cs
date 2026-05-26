@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 namespace Presentation.Controllers
 {
@@ -10,31 +11,26 @@ namespace Presentation.Controllers
     [Route("user_plan")]
     public class GeneralRegistersController : ControllerBase
     {
+        private readonly IGeneralRegistersService _service;
+
+        public GeneralRegistersController(IGeneralRegistersService service)
+        {
+            _service = service;
+        }
+
         //Renda
         [HttpGet("ler_renda")]
         public async Task<IActionResult> GetRenda()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM rendas WHERE user_id = @user_id AND ativo = TRUE", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            await cmdSelect.PrepareAsync();
-            var reader = await cmdSelect.ExecuteReaderAsync();
-            var rendas = new List<object>();
-            while (await reader.ReadAsync())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                rendas.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_renda")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr_min = reader.GetDecimal(reader.GetOrdinal("vlr_min")),
-                    vlr_max = reader.GetDecimal(reader.GetOrdinal("vlr_max")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data_pag"))
-                });
+                return Ok(await _service.GetReceiptsAsync(int.Parse(userId)));
             }
-            return Ok(new { rendas });
+            catch (Exception ex)
+            {
+                return BadRequest(new {message  = ex.Message});
+            }
         }
         [HttpPost("criar_renda")]
         public IActionResult CriarRenda([FromBody] RendaModel rendaData)
