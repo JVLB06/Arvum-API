@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using Presentation.InputMappers;
+using Presentation.WebModels;
 using System.Security.Claims;
 using System.Threading.Tasks;
 namespace Presentation.Controllers
@@ -33,50 +35,53 @@ namespace Presentation.Controllers
             }
         }
         [HttpPost("criar_renda")]
-        public IActionResult CriarRenda([FromBody] RendaModel rendaData)
+        public async Task<IActionResult> CreateReceipt([FromBody] RegisterReceiptModel receipt)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inserção de nova renda 
-            var cmdInsert = new NpgsqlCommand("INSERT INTO rendas (user_id, nome, vlr_min, vlr_max, data_pag, ativo) VALUES (@user_id, @descricao, @vlr_min, @vlr_max, @data, TRUE)", conn);
-            cmdInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdInsert.Parameters.AddWithValue("@descricao", rendaData.descricao);
-            cmdInsert.Parameters.AddWithValue("@vlr_min", rendaData.vlr_min);
-            cmdInsert.Parameters.AddWithValue("@vlr_max", rendaData.vlr_max);
-            cmdInsert.Parameters.AddWithValue("@data", rendaData.data);
-            cmdInsert.ExecuteNonQuery();
-            return Ok(new { message = "Renda criada com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                await _service.CreateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
+
+                return Ok(new { message = "Renda cadastrada com sucesso" });
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPut("atualizar_renda")]
-        public IActionResult AtualizarRenda([FromBody] RendaUpdateModel rendaData)
+        public async Task<IActionResult> AtualizarRenda([FromBody] RegisterReceiptModel receipt)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Atualização de renda
-            var cmdUpdate = new NpgsqlCommand("UPDATE rendas SET nome = @descricao, vlr_min = @vlr_min, vlr_max = @vlr_max, data_pag = @data WHERE id_renda = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", rendaData.id_renda);
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.Parameters.AddWithValue("@descricao", rendaData.descricao);
-            cmdUpdate.Parameters.AddWithValue("@vlr_min", rendaData.vlr_min);
-            cmdUpdate.Parameters.AddWithValue("@vlr_max", rendaData.vlr_max);
-            cmdUpdate.Parameters.AddWithValue("@data", rendaData.data);
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Renda atualizada com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                await _service.UpdateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
+
+                return Ok(new { message = "Renda cadastrada com sucesso" });
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        [HttpDelete("inativar_renda/{rendaData}")]
-        public IActionResult InativarRenda([FromRoute] string rendaData)
+        [HttpDelete("inativar_renda/{receiptId}")]
+        public async Task<IActionResult> InativarRenda([FromRoute] string receiptId)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inativação de renda
-            var cmdDelete = new NpgsqlCommand("UPDATE rendas SET ativo = FALSE WHERE id_renda = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(rendaData));
-            cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdDelete.ExecuteNonQuery();
-            return Ok(new { message = "Renda inativada com sucesso" });
+            try
+            {
+                await _service.DeleteReceiptAsync(int.Parse(receiptId));
+
+                return Ok(new { message = "Renda cadastrada com sucesso" });
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         #endregion
         #region Investimentos

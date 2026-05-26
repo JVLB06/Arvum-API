@@ -1,8 +1,8 @@
-﻿namespace Infrastructure.BaseModels
+﻿namespace Presentation.WebModels
 {
-    public class ReceiptBaseModel
+    public class RegisterReceiptModel
     {
-        public int Id { get; set; }
+        public int? ReceiptId { get; set; }
         public string Name { get; set; }
         public decimal MinValue { get; set; }
         public decimal MaxValue { get; set; }
