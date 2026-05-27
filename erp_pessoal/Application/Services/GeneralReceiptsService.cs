@@ -27,7 +27,8 @@ namespace Application.Services
                 receipt.Description,
                 receipt.MinValue,
                 receipt.MaxValue,
-                receipt.PaymentDate
+                receipt.PaymentDate,
+                null
             ));
         }
 

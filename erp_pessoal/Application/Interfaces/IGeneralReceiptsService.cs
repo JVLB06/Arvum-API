@@ -5,7 +5,7 @@ namespace Application.Interfaces
 {
     public interface IGeneralReceiptsService
     {
-        Task <ReceiptEntity> GetReceiptsAsync(int id);
+        Task <IEnumerable<ReceiptEntity>> GetReceiptsAsync(int id);
         Task CreateReceiptAsync(ReceiptDTO receipt, int userId);
         Task UpdateReceiptAsync(ReceiptDTO receipt, int userId);
         Task DeleteReceiptAsync(int receiptId);

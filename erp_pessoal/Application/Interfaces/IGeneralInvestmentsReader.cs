@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.DTOs;
 
 namespace Application.Interfaces
 {
     public interface IGeneralInvestmentsReader
     {
+        Task<IEnumerable<InvestmentDTO>> ReadActivesInvestmentsAsync(int id);
+        Task<IEnumerable<InvestmentDTO>> ReadInactivesInvestmentsAsync(int id);
     }
 }

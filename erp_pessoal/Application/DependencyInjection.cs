@@ -11,6 +11,7 @@ namespace Application
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IGeneralReceiptsService, GeneralReceiptsService>();
+            services.AddScoped<IGeneralInvestmentsService, GeneralInvestmentsService>();
 
             return services;
         }

@@ -7,7 +7,6 @@ namespace Infrastructure.Persistence.Writers
 {
     public class GeneralReceiptsWriter : IGeneralReceiptsWriter
     {
-        #region Rendas
         public async Task CreateReceiptAsync(ReceiptEntity receipt)
         {
             using var conn = MainRepository.CreateConnection();
@@ -60,6 +59,5 @@ namespace Infrastructure.Persistence.Writers
 
             await conn.ExecuteAsync(sql, new { Id });
         }
-        #endregion
     }
 }

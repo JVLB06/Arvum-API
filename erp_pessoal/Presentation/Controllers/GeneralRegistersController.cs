@@ -13,11 +13,13 @@ namespace Presentation.Controllers
     [Route("user_plan")]
     public class GeneralRegistersController : ControllerBase
     {
-        private readonly IGeneralReceiptsService _service;
+        private readonly IGeneralReceiptsService _receiptsService;
+        private readonly IGeneralInvestmentsService _investmentsService;
 
-        public GeneralRegistersController(IGeneralReceiptsService service)
+        public GeneralRegistersController(IGeneralReceiptsService receiptsService, IGeneralInvestmentsService investmentsService)
         {
-            _service = service;
+            _receiptsService = receiptsService;
+            _investmentsService = investmentsService;
         }
 
         #region Rendas
@@ -27,7 +29,7 @@ namespace Presentation.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
             try
             {
-                return Ok(await _service.GetReceiptsAsync(int.Parse(userId)));
+                return Ok(await _receiptsService.GetReceiptsAsync(int.Parse(userId)));
             }
             catch (Exception ex)
             {
@@ -41,7 +43,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _service.CreateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
+                await _receiptsService.CreateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
 
                 return Ok(new { message = "Renda cadastrada com sucesso" });
             }
@@ -58,7 +60,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _service.UpdateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
+                await _receiptsService.UpdateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
 
                 return Ok(new { message = "Renda cadastrada com sucesso" });
             }
@@ -73,7 +75,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                await _service.DeleteReceiptAsync(int.Parse(receiptId));
+                await _receiptsService.DeleteReceiptAsync(int.Parse(receiptId));
 
                 return Ok(new { message = "Renda cadastrada com sucesso" });
             }
@@ -86,133 +88,101 @@ namespace Presentation.Controllers
         #endregion
         #region Investimentos
         [HttpGet("ler_investimentos_ativos")]
-        public IActionResult GetInvestimentosAtivos()
+        public async Task<IActionResult> GetInvestimentosAtivos()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM investimentos WHERE user_id = @user_id AND ativo = TRUE", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            var reader = cmdSelect.ExecuteReader();
-            var invest = new List<object>();
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
             {
-                // Se a coluna "data_resgate" for nula, atribui data padrão
-                var data_resgate = reader.IsDBNull(reader.GetOrdinal("data_resgate"))
-                    ? "00/00/0000"
-                    : reader.GetDateTime(reader.GetOrdinal("data_resgate")).ToString("dd/MM/yyyy");
-                // Se a coluna "resgate" for nula, atribui 0
-                var res = reader.IsDBNull(reader.GetOrdinal("resgate"))
-                    ? 0
-                    : reader.GetDecimal(reader.GetOrdinal("resgate"));
-                invest.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_invest")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr = reader.GetDecimal(reader.GetOrdinal("vlr")),
-                    juro = reader.GetDecimal(reader.GetOrdinal("juro")),
-                    data_init = reader.GetDateTime(reader.GetOrdinal("data_init")),
-                    data_fim = data_resgate,
-                    resgate = res
-                });
+                return Ok(await _investmentsService.GetActiveInvestmentsAsync(int.Parse(userId)));
             }
-            return Ok(new { invest });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpGet("ler_investimentos_encerrados")]
-        public IActionResult GetInvestimentosEncerrados()
+        public async Task<IActionResult> GetInvestimentosEncerrados()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM investimentos WHERE user_id = @user_id AND ativo = FALSE AND resgate IS NOT NULL", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            var reader = cmdSelect.ExecuteReader();
-            var invest = new List<object>();
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
             {
-                // Se a coluna "data_resgate" for nula, atribui data padrão
-                var data_resgate = reader.IsDBNull(reader.GetOrdinal("data_resgate"))
-                    ? "00/00/0000"
-                    : reader.GetDateTime(reader.GetOrdinal("data_resgate")).ToString("dd/MM/yyyy");
-                // Se a coluna "resgate" for nula, atribui 0
-                var res = reader.IsDBNull(reader.GetOrdinal("resgate"))
-                    ? 0
-                    : reader.GetDecimal(reader.GetOrdinal("resgate"));
-                invest.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_invest")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr = reader.GetDecimal(reader.GetOrdinal("vlr")),
-                    juro = reader.GetDecimal(reader.GetOrdinal("juro")),
-                    data_init = reader.GetDateTime(reader.GetOrdinal("data_init")),
-                    data_fim = data_resgate,
-                    resgate = res
-                });
+                return Ok(await _investmentsService.GetInactiveInvestmentsAsync(int.Parse(userId)));
             }
-            return Ok(new { invest });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPost("criar_investimento")]
-        public IActionResult CriarInvestimento([FromBody] InvestimentoModel investimentoData)
+        public async Task<IActionResult> CriarInvestimento([FromBody] RegisterInvestmentModel investment)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inserção de novo investimento 
-            var cmdInsert = new NpgsqlCommand("INSERT INTO investimentos (user_id, nome, vlr, data_init, juro, ativo) VALUES (@user_id, @descricao, @vlr, @data_init, @juro, TRUE)", conn);
-            cmdInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdInsert.Parameters.AddWithValue("@descricao", investimentoData.descricao);
-            cmdInsert.Parameters.AddWithValue("@vlr", investimentoData.vlr);
-            cmdInsert.Parameters.AddWithValue("@data_init", investimentoData.data_init);
-            cmdInsert.Parameters.AddWithValue("@juro", investimentoData.juro);
-            cmdInsert.ExecuteNonQuery();
-            return Ok(new { message = "Investimento criado com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                await _investmentsService.CreateInvestmentAsync(InvestmentMapper.ToDto(investment), int.Parse(userId));
+
+                return Ok(new { message = "Investimento cadastrado com sucesso" });
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPut("atualizar_investimento")]
-        public IActionResult AtualizarInvestimento([FromBody] InvestimentoUpdateModel investimentoData)
+        public async Task<IActionResult> AtualizarInvestimento([FromBody] RegisterInvestmentModel investment)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Atualização de investimento
-            var cmdUpdate = new NpgsqlCommand("UPDATE investimentos SET nome = @descricao, vlr = @vlr, data_init = @data_init, juro = @juro WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", investimentoData.id);
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.Parameters.AddWithValue("@descricao", investimentoData.descricao);
-            cmdUpdate.Parameters.AddWithValue("@vlr", investimentoData.vlr);
-            cmdUpdate.Parameters.AddWithValue("@data_init", investimentoData.data_init);
-            cmdUpdate.Parameters.AddWithValue("@juro", investimentoData.juro);
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Investimento atualizado com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                await _investmentsService.UpdateInvestmentAsync(InvestmentMapper.ToDto(investment), int.Parse(userId));
+
+                return Ok(new { message = "Investimento atualizado com sucesso" });
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        [HttpDelete("inativar_investimento/{investimentoData}")]
-        public IActionResult InativarInvestimento([FromRoute] string investimentoData)
+        [HttpDelete("inativar_investimento/{investmentId}")]
+        public async Task<IActionResult> InativarInvestimento([FromRoute] int investmentId)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inativação de investimento
-            var cmdDelete = new NpgsqlCommand("UPDATE investimentos SET ativo = FALSE WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(investimentoData));
-            cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdDelete.ExecuteNonQuery();
-            return Ok(new { message = "Investimento inativado com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                await _investmentsService.DeleteInvestmentAsync(investmentId, int.Parse(userId));
+
+                return Ok(new { message = "Investimento excluído com sucesso" });
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPut("concluir_investimento")]
-        public IActionResult ConcluirInvestimento([FromBody] InvestimentoFimModel investimentoData)
+        public async Task<IActionResult> ConcluirInvestimento([FromBody] RegisterFinishInvestmentModel investment)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Conclusão de investimento
-            var cmdUpdate = new NpgsqlCommand("UPDATE investimentos SET ativo = FALSE, data_resgate = @data_resgate, resgate = @vlr_fim WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", investimentoData.id);
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.Parameters.AddWithValue("@data_resgate", investimentoData.data_resgate);
-            cmdUpdate.Parameters.AddWithValue("@vlr_fim", investimentoData.vlr_resgate);
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Investimento concluído com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+            try
+            {
+                await _investmentsService.FinishInvestmentAsync(FinishInvestmentMapper.ToDTO(investment), int.Parse(userId));
+
+                return Ok(new { message = "Investimento finalizado com sucesso" });
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         #endregion
         #region Dividas
