@@ -2,7 +2,7 @@
 
 namespace Application.Interfaces
 {
-    public interface IGeneralRegistersReader
+    public interface IGeneralReceiptsReader
     {
         Task<IEnumerable<ReceiptDTO>> ReadReceiptsAsync(int id);
     }

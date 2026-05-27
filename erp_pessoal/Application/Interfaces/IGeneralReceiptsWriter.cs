@@ -2,7 +2,7 @@
 
 namespace Application.Interfaces
 {
-    public interface IGeneralRegistersWriter
+    public interface IGeneralReceiptsWriter
     {
         Task CreateReceiptAsync(ReceiptEntity receipt);
         Task UpdateReceiptAsync(ReceiptEntity receipt);

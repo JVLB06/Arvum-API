@@ -5,7 +5,7 @@ using Infrastructure.Repositories;
 
 namespace Infrastructure.Persistence.Writers
 {
-    public class GeneralRegistersWriter : IGeneralRegistersWriter
+    public class GeneralReceiptsWriter : IGeneralReceiptsWriter
     {
         #region Rendas
         public async Task CreateReceiptAsync(ReceiptEntity receipt)

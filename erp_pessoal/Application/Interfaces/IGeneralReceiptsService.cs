@@ -3,7 +3,7 @@ using Application.DTOs;
 
 namespace Application.Interfaces
 {
-    public interface IGeneralRegistersService
+    public interface IGeneralReceiptsService
     {
         Task <ReceiptEntity> GetReceiptsAsync(int id);
         Task CreateReceiptAsync(ReceiptDTO receipt, int userId);

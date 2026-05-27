@@ -12,8 +12,10 @@ namespace Infrastructure
         {
             services.AddScoped<IAuthReader, AuthReader>();
             services.AddScoped<IAuthWriter, AuthWriter>();
-            services.AddScoped<IGeneralRegistersReader, GeneralRegistersReader>();
-            services.AddScoped<IGeneralRegistersWriter, GeneralRegistersWriter>();
+            services.AddScoped<IGeneralReceiptsReader, GeneralReceiptsReader>();
+            services.AddScoped<IGeneralReceiptsWriter, GeneralReceiptsWriter>();
+            services.AddScoped<IGeneralInvestmentsReader, GeneralInvestmentsReader>();
+            services.AddScoped<IGeneralInvestmentsWriter, GeneralInvestmentsWriter>();
 
             return services;
         }

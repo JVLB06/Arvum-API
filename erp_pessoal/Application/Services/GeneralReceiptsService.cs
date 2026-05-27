@@ -4,15 +4,15 @@ using Domain.Entities;
 
 namespace Application.Services
 {
-    public class GeneralRegistersService : IGeneralRegistersService
+    public class GeneralReceiptsService : IGeneralReceiptsService
     {
-        private readonly IGeneralRegistersReader _reader;
+        private readonly IGeneralReceiptsReader _reader;
 
-        private readonly IGeneralRegistersWriter _writer;
+        private readonly IGeneralReceiptsWriter _writer;
 
-        public GeneralRegistersService(
-            IGeneralRegistersReader reader,
-            IGeneralRegistersWriter writer)
+        public GeneralReceiptsService(
+            IGeneralReceiptsReader reader,
+            IGeneralReceiptsWriter writer)
         {
             _reader = reader;
             _writer = writer;

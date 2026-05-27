@@ -13,9 +13,9 @@ namespace Presentation.Controllers
     [Route("user_plan")]
     public class GeneralRegistersController : ControllerBase
     {
-        private readonly IGeneralRegistersService _service;
+        private readonly IGeneralReceiptsService _service;
 
-        public GeneralRegistersController(IGeneralRegistersService service)
+        public GeneralRegistersController(IGeneralReceiptsService service)
         {
             _service = service;
         }

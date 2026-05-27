@@ -10,7 +10,7 @@ namespace Application
         {
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IGeneralRegistersService, GeneralRegistersService>();
+            services.AddScoped<IGeneralReceiptsService, GeneralReceiptsService>();
 
             return services;
         }

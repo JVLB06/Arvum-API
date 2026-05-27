@@ -7,7 +7,7 @@ using Infrastructure.Repositories;
 
 namespace Infrastructure.Persistence.Readers
 {
-    public class GeneralRegistersReader : IGeneralRegistersReader
+    public class GeneralReceiptsReader : IGeneralReceiptsReader
     {
         public async Task<IEnumerable<ReceiptDTO>> ReadReceiptsAsync(int id)
         {
