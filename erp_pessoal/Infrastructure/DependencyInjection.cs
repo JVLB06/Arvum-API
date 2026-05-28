@@ -16,6 +16,8 @@ namespace Infrastructure
             services.AddScoped<IGeneralReceiptsWriter, GeneralReceiptsWriter>();
             services.AddScoped<IGeneralInvestmentsReader, GeneralInvestmentsReader>();
             services.AddScoped<IGeneralInvestmentsWriter, GeneralInvestmentsWriter>();
+            services.AddScoped<IGeneralDebtsReader, GeneralDebtsReader>();
+            services.AddScoped<IGeneralDebtsWriter, GeneralDebtsWriter>();
 
             return services;
         }

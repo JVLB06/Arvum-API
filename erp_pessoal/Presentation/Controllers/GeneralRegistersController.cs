@@ -15,11 +15,16 @@ namespace Presentation.Controllers
     {
         private readonly IGeneralReceiptsService _receiptsService;
         private readonly IGeneralInvestmentsService _investmentsService;
+        private readonly IGeneralDebtsService _debtsService;
 
-        public GeneralRegistersController(IGeneralReceiptsService receiptsService, IGeneralInvestmentsService investmentsService)
+        public GeneralRegistersController(
+            IGeneralReceiptsService receiptsService, 
+            IGeneralInvestmentsService investmentsService,
+            IGeneralDebtsService debtsService)
         {
             _receiptsService = receiptsService;
             _investmentsService = investmentsService;
+            _debtsService = debtsService;
         }
 
         #region Rendas
@@ -187,29 +192,19 @@ namespace Presentation.Controllers
         #endregion
         #region Dividas
         [HttpGet("ler_dividas")]
-        public IActionResult GetDividas()
+        public async Task<IActionResult> GetDividas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM divida WHERE user_id = @user_id AND ativo = TRUE", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            var reader = cmdSelect.ExecuteReader();
-            var divida = new List<object>();
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+
+            try
             {
-                divida.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_invest")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr = reader.GetDouble(reader.GetOrdinal("vlr")),
-                    data_init = reader.GetDateTime(reader.GetOrdinal("data")),
-                    data_fim = reader.GetDateTime(reader.GetOrdinal("data_prev")),
-                    resgate = reader.GetBoolean(reader.GetOrdinal("quitada"))
-                });
+                return Ok(await _debtsService.GetDebtsAsync(int.Parse(userId)));
             }
-            return Ok(new { divida });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
         }
         [HttpPost("criar_divida")]
         public IActionResult CriarDivida([FromBody] DividaModel dividaData)
