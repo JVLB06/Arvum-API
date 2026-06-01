@@ -207,88 +207,70 @@ namespace Presentation.Controllers
 
         }
         [HttpPost("criar_divida")]
-        public IActionResult CriarDivida([FromBody] DividaModel dividaData)
+        public async Task<IActionResult> CriarDivida([FromBody] RegisterDebtModel debt)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inserção de nova dívida 
-            var cmdInsert = new NpgsqlCommand("INSERT INTO divida (user_id, nome, vlr, data, data_prev, ativo, quitada) VALUES (@user_id, @descricao, @vlr, @data_init, @data_venc, TRUE, FALSE)", conn);
-            cmdInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdInsert.Parameters.AddWithValue("@descricao", dividaData.descricao);
-            cmdInsert.Parameters.AddWithValue("@vlr", dividaData.vlr);
-            cmdInsert.Parameters.AddWithValue("@data_venc", dividaData.data_venc);
-            cmdInsert.Parameters.AddWithValue("@data_init", dividaData.data_init);
-            cmdInsert.ExecuteNonQuery();
-            return Ok(new { message = "Dívida criada com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                return Ok(await _debtsService.RegisterDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPut("atualizar_divida")]
-        public IActionResult AtualizarDivida([FromBody] DividaUpdateModel dividaData)
+        public async Task<IActionResult> AtualizarDivida([FromBody] RegisterDebtModel debt)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Atualização de dívida
-            var cmdUpdate = new NpgsqlCommand("UPDATE divida SET nome = @descricao, vlr = @vlr, data = @data_init, data_prev = @data_venc WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", dividaData.id);
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.Parameters.AddWithValue("@descricao", dividaData.descricao);
-            cmdUpdate.Parameters.AddWithValue("@vlr", dividaData.vlr);
-            cmdUpdate.Parameters.AddWithValue("@data_init", dividaData.data_init);
-            cmdUpdate.Parameters.AddWithValue("@data_venc", dividaData.data_venc);
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Dívida atualizada com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                return Ok(await _debtsService.UpdateDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        [HttpDelete("inativar_divida/{dividaData}")]
-        public IActionResult InativarDivida([FromRoute] string dividaData)
+        [HttpDelete("inativar_divida/{debtId}")]
+        public async Task<IActionResult> InativarDivida([FromRoute] int debtId)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inativação de dívida
-            var cmdDelete = new NpgsqlCommand("UPDATE divida SET ativo = FALSE WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(dividaData));
-            cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdDelete.ExecuteNonQuery();
-            return Ok(new { message = "Dívida inativada com sucesso" });
+            try
+            {
+                return Ok(await _debtsService.DeleteDebtAsync(debtId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        [HttpPut("pagar_divida")]
-        public IActionResult PagarDivida([FromBody] Dictionary<string, string> dividaData)
+        [HttpPut("pagar_divida/{dbtId}")]
+        public async Task<IActionResult> PagarDivida([FromRoute] int debtId)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Pagamento de dívida
-            var cmdUpdate = new NpgsqlCommand("UPDATE divida SET ativo = FALSE, quitada = TRUE WHERE id_invest = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", int.Parse(dividaData["id_divida"]));
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Dívida paga com sucesso" });
+            try
+            {
+                return Ok(await _debtsService.PayDebtAsync(debtId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpGet("ler_dividas_quitadas")]
-        public IActionResult GetDividasQuitadas()
+        public async Task<IActionResult> GetDividasQuitadas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM divida WHERE user_id = @user_id AND ativo = FALSE AND quitada = TRUE", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            var reader = cmdSelect.ExecuteReader();
-            var divida = new List<object>();
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
             {
-                divida.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_invest")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr = reader.GetDouble(reader.GetOrdinal("vlr")),
-                    data_init = reader.GetDateTime(reader.GetOrdinal("data")),
-                    data_fim = reader.GetDateTime(reader.GetOrdinal("data_prev")),
-                    resgate = reader.GetBoolean(reader.GetOrdinal("quitada"))
-                });
+                return Ok(await _debtsService.GetPaidDebtsAsync(int.Parse(userId)));
             }
-            return Ok(new { divida });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         #endregion
         #region Metas

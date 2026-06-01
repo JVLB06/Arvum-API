@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Services
@@ -26,7 +27,57 @@ namespace Application.Services
                 debt.Value,
                 debt.InitialDate,
                 debt.ReceiveDate,
-                debt.Paid
+                debt.Paid,
+                null
+            ));
+        }
+
+        public async Task RegisterDebtAsync(DebtDTO debt, int userId)
+        {
+            await _writer.CreateDebtAsync(new DebtEntity(
+                debt.Id,
+                debt.Name,
+                debt.Value,
+                debt.InitialDate,
+                debt.ReceiveDate,
+                debt.Paid,
+                userId
+            ));
+        }
+
+        public async Task UpdateDebtAsync(DebtDTO debt, int userId)
+        {
+            await _writer.UpdateDebtAsync(new DebtEntity(
+                debt.Id,
+                debt.Name,
+                debt.Value,
+                debt.InitialDate,
+                debt.ReceiveDate,
+                debt.Paid,
+                userId
+            ));
+        }
+        public async Task DeleteDebtAsync(int id)
+        {
+            await _writer.InactivateDebtAsync(id);
+        }
+
+        public async Task PayDebtAsync(int id)
+        {
+            await _writer.PayDebtAsync(id);
+        }
+
+        public async Task<IEnumerable<DebtEntity>> GetPaidDebtsAsync(int userId)
+        {
+            var connect = await _reader.ReadInactiveDebtsAsync(userId);
+            return connect.Select(debt => new DebtEntity(
+                debt.Id,
+                debt.Name,
+                debt.Value,
+                debt.InitialDate,
+                debt.ReceiveDate,
+                debt.Paid,
+                userId
             ));
         }
     }

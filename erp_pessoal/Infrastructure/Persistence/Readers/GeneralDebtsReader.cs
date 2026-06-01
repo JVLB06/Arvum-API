@@ -33,5 +33,31 @@ namespace Infrastructure.Persistence.Readers
 
             return (IEnumerable<DebtDTO>)DebtMapper.ToDTO(results);
         }
+
+        public async Task<IEnumerable<DebtDTO>> ReadInactiveDebtsAsync(int id)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"SELECT 
+                                id_invest AS Id, 
+                                nome AS Name,       
+                                vlr AS Value,
+                                data AS InitialDate,
+                                data_prev AS ReceiveDate,
+                                quitada AS Paid    
+                            FROM divida 
+                            WHERE 1=1
+                                AND user_id = @Id 
+                                AND ativo = FALSE
+                                AND quitada = TRUE";
+
+            var results = await conn.QueryFirstOrDefaultAsync<DebtBaseModel>(
+                sql, new { Id = id });
+
+            if (results is null)
+                return null;
+
+            return (IEnumerable<DebtDTO>)DebtMapper.ToDTO(results);
+        }
     }
 }
