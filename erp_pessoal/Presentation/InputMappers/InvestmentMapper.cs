@@ -5,7 +5,7 @@ namespace Presentation.InputMappers
 {
     public class InvestmentMapper
     {
-        public static InvestmentDTO ToDto(RegisterInvestmentModel model)
+        public static InvestmentDTO ToDTO(RegisterInvestmentModel model)
         {
             return new InvestmentDTO
             {

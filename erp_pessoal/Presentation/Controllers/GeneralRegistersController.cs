@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Infrastructure.BaseModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -132,7 +133,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _investmentsService.CreateInvestmentAsync(InvestmentMapper.ToDto(investment), int.Parse(userId));
+                await _investmentsService.CreateInvestmentAsync(InvestmentMapper.ToDTO(investment), int.Parse(userId));
 
                 return Ok(new { message = "Investimento cadastrado com sucesso" });
             }
@@ -149,7 +150,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _investmentsService.UpdateInvestmentAsync(InvestmentMapper.ToDto(investment), int.Parse(userId));
+                await _investmentsService.UpdateInvestmentAsync(InvestmentMapper.ToDTO(investment), int.Parse(userId));
 
                 return Ok(new { message = "Investimento atualizado com sucesso" });
             }
@@ -367,80 +368,60 @@ namespace Presentation.Controllers
         #region Gastos
         //Gastos
         [HttpGet("ler_gastos")]
-        public IActionResult GetGastos()
+        public async Task<IActionResult> GetGastos()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM gastos WHERE user_id = @user_id AND ativo = TRUE", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            var reader = cmdSelect.ExecuteReader();
-            var gasto = new List<object>();
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
             {
-                gasto.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_gasto")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr_min = reader.GetDecimal(reader.GetOrdinal("vlr_min")),
-                    vlr_max = reader.GetDecimal(reader.GetOrdinal("vlr_max")),
-                    prioridade = reader.GetInt32(reader.GetOrdinal("prioridade")),
-                    data_init = reader.GetDateTime(reader.GetOrdinal("data_venc")),
-                    fix_var = reader.GetBoolean(reader.GetOrdinal("fixvar"))
-                });
+                return Ok(await _expensesService.GetExpensesAsync(int.Parse(userId)));
             }
-            return Ok(new { gasto });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPost("criar_gasto")]
-        public IActionResult CriarGasto([FromBody] GastoModel gastoData)
+        public async Task<IActionResult> CriarGasto([FromBody] ExpenseBaseModel expense)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inserção de novo gasto 
-            var cmdInsert = new NpgsqlCommand("INSERT INTO gastos (user_id, nome, vlr_min, vlr_max, data_venc, prioridade, fixvar, ativo) VALUES (@user_id, @descricao, @vlr_min, @vlr_max, @data_venc, @prioridade, @fixvar, TRUE)", conn);
-            cmdInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdInsert.Parameters.AddWithValue("@descricao", gastoData.descricao);
-            cmdInsert.Parameters.AddWithValue("@vlr_min", gastoData.vlr_min);
-            cmdInsert.Parameters.AddWithValue("@vlr_max", gastoData.vlr_max);
-            cmdInsert.Parameters.AddWithValue("@data_venc", gastoData.data);
-            cmdInsert.Parameters.AddWithValue("@prioridade", gastoData.prioridade);
-            cmdInsert.Parameters.AddWithValue("@fixvar", gastoData.fixvar);
-            cmdInsert.ExecuteNonQuery();
-            return Ok(new { message = "Gasto criado com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+            
+            try {                 
+                await _expensesService.RegisterExpenseAsync(ExpenseMapper.ToDTO(expense), int.Parse(userId));
+                return Ok(new { message = "Gasto cadastrado com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPut("atualizar_gasto")]
-        public IActionResult AtualizarGasto([FromBody] GastoUpdateModel gastoData)
+        public async Task<IActionResult> AtualizarGasto([FromBody] ExpenseBaseModel expense)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Atualização de gasto
-            var cmdUpdate = new NpgsqlCommand("UPDATE gastos SET nome = @descricao, vlr_min = @vlr_min, vlr_max = @vlr_max, data_venc = @data_venc, prioridade = @prioridade, fixvar = @fixvar WHERE id_gasto = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", gastoData.id);
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.Parameters.AddWithValue("@descricao", gastoData.descricao);
-            cmdUpdate.Parameters.AddWithValue("@vlr_min", gastoData.vlr_min);
-            cmdUpdate.Parameters.AddWithValue("@vlr_max", gastoData.vlr_max);
-            cmdUpdate.Parameters.AddWithValue("@data_venc", gastoData.data);
-            cmdUpdate.Parameters.AddWithValue("@prioridade", gastoData.prioridade);
-            cmdUpdate.Parameters.AddWithValue("@fixvar", gastoData.fixvar);
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Gasto atualizado com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                await _expensesService.UpdateExpenseAsync(ExpenseMapper.ToDTO(expense), int.Parse(userId));
+                return Ok(new { message = "Gasto atualizado com sucesso" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        [HttpDelete("inativar_gasto/{gastoData}")]
-        public IActionResult InativarGasto([FromRoute] string gastoData)
+        [HttpDelete("inativar_gasto/{expenseId}")]
+        public async Task<IActionResult> InativarGasto([FromRoute] int expenseId)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inativação de gasto
-            var cmdDelete = new NpgsqlCommand("UPDATE gastos SET ativo = FALSE WHERE id_gasto = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(gastoData));
-            cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdDelete.ExecuteNonQuery();
-            return Ok(new { message = "Gasto inativado com sucesso" });
+            try
+            {
+                await _expensesService.DeleteExpenseAsync(expenseId);
+                return Ok(new { message = "Gasto inativado com sucesso" });
+            }   
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         #endregion
     }

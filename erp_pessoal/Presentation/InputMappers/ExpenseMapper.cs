@@ -5,7 +5,7 @@ namespace Presentation.InputMappers
 {
     public class ExpenseMapper
     {
-        public static ExpenseDTO ToDto(RegisterExpenseModel model)
+        public static ExpenseDTO ToDTO(RegisterExpenseModel model)
         {
             return new ExpenseDTO
             {

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Entities;
 
 namespace Application.Interfaces
 {
     public interface IGeneralExpensesWriter
     {
+        Task CreateExpenseAsync(ExpenseEntity expense);
+        Task UpdateExpenseAsync(ExpenseEntity expense);
+        Task DeleteExpenseAsync(int expenseId);
     }
 }
