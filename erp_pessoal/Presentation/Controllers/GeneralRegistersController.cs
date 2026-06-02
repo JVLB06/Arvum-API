@@ -5,7 +5,6 @@ using Npgsql;
 using Presentation.InputMappers;
 using Presentation.WebModels;
 using System.Security.Claims;
-using System.Threading.Tasks;
 namespace Presentation.Controllers
 {
     [Authorize]
@@ -16,15 +15,21 @@ namespace Presentation.Controllers
         private readonly IGeneralReceiptsService _receiptsService;
         private readonly IGeneralInvestmentsService _investmentsService;
         private readonly IGeneralDebtsService _debtsService;
+        private readonly IGeneralGoalsService _goalsService;
+        private readonly IGeneralExpensesService _expensesService;
 
         public GeneralRegistersController(
             IGeneralReceiptsService receiptsService, 
             IGeneralInvestmentsService investmentsService,
-            IGeneralDebtsService debtsService)
+            IGeneralDebtsService debtsService,
+            IGeneralGoalsService goalsService,
+            IGeneralExpensesService expensesService)
         {
             _receiptsService = receiptsService;
             _investmentsService = investmentsService;
             _debtsService = debtsService;
+            _goalsService = goalsService;
+            _expensesService = expensesService;
         }
 
         #region Rendas
@@ -275,110 +280,88 @@ namespace Presentation.Controllers
         #endregion
         #region Metas
         [HttpGet("ler_metas")]
-        public IActionResult GetMetas()
+        public async Task<IActionResult> GetMetas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM meta WHERE user_id = @user_id AND ativo = TRUE", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            var reader = cmdSelect.ExecuteReader();
-            var meta = new List<object>();
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
             {
-                meta.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_meta")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr = reader.GetDecimal(reader.GetOrdinal("vlr")),
-                    data_init = reader.GetDateTime(reader.GetOrdinal("data_meta")),
-                    data_fim = reader.GetDecimal(reader.GetOrdinal("progresso"))
-                });
+                return Ok(await _goalsService.GetActiveGoalsAsync(int.Parse(userId)));
             }
-            return Ok(new { meta });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPost("criar_meta")]
-        public IActionResult CriarMeta([FromBody] MetasModel metaData)
+        public async Task<IActionResult> CriarMeta([FromBody] RegisterGoalModel goal)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inserção de nova meta 
-            var cmdInsert = new NpgsqlCommand("INSERT INTO meta (user_id, nome, vlr, data_meta, progresso, ativo) VALUES (@user_id, @descricao, @vlr, @data_prev, 0, TRUE)", conn);
-            cmdInsert.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdInsert.Parameters.AddWithValue("@descricao", metaData.descricao);
-            cmdInsert.Parameters.AddWithValue("@vlr", metaData.vlr);
-            cmdInsert.Parameters.AddWithValue("@data_prev", metaData.data_venc);
-            cmdInsert.ExecuteNonQuery();
-            return Ok(new { message = "Meta criada com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                return Ok(await _goalsService.RegisterGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPut("atualizar_meta")]
-        public IActionResult AtualizarMeta([FromBody] MetasUpdateModel metaData)
+        public async Task<IActionResult> AtualizarMeta([FromBody] RegisterGoalModel goal)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Atualização de meta
-            var cmdUpdate = new NpgsqlCommand("UPDATE meta SET nome = @descricao, vlr = @vlr, data_meta = @data_prev, progresso = @progresso WHERE id_meta = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", metaData.id);
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.Parameters.AddWithValue("@descricao", metaData.descricao);
-            cmdUpdate.Parameters.AddWithValue("@vlr", metaData.vlr);
-            cmdUpdate.Parameters.AddWithValue("@data_prev", metaData.data_venc);
-            cmdUpdate.Parameters.AddWithValue("@progresso", metaData.progresso);
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Meta atualizada com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                return Ok(await _goalsService.UpdateGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        [HttpDelete("inativar_meta/{metaData}")]
-        public IActionResult InativarMeta([FromRoute] string metaData)
+        [HttpDelete("inativar_meta/{goalId}")]
+        public async Task<IActionResult> InativarMeta([FromRoute] int goalId)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Inativação de meta
-            var cmdDelete = new NpgsqlCommand("UPDATE meta SET ativo = FALSE WHERE id_meta = @id AND user_id = @user_id", conn);
-            cmdDelete.Parameters.AddWithValue("@id", int.Parse(metaData));
-            cmdDelete.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdDelete.ExecuteNonQuery();
-            return Ok(new { message = "Meta inativada com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                return Ok(await _goalsService.DeleteGoalAsync(goalId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-        [HttpPut("concluir_meta")]
-        public IActionResult ConcluirMeta([FromBody] Dictionary<string, string> metaData)
+        [HttpPut("concluir_meta/{goalId}")]
+        public async Task<IActionResult> ConcluirMeta([FromRoute] int goalId)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Conclusão de meta
-            var cmdUpdate = new NpgsqlCommand("UPDATE meta SET ativo = FALSE, progresso = 100 WHERE id_meta = @id AND user_id = @user_id", conn);
-            cmdUpdate.Parameters.AddWithValue("@id", int.Parse(metaData["id_meta"]));
-            cmdUpdate.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdUpdate.ExecuteNonQuery();
-            return Ok(new { message = "Meta concluída com sucesso" });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                return Ok(await _goalsService.EndGoalAsync(goalId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpGet("ler_metas_concluidas")]
-        public IActionResult GetMetasConcluidas()
+        public async Task<IActionResult> GetMetasConcluidas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand("SELECT * FROM meta WHERE user_id = @user_id AND ativo = FALSE AND progresso = 100", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            var reader = cmdSelect.ExecuteReader();
-            var meta = new List<object>();
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
             {
-                meta.Add(new
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("id_meta")),
-                    descricao = reader.GetString(reader.GetOrdinal("nome")),
-                    vlr = reader.GetDecimal(reader.GetOrdinal("vlr")),
-                    data_init = reader.GetDateTime(reader.GetOrdinal("data_meta")),
-                    data_fim = reader.GetDecimal(reader.GetOrdinal("progresso"))
-                });
+                return Ok(await _goalsService.GetDoneGoalsAsync(int.Parse(userId)));
             }
-            return Ok(new { meta });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         #endregion
         #region Gastos
