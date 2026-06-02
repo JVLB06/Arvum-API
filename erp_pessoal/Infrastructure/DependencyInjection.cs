@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
 using Infrastructure.Persistence.Readers;
 using Infrastructure.Persistence.Writers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure
@@ -18,6 +17,10 @@ namespace Infrastructure
             services.AddScoped<IGeneralInvestmentsWriter, GeneralInvestmentsWriter>();
             services.AddScoped<IGeneralDebtsReader, GeneralDebtsReader>();
             services.AddScoped<IGeneralDebtsWriter, GeneralDebtsWriter>();
+            services.AddScoped<IGeneralGoalsReader, GeneralGoalsReader>();
+            services.AddScoped<IGeneralGoalsWriter, GeneralGoalsWriter>();
+            services.AddScoped<IGeneralExpensesReader, GeneralExpensesReader>();
+            services.AddScoped<IGeneralExpensesWriter, GeneralExpensesWriter>();
 
             return services;
         }
