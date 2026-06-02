@@ -219,7 +219,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _debtsService.RegisterDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId)));
+                await _debtsService.RegisterDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId));
+                return Ok(new { message = "Dívida criada com sucesso" });
             }
             catch (Exception ex)
             {
@@ -233,7 +234,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _debtsService.UpdateDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId));
+                await _debtsService.UpdateDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId));
+                return Ok(new { message = "Dívida atualizada com sucesso" });
             }
             catch (Exception ex)
             {
@@ -245,7 +247,8 @@ namespace Presentation.Controllers
         {
             try
             {
-                return Ok(await _debtsService.DeleteDebtAsync(debtId));
+                await _debtsService.DeleteDebtAsync(debtId);
+                return Ok(new { message = "Dívida cancelada com sucesso" });
             }
             catch (Exception ex)
             {
@@ -257,7 +260,8 @@ namespace Presentation.Controllers
         {
             try
             {
-                return Ok(await _debtsService.PayDebtAsync(debtId));
+                await _debtsService.PayDebtAsync(debtId);
+                return Ok(new { message = "Dívida paga com sucesso" });
             }
             catch (Exception ex)
             {
@@ -301,7 +305,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _goalsService.RegisterGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId)));
+                await _goalsService.RegisterGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId));
+                return Ok(new { message = "Meta criada com sucesso" });
             }
             catch (Exception ex)
             {
@@ -315,7 +320,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _goalsService.UpdateGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId)));
+                await _goalsService.UpdateGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId));
+                return Ok(new { message = "Meta atualizada com sucesso" });
             }
             catch (Exception ex)
             {
@@ -329,7 +335,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _goalsService.DeleteGoalAsync(goalId));
+                await _goalsService.DeleteGoalAsync(goalId);
+                return Ok(new { message = "Meta cancelada com sucesso" });
             }
             catch (Exception ex)
             {
@@ -343,7 +350,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _goalsService.EndGoalAsync(goalId));
+                await _goalsService.EndGoalAsync(goalId);
+                return Ok(new { message = "Meta concluída com sucesso" });
             }
             catch (Exception ex)
             {
@@ -382,7 +390,7 @@ namespace Presentation.Controllers
             }
         }
         [HttpPost("criar_gasto")]
-        public async Task<IActionResult> CriarGasto([FromBody] ExpenseBaseModel expense)
+        public async Task<IActionResult> CriarGasto([FromBody] RegisterExpenseModel expense)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
             
@@ -396,7 +404,7 @@ namespace Presentation.Controllers
             }
         }
         [HttpPut("atualizar_gasto")]
-        public async Task<IActionResult> AtualizarGasto([FromBody] ExpenseBaseModel expense)
+        public async Task<IActionResult> AtualizarGasto([FromBody] RegisterExpenseModel expense)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

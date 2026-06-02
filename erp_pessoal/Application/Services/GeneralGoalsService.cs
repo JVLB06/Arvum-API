@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Services
@@ -31,7 +32,7 @@ namespace Application.Services
             ));
         }
 
-        public async Task RegisterGoalAsync(GoalEntity goal, int userId)
+        public async Task RegisterGoalAsync(GoalDTO goal, int userId)
         {
             await _generalGoalsWriter.CreateGoalAsync(new GoalEntity(
                 null,
@@ -43,7 +44,7 @@ namespace Application.Services
             ));
         }
 
-        public async Task UpdateGoalAsync(GoalEntity goal, int userId)
+        public async Task UpdateGoalAsync(GoalDTO goal, int userId)
         {
             await _generalGoalsWriter.UpdateGoalAsync(new GoalEntity(
                 goal.Id,
