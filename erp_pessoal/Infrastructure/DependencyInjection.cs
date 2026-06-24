@@ -21,6 +21,8 @@ namespace Infrastructure
             services.AddScoped<IGeneralGoalsWriter, GeneralGoalsWriter>();
             services.AddScoped<IGeneralExpensesReader, GeneralExpensesReader>();
             services.AddScoped<IGeneralExpensesWriter, GeneralExpensesWriter>();
+            services.AddScoped<ISpecificRegistersReader, SpecificRegistersReader>();
+            services.AddScoped<ISpecificRegistersWriter, SpecificRegistersWriter>();
 
             return services;
         }
