@@ -353,177 +353,62 @@ namespace Presentation.Controllers
 
         //Pagamentos (gastos geral)
         [HttpGet("obter_gastos_pgto")]
-        public async Task<IActionResult> GetGastos()
+        public async Task<IActionResult> GetExpenses([FromQuery] GetExtractModel extract)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand(
-                "SELECT p.id_gasto_geral, e.data, e.historico, p.vlr, g.id_gasto, " +
-                "g.nome, (g.vlr_min + g.vlr_max)/2 as gasto_valor, g.data_venc, g.fixvar, e.saldo " +
-                "FROM pagamentos p " +
-                "JOIN extrato e ON e.id_lcto = p.lcto_id " +
-                "JOIN gastos g ON g.id_gasto = p.gasto_id " +
-                "JOIN usuarios u ON u.id = @user_id " +
-                "where p.ativo = TRUE " +
-                "AND e.ativo = TRUE " +
-                "ORDER BY e.data desc; ", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            await cmdSelect.PrepareAsync();
-            var reader = await cmdSelect.ExecuteReaderAsync();
-            var gastos = new List<object>();
-            while (await reader.ReadAsync())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                gastos.Add(new
-                {
-                    id_gasto_geral = reader.GetInt32(reader.GetOrdinal("id_gasto_geral")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data")),
-                    historico = reader.GetString(reader.GetOrdinal("historico")),
-                    vlr_pagamento = reader.GetDouble(reader.GetOrdinal("vlr")),
-                    gasto = new
-                    {
-                        id_gasto = reader.GetInt32(reader.GetOrdinal("id_gasto")),
-                        nome = reader.GetString(reader.GetOrdinal("nome")),
-                        valor = reader.GetDouble(reader.GetOrdinal("gasto_valor")),
-                        data_venc = reader.GetDateTime(reader.GetOrdinal("data_venc")),
-                        progresso = reader.GetBoolean(reader.GetOrdinal("fixvar"))
-                    },
-                    saldo_extrato = reader.GetDouble(reader.GetOrdinal("saldo"))
-                });
+                return Ok(await _service.GetExpensePayementsAsync(int.Parse(userId), extract.InitialDate, extract.EndDate));
             }
-            return Ok(new { gastos });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         //Divida_pgto
         [HttpGet("obter_divida_pgto")]
-        public async Task<IActionResult> GetDivida()
+        public async Task<IActionResult> GetDebts([FromQuery] GetExtractModel extract)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand(
-                "SELECT dp.id_pgto_divida, e.data, e.historico, dp.vlr, d.id_invest, " +
-                "d.nome, d.vlr as divida_valor, d.data , d.data_prev, e.saldo " +
-                "FROM divida_pgto dp " +
-                "JOIN extrato e ON e.id_lcto = dp.lcto_id " +
-                "JOIN divida d ON d.id_invest = dp.divida_id " +
-                "JOIN usuarios u ON u.id = @user_id " +
-                "where dp.ativo = TRUE " +
-                "AND e.ativo = TRUE " +
-                "ORDER BY e.data desc;", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            await cmdSelect.PrepareAsync();
-            var reader = await cmdSelect.ExecuteReaderAsync();
-            var dividas = new List<object>();
-            while (await reader.ReadAsync())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                dividas.Add(new
-                {
-                    id_divida = reader.GetInt32(reader.GetOrdinal("id_divida")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data")),
-                    historico = reader.GetString(reader.GetOrdinal("historico")),
-                    vlr_pagamento = reader.GetDouble(reader.GetOrdinal("vlr")),
-                    divida_item = new
-                    {
-                        id_divida_item = reader.GetInt32(reader.GetOrdinal("id_pgto_divida")),
-                        nome = reader.GetString(reader.GetOrdinal("nome")),
-                        valor = reader.GetDouble(reader.GetOrdinal("divida_valor")),
-                        data_init = reader.GetDateTime(reader.GetOrdinal("data")),
-                        data_fim = reader.GetDateTime(reader.GetOrdinal("data_prev"))
-                    },
-                    saldo_extrato = reader.GetDouble(reader.GetOrdinal("saldo"))
-                });
+                return Ok(await _service.GetDebtPaymentsAsync(int.Parse(userId), extract.InitialDate, extract.EndDate));
             }
-            return Ok(new { dividas });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         //Renda_pgto
         [HttpGet("obter_renda_pgto")]
-        public async Task<IActionResult> GetRenda()
+        public async Task<IActionResult> GetReceipts([FromQuery] GetExtractModel extract)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand(
-                "SELECT rp.id_renda, e.data, e.historico, rp.vlr, r.id_renda as renda_id, " +
-                "r.nome, (r.vlr_min+ r.vlr_max)/2 as renda_valor, r.data_pag, e.saldo " +
-                "FROM renda_pgto rp " +
-                "JOIN rendas r ON r.id_renda = rp.renda_id " +
-                "JOIN extrato e ON e.id_lcto = rp.lcto_id " +
-                "JOIN usuarios u ON u.id = @user_id " +
-                "where rp.ativo = TRUE " +
-                "AND e.ativo = TRUE " +
-                "ORDER BY e.data desc;", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            await cmdSelect.PrepareAsync();
-            var reader = await cmdSelect.ExecuteReaderAsync();
-            var rendas = new List<object>();
-            while (await reader.ReadAsync())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                rendas.Add(new
-                {
-                    id_renda = reader.GetInt32(reader.GetOrdinal("id_renda")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data")),
-                    historico = reader.GetString(reader.GetOrdinal("historico")),
-                    vlr_pagamento = reader.GetDouble(reader.GetOrdinal("vlr")),
-                    divida_item = new
-                    {
-                        id_renda_item = reader.GetInt32(reader.GetOrdinal("renda_id")),
-                        nome = reader.GetString(reader.GetOrdinal("nome")),
-                        valor = reader.GetDouble(reader.GetOrdinal("renda_valor")),
-                        data_init = reader.GetDateTime(reader.GetOrdinal("data_pag"))
-                    },
-                    saldo_extrato = reader.GetDouble(reader.GetOrdinal("saldo"))
-                });
+                return Ok(await _service.GetReceiptPaymentsAsync(int.Parse(userId), extract.InitialDate, extract.EndDate));
             }
-            return Ok(new { rendas });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         //Investimento_pgto
         [HttpGet("obter_investimento_pgto")]
-        public async Task<IActionResult> GetInvestimento()
+        public async Task<IActionResult> GetInvestiments([FromQuery] GetExtractModel extract)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand(
-                "SELECT ip.id_invest, e.data, e.historico, ip.vlr, i.id_invest as invest_id," +
-                "i.nome, i.vlr as invest_valor, i.juro, i.data_init, e.saldo " +
-                "FROM investimento_pgto ip " +
-                "JOIN extrato e ON e.id_lcto = ip.lcto_id " +
-                "JOIN investimentos i ON i.id_invest = ip.invest_id " +
-                "JOIN usuarios u ON u.id = @user_id " +
-                "where ip.ativo = TRUE " +
-                "AND e.ativo = TRUE " +
-                "ORDER BY e.data desc;", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            await cmdSelect.PrepareAsync();
-            var reader = await cmdSelect.ExecuteReaderAsync();
-            var investimentos = new List<object>();
-            while (await reader.ReadAsync())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                investimentos.Add(new
-                {
-                    id_invest_pgto = reader.GetInt32(reader.GetOrdinal("id_invest")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data")),
-                    historico = reader.GetString(reader.GetOrdinal("historico")),
-                    vlr_pagamento = reader.GetDouble(reader.GetOrdinal("vlr")),
-                    invest_item = new
-                    {
-                        id_invest_item = reader.GetInt32(reader.GetOrdinal("invest_id")),
-                        nome = reader.GetString(reader.GetOrdinal("nome")),
-                        valor = reader.GetDouble(reader.GetOrdinal("invest_valor")),
-                        juro = reader.GetDouble(reader.GetOrdinal("juro")),
-                        data_init = reader.GetDateTime(reader.GetOrdinal("data_init"))
-                    },
-                    saldo_extrato = reader.GetDouble(reader.GetOrdinal("saldo"))
-                });
+                return Ok(await _service.GetInvestmentPaymentsAsync(int.Parse(userId), extract.InitialDate, extract.EndDate));
             }
-            return Ok(new { investimentos });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

@@ -46,5 +46,75 @@ namespace Application.Services
                 extract.Balance
             ));
         }
+
+        public async Task<IEnumerable<SpecificExpensesEntity>> GetExpensePayementsAsync(int userId, DateTime initialDate, DateTime endDate)
+        {
+            var connect = await _reader.ReadExpenseEntryByUser(userId, initialDate, endDate);
+            return connect.Select(extract => new SpecificExpensesEntity(
+                extract.Id,
+                userId,
+                extract.SpecificId,
+                extract.ExtractDate,
+                extract.Description,
+                extract.EntryValue,
+                extract.ExpenseId,
+                extract.ExpenseName,
+                extract.ExpenseValue,
+                extract.ExpenseDate,
+                extract.Variable,
+                extract.Balance));
+        }
+
+        public async Task<IEnumerable<SpecificDebtEntity>> GetDebtPaymentsAsync(int userId, DateTime initialDate, DateTime endDate)
+        {
+            var connect = await _reader.ReadDebtsEntryByUser(userId, initialDate, endDate);
+            return connect.Select(extract => new SpecificDebtEntity(
+                extract.Id,
+                userId,
+                extract.SpecificId,
+                extract.ExtractDate,
+                extract.Description,
+                extract.EntryValue,
+                extract.DebtId,
+                extract.DebtName,
+                extract.DebtValue,
+                extract.DebtDate,
+                extract.DebtEndDate,
+                extract.Balance));
+        }
+
+        public async Task<IEnumerable<SpecificInvestmentEntity>> GetInvestmentPaymentsAsync(int userId, DateTime initialDate, DateTime endDate)
+        {
+            var connect = await _reader.ReadInvestmentsEntryByUser(userId, initialDate, endDate);
+            return connect.Select(extract => new SpecificInvestmentEntity(
+                extract.Id,
+                userId,
+                extract.SpecificId,
+                extract.ExtractDate,
+                extract.Description,
+                extract.Value,
+                extract.InvestId,
+                extract.InvestName,
+                extract.InvestValue,
+                extract.Interest,
+                extract.InvestDate,
+                extract.Balance));
+        }
+
+        public async Task<IEnumerable<SpecificReceiptEntity>> GetReceiptPaymentsAsync(int userId, DateTime initialDate, DateTime endDate)
+        {
+            var connect = await _reader.ReadReceiptsEntryByUser(userId, initialDate, endDate);
+            return connect.Select(extract => new SpecificReceiptEntity(
+                extract.Id,
+                userId,
+                extract.SpecificId,
+                extract.ExtractDate,
+                extract.Description,
+                extract.Value,
+                extract.ReceiptId,
+                extract.ReceiptValue,
+                extract.ReceiptDate,
+                extract.Balance));
+        }
     }
 }
