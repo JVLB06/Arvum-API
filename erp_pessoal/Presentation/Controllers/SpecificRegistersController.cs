@@ -2,6 +2,8 @@
 using Npgsql;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Application.Interfaces;
+using Presentation.WebModels;
 
 namespace Presentation.Controllers
 {
@@ -10,6 +12,13 @@ namespace Presentation.Controllers
     [Route("extrato")]
     public class SpecificRegistersController : ControllerBase
     {
+        private readonly ISpecificRegistersService _service;
+
+        public SpecificRegistersController(ISpecificRegistersService service)
+        {
+            _service = service;
+        }
+
         //Tratamento de valores do extrato
         private decimal NormalizarValor(decimal valor, string tipo)
         {
@@ -86,66 +95,17 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("ler_extrato")]
-        public async Task<IActionResult> LerExtrato(
-         [FromQuery(Name = "data_ini")] DateTime dataIni,
-        [FromQuery(Name = "data_fim")] DateTime dataEnd)
+        public async Task<IActionResult> ReadExtract([FromQuery] GetExtractModel extract)
         {
-            // Obtendo ID do usuário
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(usuarioId))
-                return Unauthorized("Usuário não autenticado");
-
-            // Estabelecendo conexão com o banco de dados
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            await conn.OpenAsync();
-
-            var cmdSelect = new NpgsqlCommand(
-                @"SELECT 
-                    e.id_lcto,
-                    e.historico,
-                    e.vlr,
-                    e.data,
-                    CASE 
-                        WHEN p.lcto_id IS NOT NULL THEN 'gasto'
-                        WHEN dp.lcto_id IS NOT NULL THEN 'divida'
-                        WHEN mp.lcto_id IS NOT NULL THEN 'meta'
-                        WHEN ip.lcto_id IS NOT NULL THEN 'investimento'
-                        WHEN rp.lcto_id IS NOT NULL THEN 'renda'
-                        ELSE 'desconhecido'
-                    END AS tipo,
-                    e.saldo
-                FROM extrato e
-                LEFT JOIN pagamentos p ON p.lcto_id = e.id_lcto AND p.ativo = TRUE
-                LEFT JOIN divida_pgto dp ON dp.lcto_id = e.id_lcto AND dp.ativo = TRUE
-                LEFT JOIN meta_pgto mp ON mp.lcto_id = e.id_lcto AND mp.ativo = TRUE
-                LEFT JOIN investimento_pgto ip ON ip.lcto_id = e.id_lcto AND ip.ativo = TRUE
-                LEFT JOIN renda_pgto rp ON rp.lcto_id = e.id_lcto AND rp.ativo = TRUE
-                WHERE 
-                    e.ativo = TRUE
-                    AND e.data BETWEEN @dataIni AND @dataEnd
-                    AND e.user_id = @user_id;", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            cmdSelect.Parameters.AddWithValue("@dataIni", dataIni);
-            cmdSelect.Parameters.AddWithValue("@dataEnd", dataEnd);
-
-            await cmdSelect.PrepareAsync();
-
-            var reader = await cmdSelect.ExecuteReaderAsync();
-            var extrato = new List<object>();
-
-            while (await reader.ReadAsync())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                extrato.Add(new ExtratoModel
-                {
-                    extrato_id = reader.GetInt32(reader.GetOrdinal("id_lcto")),
-                    historico = reader.GetString(reader.GetOrdinal("historico")),
-                    valor = reader.GetDecimal(reader.GetOrdinal("vlr")),
-                    tipo = reader.GetString(reader.GetOrdinal("tipo")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data")),
-                    saldo = reader.GetDecimal(reader.GetOrdinal("saldo"))
-                });
+                return Ok(await _service.GetExtractAsync(int.Parse(userId), extract.InitialDate, extract.EndDate));
             }
-            return Ok(new { extrato });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         //Inclusão de informações de extrato
@@ -376,49 +336,19 @@ namespace Presentation.Controllers
             await cmdDeleteall.ExecuteNonQueryAsync();
             return Ok("Lançamento removido com sucesso.");
         }
-        //Visualização com os joins
-        //Meta_pgto
+        
         [HttpGet("obter_meta_pgto")]
-        public async Task<IActionResult> GetMeta()
+        public async Task<IActionResult> GetGoalPayments([FromQuery] GetExtractModel extract)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-            conn.Open();
-            // Realização do select
-            var cmdSelect = new NpgsqlCommand(
-                "SELECT mp.id_pgto_meta, e.data, e.historico, mp.vlr, m.id_meta, " +
-                "m.nome, m.vlr as meta_valor, m.data_meta, m.progresso, e.saldo " +
-                "FROM meta_pgto mp " +
-                "JOIN extrato e ON e.id_lcto = mp.lcto_id " +
-                "JOIN meta m ON m.id_meta = mp.meta_invest_id " +
-                "JOIN usuarios u ON u.id = @user_id " +
-                "WHERE mp.ativo = TRUE " +
-                "AND e.ativo = TRUE " +
-                "ORDER BY e.data desc;", conn);
-            cmdSelect.Parameters.AddWithValue("@user_id", int.Parse(usuarioId));
-            await cmdSelect.PrepareAsync();
-            var reader = await cmdSelect.ExecuteReaderAsync();
-            var meta = new List<object>();
-            while (await reader.ReadAsync())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                meta.Add(new
-                {
-                    id_pgto_meta = reader.GetInt32(reader.GetOrdinal("id_pgto_meta")),
-                    data = reader.GetDateTime(reader.GetOrdinal("data")),
-                    historico = reader.GetString(reader.GetOrdinal("historico")),
-                    vlr_pagamento = reader.GetDouble(reader.GetOrdinal("vlr")),
-                    meta = new
-                    {
-                        id_meta = reader.GetInt32(reader.GetOrdinal("id_meta")),
-                        nome = reader.GetString(reader.GetOrdinal("nome")),
-                        valor = reader.GetDouble(reader.GetOrdinal("meta_valor")),
-                        data_meta = reader.GetDateTime(reader.GetOrdinal("data_meta")),
-                        progresso = reader.GetDouble(reader.GetOrdinal("progresso"))
-                    },
-                    saldo_extrato = reader.GetDouble(reader.GetOrdinal("saldo"))
-                });
+                return Ok(await _service.GetGoalPaymentsAsync(int.Parse(userId), extract.InitialDate, extract.EndDate));
             }
-            return Ok(new { meta });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         //Pagamentos (gastos geral)
