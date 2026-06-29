@@ -9,8 +9,9 @@
         public DateTime ExtractDate { get; private set; }
         public string Kind { get; private set; }
         public decimal? Balance { get; private set; }
+        public int? ExternalId { get; private set; }
 
-        public ExtractEntity(int? id, int? userId, string name, decimal value, DateTime extractDate, string kind, decimal? balance) { 
+        public ExtractEntity(int? id, int? userId, string name, decimal value, DateTime extractDate, string kind, decimal? balance, int? externalId) { 
             Id = id;
             UserId = userId;
             Name = name;
@@ -18,6 +19,7 @@
             ExtractDate = extractDate;
             Kind = kind;
             Balance = balance is null ? 0 : balance;
+            ExternalId = externalId;
         }
     }
 }

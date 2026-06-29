@@ -1,5 +1,7 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection.PortableExecutable;
 
 namespace Application.Services
@@ -24,7 +26,8 @@ namespace Application.Services
                 extract.Value,
                 extract.ExtractDate,
                 extract.Kind,
-                extract.Balance
+                extract.Balance,
+                null
             ));
         }
 
@@ -115,6 +118,95 @@ namespace Application.Services
                 extract.ReceiptValue,
                 extract.ReceiptDate,
                 extract.Balance));
+        }
+
+        public async Task<int> SetExtractAsync(ExtractDTO main, int userId)
+        {
+            ExtractEntity payload = new ExtractEntity(
+                main.Id,
+                userId,
+                main.Name,
+                main.Value,
+                main.ExtractDate,
+                main.Kind,
+                0,
+                main.ExternalId);
+
+            int newId = await _writer.CreateMainExtractAsync(payload);
+
+            switch (main.Kind)
+            {
+                case "gasto":
+                    return await _writer.CreateExpenseExtractAsync(payload, newId);
+                case "divida":
+                    return await _writer.CreateDebtExtractAsync(payload, newId);
+                case "meta":
+                    return await _writer.CreateGoalExtractAsync(payload, newId);
+                case "investimento":
+                    return await _writer.CreateInvestmentExtractAsync(payload, newId);
+                case "renda":
+                    return await _writer.CreateReceiptExtractAsync(payload, newId);
+                default:
+                    return 500;       
+            }
+        }
+
+        public async Task UpdateExtractAsync(ExtractDTO main, int userId)
+        {
+            ExtractEntity payload = new ExtractEntity(
+                main.Id,
+                userId,
+                main.Name,
+                main.Value,
+                main.ExtractDate,
+                main.Kind,
+                0,
+                main.ExternalId);
+
+            await _writer.UpdateMainExtractAsync(payload);
+
+            switch (main.Kind)
+            {
+                case "gasto":
+                    await _writer.UpdateExpenseExtractAsync(payload);
+                    break;
+                case "divida":
+                    await _writer.UpdateDebtExtractAsync(payload);
+                    break;
+                case "meta":
+                    await _writer.UpdateGoalExtractAsync(payload);
+                    break;
+                case "investimento":
+                    await _writer.UpdateInvestmentExtractAsync(payload);
+                    break;
+                case "renda":
+                    await _writer.UpdateReceiptExtractAsync(payload);
+                    break;
+            }
+        }
+
+        public async Task DeleteExtractAsync(ExtractDeleteDTO main, int userId)
+        {
+            switch (main.Kind)
+            {
+                case "gasto":
+                    await _writer.DeleteExpenseExtractAsync(main.Id, userId);
+                    break;
+                case "divida":
+                    await _writer.DeleteDebtExtractAsync(main.Id, userId);
+                    break;
+                case "meta":
+                    await _writer.DeleteGoalExtractAsync(main.Id, userId);
+                    break;
+                case "investimento":
+                    await _writer.DeleteInvestmentExtractAsync(main.Id, userId);
+                    break;
+                case "renda":
+                    await _writer.DeleteReceiptExtractAsync(main.Id, userId);
+                    break;
+            }
+
+            await _writer.DeleteMainExtractAsync(main.Id, userId);
         }
     }
 }
