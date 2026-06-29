@@ -276,5 +276,46 @@ namespace Infrastructure.Persistence.Readers
 
             return (IEnumerable<SpecificInvestmentDTO>)SpecificInvestmentMapper.ToDTO(extract);
         }
+
+        public async Task<decimal> GetLastBalanceAsync(int userId, DateTime extractDate)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+            SELECT COALESCE(saldo, 0) FROM extrato
+            WHERE user_id = @userId AND data < @extractDate AND ativo = TRUE
+            ORDER BY data DESC, id_lcto DESC
+            LIMIT 1;";
+
+            return await conn.QueryFirstOrDefaultAsync<decimal>(sql, new { userId, extractDate });
+        }
+
+        public async Task<IEnumerable<ExtractBalanceDTO>> GetNextEntrysAsync(int userId, DateTime extractDate)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT id_lcto as Id, vlr as Valor 
+                FROM extrato
+                WHERE user_id = @userId AND data >= @extractDate AND ativo = TRUE
+                ORDER BY data ASC, id_lcto ASC;";
+
+            var extract = await conn.QueryAsync<ExtractBalanceBaseModel>(sql, new { userId, extractDate });
+
+            return extract.Select(item => ExtractBalanceMapper.ToDTO(item));
+        }
+
+        public async Task<DateTime> GetExtractDateByIdAsync(int userId, int entryId)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT data 
+                FROM extrato 
+                WHERE user_id = @userId AND id_lcto = @entryId AND ativo = TRUE 
+                LIMIT 1;";
+
+            return await conn.QueryFirstOrDefaultAsync<DateTime>(sql, new { userId, entryId });
+        }
     }
 }

@@ -14,5 +14,6 @@ namespace Application.Interfaces
         Task<int> SetExtractAsync(ExtractDTO main, int userId);
         Task UpdateExtractAsync(ExtractDTO main, int userId);
         Task DeleteExtractAsync(ExtractDeleteDTO main, int userId);
+        Task CalculateBalancesAsync(int userId, int entryId);
     }
 }

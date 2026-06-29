@@ -1,8 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.PortableExecutable;
 
 namespace Application.Services
 {
@@ -10,10 +8,13 @@ namespace Application.Services
     {
         public readonly ISpecificRegistersReader _reader;
         public readonly ISpecificRegistersWriter _writer;
-        public SpecificRegistersService(ISpecificRegistersReader reader, ISpecificRegistersWriter writer)
+        public readonly ISpecificRegistersService _service;
+
+        public SpecificRegistersService(ISpecificRegistersReader reader, ISpecificRegistersWriter writer, ISpecificRegistersService service)
         {
             _reader = reader;
             _writer = writer;
+            _service = service;
         }
 
         public async Task<IEnumerable<ExtractEntity>> GetExtractAsync(int userId, DateTime initialDate, DateTime endDate)
@@ -133,22 +134,31 @@ namespace Application.Services
                 main.ExternalId);
 
             int newId = await _writer.CreateMainExtractAsync(payload);
+            int newSpecificId;
 
             switch (main.Kind)
             {
                 case "gasto":
-                    return await _writer.CreateExpenseExtractAsync(payload, newId);
+                    newSpecificId =  await _writer.CreateExpenseExtractAsync(payload, newId);
+                    break;
                 case "divida":
-                    return await _writer.CreateDebtExtractAsync(payload, newId);
+                    newSpecificId = await _writer.CreateDebtExtractAsync(payload, newId);
+                    break;
                 case "meta":
-                    return await _writer.CreateGoalExtractAsync(payload, newId);
+                    newSpecificId = await _writer.CreateGoalExtractAsync(payload, newId);
+                    break;
                 case "investimento":
-                    return await _writer.CreateInvestmentExtractAsync(payload, newId);
+                    newSpecificId = await _writer.CreateInvestmentExtractAsync(payload, newId);
+                    break;
                 case "renda":
-                    return await _writer.CreateReceiptExtractAsync(payload, newId);
+                    newSpecificId = await _writer.CreateReceiptExtractAsync(payload, newId);
+                    break;
                 default:
                     return 500;       
             }
+
+            await _service.CalculateBalancesAsync(userId, newSpecificId);
+            return newSpecificId;
         }
 
         public async Task UpdateExtractAsync(ExtractDTO main, int userId)
@@ -183,6 +193,8 @@ namespace Application.Services
                     await _writer.UpdateReceiptExtractAsync(payload);
                     break;
             }
+
+            await _service.CalculateBalancesAsync(userId, main.Id);
         }
 
         public async Task DeleteExtractAsync(ExtractDeleteDTO main, int userId)
@@ -207,6 +219,31 @@ namespace Application.Services
             }
 
             await _writer.DeleteMainExtractAsync(main.Id, userId);
+            await _service.CalculateBalancesAsync(userId, main.Id);
+        }
+
+        public async Task CalculateBalancesAsync(int userId, int entryId)
+        {
+            DateTime extractDate = await _reader.GetExtractDateByIdAsync(userId, entryId);
+
+            if (extractDate == DateTime.MinValue) return;
+
+            decimal lastGroupedBalance = await _reader.GetLastBalanceAsync(userId, extractDate);
+
+            var entrys = await _reader.GetNextEntrysAsync(userId, extractDate);
+
+            if (!entrys.Any()) return;
+
+            var balancesToUpdate = new List<ExtractBalanceEntity>();
+
+            foreach (var entry in entrys)
+            {
+                lastGroupedBalance += entry.Balance;
+
+                balancesToUpdate.Add(new ExtractBalanceEntity(entry.Id, lastGroupedBalance));
+            }
+
+            await _writer.UpdateMultipleBalanceAsync(balancesToUpdate);
         }
     }
 }

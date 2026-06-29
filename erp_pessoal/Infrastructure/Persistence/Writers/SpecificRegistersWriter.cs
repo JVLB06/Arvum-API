@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Dapper;
 using Domain.Entities;
 using Infrastructure.Repositories;
@@ -394,7 +395,25 @@ namespace Infrastructure.Persistence.Writers
                 userId
             });
         }
-        
+
+        #endregion
+
+        #region Aditional
+        public async Task UpdateMultipleBalanceAsync(IEnumerable<ExtractBalanceEntity> balances)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                    UPDATE extrato AS e
+                    SET saldo = NowDate.novo_saldo
+                    FROM unnest(@ids, @balance) AS NowDate(id_lcto, novo_saldo)
+                    WHERE e.id_lcto = NowDate.id_lcto;";
+
+            var ids = balances.Select(x => x.Id).ToArray();
+            var balance = balances.Select(x => x.Balance).ToArray();
+
+            await conn.ExecuteAsync(sql, new { ids, balance });
+        }
         #endregion
     }
 }

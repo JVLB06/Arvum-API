@@ -23,5 +23,6 @@ namespace Application.Interfaces
         Task DeleteGoalExtractAsync(int id, int userId);
         Task DeleteInvestmentExtractAsync(int id, int userId);
         Task DeleteReceiptExtractAsync(int id, int userId);
+        Task UpdateMultipleBalanceAsync(IEnumerable<ExtractBalanceEntity> balances);
     }
 }

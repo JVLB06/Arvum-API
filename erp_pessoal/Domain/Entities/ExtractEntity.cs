@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using Domain.Helpers;
+
+namespace Domain.Entities
 {
     public class ExtractEntity
     {
@@ -15,7 +17,7 @@
             Id = id;
             UserId = userId;
             Name = name;
-            Value = value;
+            Value = ExtractHelper.NormalizeValueByKind(value, kind);
             ExtractDate = extractDate;
             Kind = kind;
             Balance = balance is null ? 0 : balance;
