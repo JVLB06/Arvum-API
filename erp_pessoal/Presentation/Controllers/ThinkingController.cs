@@ -1,13 +1,9 @@
 ﻿using Application.Interfaces;
-using erp_pessoal.Models;
-using Infrastructure.BaseMappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using Presentation.InputMappers;
 using Presentation.WebModels;
 using System.Security.Claims;
-using System.Security.Cryptography.Xml;
 
 namespace Presentation.Controllers
 {
@@ -16,30 +12,31 @@ namespace Presentation.Controllers
     [Route("thinking")]
     public class ThinkingController : ControllerBase
     {
-        private readonly IPreferencesService _service;
+        private readonly IThinkingService _service;
 
-        public ThinkingController(IPreferencesService service)
+        public ThinkingController(IThinkingService service)
         {
             _service = service;
         }
 
         [HttpGet("indicadores")]
-        public IActionResult GetIndicadores()
+        public async Task<IActionResult> GetIndicators()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(usuarioId))
-                return Unauthorized("Usuário não autenticado");
-
-            var resultado = _thinkingUtils.GerarSugestoes(int.Parse(usuarioId));
-
-            return Ok(resultado);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
+            try
+            {
+                return Ok(await _service.GeneratePreferencesAsync(int.Parse(userId)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("ler_preferencias")]
         public async Task<IActionResult> ReadPreferences()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             try
             {
                 return Ok(await _service.GetPreferences(int.Parse(userId)));
@@ -54,7 +51,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> CreatePreferences([FromBody] PreferenceModel preference)
         {
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             try
             {
                 await _service.CreatePreference(PreferencesMapper.ToInput(preference), int.Parse(userId));
@@ -69,7 +66,7 @@ namespace Presentation.Controllers
         [HttpDelete("deletar_preferencia/{id}")]
         public async Task<IActionResult> DeletePreference([FromQuery] int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             try
             {
                 await _service.DeletePreference(id, int.Parse(userId));

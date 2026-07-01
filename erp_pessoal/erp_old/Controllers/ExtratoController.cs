@@ -93,7 +93,7 @@ namespace erp_pessoal.Controllers
          [FromQuery(Name = "data_ini")] DateTime dataIni, 
         [FromQuery(Name = "data_fim")] DateTime dataEnd)
         {
-            // Obtendo ID do usuário
+            // User Id Obtainement
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(usuarioId))
                 return Unauthorized("Usuário não autenticado");
@@ -155,7 +155,7 @@ namespace erp_pessoal.Controllers
         [HttpPost("incluir_lancamento")]
         public async Task<IActionResult> IncluirLcto([FromBody] ExtratoModel extData)
         {
-            // Obtendo ID do usuário
+            // User Id Obtainement
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(usuarioId))
                 return Unauthorized("Usuário não autenticado");
@@ -271,7 +271,7 @@ namespace erp_pessoal.Controllers
         [HttpPut("atualizar_lancamento")]
         public async Task<IActionResult> AtualizarLcto([FromBody] ExtratoUpdateModel extData)
         {
-            // Obtendo ID do usuário
+            // User Id Obtainement
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(usuarioId))
                 return Unauthorized("Usuário não autenticado");
@@ -338,7 +338,7 @@ namespace erp_pessoal.Controllers
         [HttpDelete("remover_lancamento")]
         public async Task<IActionResult> RemoverLcto([FromBody] ExtratoDeleteModel extData)
         {
-            // Obtendo ID do usuário
+            // User Id Obtainement
             var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(usuarioId))
                 return Unauthorized("Usuário não autenticado");
@@ -384,7 +384,7 @@ namespace erp_pessoal.Controllers
         [HttpGet("obter_meta_pgto")]
         public async Task<IActionResult> GetMeta()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -428,7 +428,7 @@ namespace erp_pessoal.Controllers
         [HttpGet("obter_gastos_pgto")]
         public async Task<IActionResult> GetGastos()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -472,7 +472,7 @@ namespace erp_pessoal.Controllers
         [HttpGet("obter_divida_pgto")]
         public async Task<IActionResult> GetDivida()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -516,7 +516,7 @@ namespace erp_pessoal.Controllers
         [HttpGet("obter_renda_pgto")]
         public async Task<IActionResult> GetRenda()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -559,7 +559,7 @@ namespace erp_pessoal.Controllers
         [HttpGet("obter_investimento_pgto")]
         public async Task<IActionResult> GetInvestimento()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select

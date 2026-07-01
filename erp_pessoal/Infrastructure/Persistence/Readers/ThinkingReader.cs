@@ -8,6 +8,7 @@ namespace Infrastructure.Persistence.Readers
 {
     public class ThinkingReader : IThinkingReader
     {
+        #region Preferences
         public async Task<IEnumerable<PreferenceDTO>> ReadPreferencesAsync(int userId)
         {
             using var conn = MainRepository.CreateConnection();
@@ -64,5 +65,116 @@ namespace Infrastructure.Persistence.Readers
 
             return (PreferenceDTO)PreferenceMapper.ToDTO(query);
         }
+        #endregion
+        #region Preferences_Utils
+        public async Task<IEnumerable<GeneralInfoDTO>> ReadDebtTotalAsync(int userId)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT 
+                    COALESCE(SUM(vlr),0) AS Total
+                FROM 
+                    divida
+                WHERE 
+                    user_id = @userId
+                    AND ativo = TRUE;";
+
+            var query = await conn.QueryAsync<GeneralInfoBaseModel>(sql, new {userId});
+
+            return query.Select(item => GeneralInfoMapper.ToDTO(item));
+        }
+
+        public async Task<IEnumerable<GeneralInfoDTO>> ReadReceiptTotalAsync(int userId)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT 
+                    COALESCE(SUM((vlr_min + vlr_max)/2),0) AS Total
+                FROM 
+                    rendas
+                WHERE 
+                    user_id = @userId
+                    AND ativo = TRUE;";
+
+            var query = await conn.QueryAsync<GeneralInfoBaseModel>(sql, new { userId });
+
+            return query.Select(item => GeneralInfoMapper.ToDTO(item));
+        }
+
+        public async Task<IEnumerable<GeneralInfoDTO>> ReadExpensesTotalAsync(int userId)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT
+                    COALESCE(SUM(vlr_min + vlr_max)/2),0) AS Total,
+                    CASE fixvar 
+                        WHEN TRUE THEN 'Fix'
+                        WHEN FALSE THEN 'Var'
+                    END AS Kind
+                FROM 
+                    gastos
+                WHERE 1=1
+                    AND user_id = @userId
+                    AND ativo = TRUE
+                GROUP BY fixvar;";
+
+            var query = await conn.QueryAsync<GeneralInfoBaseModel>(sql, new { userId });
+
+            return query.Select(item => GeneralInfoMapper.ToDTO(item));
+        }
+
+        public async Task<IEnumerable<PreferencesInfoDTO>> ReadExclusionsAsync(int userId)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT
+                    G.id_gasto AS Id,
+                    G.nome AS Name,
+                    G.vlr_min AS MinValue,
+                    G.vlr_max AS MaxValue
+                FROM 
+                    gastos G
+                LEFT JOIN 
+                    RESTRICOES_USUARIO RU ON RU.gasto_id = G.id_gasto
+                WHERE 
+                    G.user_id = @userId
+                    AND RU.excluir <> TRUE OR RU.excluir is null
+                    AND G.ativo = TRUE
+                    AND G.prioridade >= 4;";
+
+            var query = await conn.QueryAsync<PreferencesInfoBaseModel>(sql, new { userId });
+
+            return query.Select(item => PreferencesInfoMapper.ToDTO(item));
+        }
+
+        public async Task<IEnumerable<PreferencesInfoDTO>> ReadReductionsAsync(int userId)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sql = @"
+                SELECT
+                    G.id_gasto AS Id,
+                    G.nome AS Name,
+                    G.vlr_min AS MinValue,
+                    G.vlr_max AS MaxValue
+                FROM 
+                    gastos G
+                LEFT JOIN 
+                    RESTRICOES_USUARIO RU ON RU.gasto_id = G.id_gasto
+                WHERE 
+                    G.user_id = @userId
+                    AND G.ativo = TRUE
+                    AND RU.reduzir <> TRUE OR RU.reduzir is null
+                    AND G.prioridade >= 4;";
+
+            var query = await conn.QueryAsync<PreferencesInfoBaseModel>(sql, new { userId });
+
+            return query.Select(item => PreferencesInfoMapper.ToDTO(item));
+        }
+        #endregion
     }
 }

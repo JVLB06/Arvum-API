@@ -14,7 +14,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_renda")]
         public async Task<IActionResult> GetRenda()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -39,7 +39,7 @@ namespace erp_pessoal.Controllers {
         [HttpPost("criar_renda")]
         public IActionResult CriarRenda([FromBody] RendaModel rendaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inserção de nova renda 
@@ -55,7 +55,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("atualizar_renda")]
         public IActionResult AtualizarRenda([FromBody] RendaUpdateModel rendaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Atualização de renda
@@ -72,7 +72,7 @@ namespace erp_pessoal.Controllers {
         [HttpDelete("inativar_renda/{rendaData}")]
         public IActionResult InativarRenda([FromRoute] string rendaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de renda
@@ -87,7 +87,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_investimentos_ativos")]
         public IActionResult GetInvestimentosAtivos()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -121,7 +121,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_investimentos_encerrados")]
         public IActionResult GetInvestimentosEncerrados()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -155,7 +155,7 @@ namespace erp_pessoal.Controllers {
         [HttpPost("criar_investimento")]
         public IActionResult CriarInvestimento([FromBody] InvestimentoModel investimentoData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inserção de novo investimento 
@@ -171,7 +171,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("atualizar_investimento")]
         public IActionResult AtualizarInvestimento([FromBody] InvestimentoUpdateModel investimentoData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Atualização de investimento
@@ -188,7 +188,7 @@ namespace erp_pessoal.Controllers {
         [HttpDelete("inativar_investimento/{investimentoData}")]
         public IActionResult InativarInvestimento([FromRoute] string investimentoData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de investimento
@@ -201,7 +201,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("concluir_investimento")]
         public IActionResult ConcluirInvestimento([FromBody] InvestimentoFimModel investimentoData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Conclusão de investimento
@@ -218,7 +218,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_dividas")]
         public IActionResult GetDividas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -243,7 +243,7 @@ namespace erp_pessoal.Controllers {
         [HttpPost("criar_divida")]
         public IActionResult CriarDivida([FromBody] DividaModel dividaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inserção de nova dívida 
@@ -259,7 +259,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("atualizar_divida")]
         public IActionResult AtualizarDivida([FromBody] DividaUpdateModel dividaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Atualização de dívida
@@ -276,7 +276,7 @@ namespace erp_pessoal.Controllers {
         [HttpDelete("inativar_divida/{dividaData}")]
         public IActionResult InativarDivida([FromRoute] string dividaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de dívida
@@ -289,7 +289,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("pagar_divida")]
         public IActionResult PagarDivida([FromBody] Dictionary<string, string> dividaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Pagamento de dívida
@@ -302,7 +302,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_dividas_quitadas")]
         public IActionResult GetDividasQuitadas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -329,7 +329,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_metas")]
         public IActionResult GetMetas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -353,7 +353,7 @@ namespace erp_pessoal.Controllers {
         [HttpPost("criar_meta")]
         public IActionResult CriarMeta([FromBody] MetasModel metaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inserção de nova meta 
@@ -368,7 +368,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("atualizar_meta")]
         public IActionResult AtualizarMeta([FromBody] MetasUpdateModel metaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Atualização de meta
@@ -385,7 +385,7 @@ namespace erp_pessoal.Controllers {
         [HttpDelete("inativar_meta/{metaData}")]
         public IActionResult InativarMeta([FromRoute] string metaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de meta
@@ -398,7 +398,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("concluir_meta")]
         public IActionResult ConcluirMeta([FromBody] Dictionary<string, string> metaData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Conclusão de meta
@@ -411,7 +411,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_metas_concluidas")]
         public IActionResult GetMetasConcluidas()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -437,7 +437,7 @@ namespace erp_pessoal.Controllers {
         [HttpGet("ler_gastos")]
         public IActionResult GetGastos()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Realização do select
@@ -463,7 +463,7 @@ namespace erp_pessoal.Controllers {
         [HttpPost("criar_gasto")]
         public IActionResult CriarGasto([FromBody] GastoModel gastoData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inserção de novo gasto 
@@ -481,7 +481,7 @@ namespace erp_pessoal.Controllers {
         [HttpPut("atualizar_gasto")]
         public IActionResult AtualizarGasto([FromBody] GastoUpdateModel gastoData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Atualização de gasto
@@ -500,7 +500,7 @@ namespace erp_pessoal.Controllers {
         [HttpDelete("inativar_gasto/{gastoData}")]
         public IActionResult InativarGasto([FromRoute] string gastoData)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             using var conn = new NpgsqlConnection(Essentials._connectionString);
             conn.Open();
             // Inativação de gasto

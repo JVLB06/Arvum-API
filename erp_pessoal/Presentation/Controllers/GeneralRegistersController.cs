@@ -37,7 +37,7 @@ namespace Presentation.Controllers
         [HttpGet("ler_renda")]
         public async Task<IActionResult> GetRenda()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
             try
             {
                 return Ok(await _receiptsService.GetReceiptsAsync(int.Parse(userId)));
