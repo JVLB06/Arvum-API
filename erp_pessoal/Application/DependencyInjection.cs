@@ -12,6 +12,7 @@ namespace Application
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IGeneralReceiptsService, GeneralReceiptsService>();
             services.AddScoped<IGeneralInvestmentsService, GeneralInvestmentsService>();
+            services.AddScoped<IPreferencesService, PreferencesService>();
 
             return services;
         }

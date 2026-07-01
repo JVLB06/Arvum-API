@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Npgsql;
+﻿using Application.Interfaces;
 using erp_pessoal.Models;
+using Infrastructure.BaseMappers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+using Presentation.InputMappers;
+using Presentation.WebModels;
+using System.Security.Claims;
+using System.Security.Cryptography.Xml;
 
 namespace Presentation.Controllers
 {
@@ -11,7 +16,12 @@ namespace Presentation.Controllers
     [Route("thinking")]
     public class ThinkingController : ControllerBase
     {
-        private readonly ThinkingUtils _thinkingUtils = new ThinkingUtils();
+        private readonly IPreferencesService _service;
+
+        public ThinkingController(IPreferencesService service)
+        {
+            _service = service;
+        }
 
         [HttpGet("indicadores")]
         public IActionResult GetIndicadores()
@@ -27,192 +37,48 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("ler_preferencias")]
-        public IActionResult LerPreferencias()
+        public async Task<IActionResult> ReadPreferences()
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(usuarioId))
-                return Unauthorized("Usuário não autenticado");
-
-            List<PreferenciasUsuarioModel> preferenciasList = new();
-
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-
-            conn.Open();
-
-            var cmd = new NpgsqlCommand(@"
-                SELECT 
-                    RU.USER_ID,
-                    RU.ID_PREF,
-                    RU.GASTO_ID,
-                    RU.EXCLUIR,
-                    RU.REDUZIR,
-                    RU.BLOQUEADO,
-                    G.NOME
-                FROM RESTRICOES_USUARIO RU
-                INNER JOIN GASTOS G
-                WHERE USER_ID = @user
-                AND ATIVO = TRUE
-            ", conn);
-
-            cmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
-
-            using var reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                preferenciasList.Add(new PreferenciasUsuarioModel
-                {
-                    IdUsuario = reader.GetString(0),
-                    IdPreferencia = reader.GetString(1),
-                    IdGasto = reader.GetString(2),
-                    Excluir = reader.GetBoolean(3),
-                    Reduzir = reader.GetBoolean(4),
-                    Bloqueado = reader.GetBoolean(5),
-                    GastoNome = reader.GetString(6)
-                });
+                return Ok(await _service.GetPreferences(int.Parse(userId)));
             }
-
-            return Ok(preferenciasList);
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("criar_preferencias")]
-        public IActionResult CriarPreferencias(
-            [FromBody] NovaPreferenciaModel preferencias)
+        public async Task<IActionResult> CreatePreferences([FromBody] PreferenceModel preference)
         {
 
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(usuarioId))
-                return Unauthorized("Usuário não autenticado");
-
-            List<PreferenciasUsuarioModel> preferenciasList = new();
-
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-
-            conn.Open();
-
-            var readCmd = new NpgsqlCommand(@"
-                SELECT
-                    USER_ID,
-                    ID_PREF,
-                    GASTO_ID,
-                    EXCLUIR,
-                    REDUZIR,
-                    BLOQUEADO
-                FROM RESTRICOES_USUARIO
-                WHERE USER_ID = @user
-                AND GASTO_ID = @gasto
-                LIMIT 1
-            ", conn);
-
-            var insertCmd = new NpgsqlCommand(@"
-                INSERT INTO RESTRICOES_USUARIO
-                (
-                    USER_ID,
-                    GASTO_ID,
-                    EXCLUIR,
-                    REDUZIR,
-                    ATIVO
-                )
-                VALUES
-                (
-                    @user,
-                    @gasto,
-                    @excluir,
-                    @reduzir,
-                    TRUE
-                )
-            ", conn);
-
-            var updateCmd = new NpgsqlCommand(@"
-                UPDATE RESTRICOES_USUARIO
-                SET
-                    EXCLUIR = @excluir,
-                    REDUZIR = @reduzir,
-                    ATIVO = TRUE
-                WHERE
-                    USER_ID = @user
-                    AND ID_PREF = @preferencia
-                    AND GASTO_ID = @gasto
-            ", conn);
-
-            readCmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
-            readCmd.Parameters.AddWithValue("@gasto", int.Parse(preferencias.IdGasto));
-
-            PreferenciasUsuarioModel? preferenciaExistente = null;
-
-            using (var reader = readCmd.ExecuteReader())
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                if (reader.Read())
-                {
-                    preferenciaExistente = new PreferenciasUsuarioModel
-                    {
-                        IdUsuario = reader.GetInt32(0).ToString(),
-                        IdPreferencia = reader.GetInt32(1).ToString(),
-                        IdGasto = reader.GetInt32(2).ToString(),
-                        Excluir = reader.GetBoolean(3),
-                        Reduzir = reader.GetBoolean(4),
-                        Bloqueado = reader.GetBoolean(5)
-                    };
-                }
+                await _service.CreatePreference(PreferencesMapper.ToInput(preference), int.Parse(userId));
+                return Ok("Preferência criada com sucesso");
             }
-
-            if (preferenciaExistente == null)
+            catch (Exception ex)
             {
-                insertCmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
-                insertCmd.Parameters.AddWithValue("@gasto", int.Parse(preferencias.IdGasto));
-                insertCmd.Parameters.AddWithValue("@excluir", preferencias.Excluir ? true : false); //Se verdadeiro exclusão bloqueada
-                insertCmd.Parameters.AddWithValue("@reduzir", preferencias.Excluir ? false : true); //Se falso redução bloqueada
-                insertCmd.ExecuteNonQuery();
+                return BadRequest(new { message = ex.Message });
             }
-            else
-            {
-                updateCmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
-                updateCmd.Parameters.AddWithValue("@preferencia", preferenciaExistente.IdPreferencia);
-                updateCmd.Parameters.AddWithValue("@gasto", int.Parse(preferencias.IdGasto));
-                updateCmd.Parameters.AddWithValue("@excluir", preferencias.Excluir ? true : false); //Se verdadeiro exclusão bloqueada
-                updateCmd.Parameters.AddWithValue("@reduzir", preferencias.Excluir ? false : true); //Se falso redução bloqueada
-                updateCmd.ExecuteNonQuery();
-            }
-
-            return Ok(new
-            {
-                mensagem = "Preferência adicionada com sucesso"
-            });
         }
 
-        [HttpDelete("deletar_preferencia")]
-        public IActionResult DeletarPreferencia(
-            [FromQuery] string preferenciaId)
+        [HttpDelete("deletar_preferencia/{id}")]
+        public async Task<IActionResult> DeletePreference([FromQuery] int id)
         {
-            var usuarioId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(usuarioId))
-                return Unauthorized();
-
-            using var conn = new NpgsqlConnection(Essentials._connectionString);
-
-            conn.Open();
-
-            var cmd = new NpgsqlCommand(@"
-                UPDATE RESTRICOES_USUARIO
-                SET ATIVO = FALSE
-                EXCLUIR = FALSE
-                REDUZIR = FALSE
-                WHERE USER_ID = @user
-                AND ID_PREF = @preferencia
-            ", conn);
-
-            cmd.Parameters.AddWithValue("@user", usuarioId);
-            cmd.Parameters.AddWithValue("@preferencia", preferenciaId);
-
-            cmd.ExecuteNonQuery();
-
-            return Ok(new
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //Obtendo ID do usuário
+            try
             {
-                mensagem = "Preferência removida com sucesso"
-            });
+                await _service.DeletePreference(id, int.Parse(userId));
+                return Ok("Preferência excluída com sucesso");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
