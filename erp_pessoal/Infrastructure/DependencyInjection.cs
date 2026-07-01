@@ -23,6 +23,8 @@ namespace Infrastructure
             services.AddScoped<IGeneralExpensesWriter, GeneralExpensesWriter>();
             services.AddScoped<ISpecificRegistersReader, SpecificRegistersReader>();
             services.AddScoped<ISpecificRegistersWriter, SpecificRegistersWriter>();
+            services.AddScoped<IThinkingReader, ThinkingReader>();
+            services.AddScoped<IThinkingWriter, ThinkingWriter>();
 
             return services;
         }
