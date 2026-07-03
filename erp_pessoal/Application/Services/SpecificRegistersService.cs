@@ -8,13 +8,11 @@ namespace Application.Services
     {
         public readonly ISpecificRegistersReader _reader;
         public readonly ISpecificRegistersWriter _writer;
-        public readonly ISpecificRegistersService _service;
 
-        public SpecificRegistersService(ISpecificRegistersReader reader, ISpecificRegistersWriter writer, ISpecificRegistersService service)
+        public SpecificRegistersService(ISpecificRegistersReader reader, ISpecificRegistersWriter writer)
         {
             _reader = reader;
             _writer = writer;
-            _service = service;
         }
 
         public async Task<IEnumerable<ExtractEntity>> GetExtractAsync(int userId, DateTime initialDate, DateTime endDate)
@@ -157,7 +155,7 @@ namespace Application.Services
                     return 500;       
             }
 
-            await _service.CalculateBalancesAsync(userId, newSpecificId);
+            await this.CalculateBalancesAsync(userId, newSpecificId);
             return newSpecificId;
         }
 
@@ -194,7 +192,7 @@ namespace Application.Services
                     break;
             }
 
-            await _service.CalculateBalancesAsync(userId, main.Id);
+            await this.CalculateBalancesAsync(userId, main.Id);
         }
 
         public async Task DeleteExtractAsync(ExtractDeleteDTO main, int userId)
@@ -219,7 +217,7 @@ namespace Application.Services
             }
 
             await _writer.DeleteMainExtractAsync(main.Id, userId);
-            await _service.CalculateBalancesAsync(userId, main.Id);
+            await this.CalculateBalancesAsync(userId, main.Id);
         }
 
         public async Task CalculateBalancesAsync(int userId, int entryId)
