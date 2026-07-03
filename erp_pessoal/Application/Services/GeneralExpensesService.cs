@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Application.Services
 {
-    public class GeneralExpensesService
+    public class GeneralExpensesService : IGeneralExpensesService
     {
         private readonly IGeneralExpensesReader _reader;
         private readonly IGeneralExpensesWriter _writer;

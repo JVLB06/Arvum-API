@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int SpecificId { get; set; } 
         public DateTime ExtractDate { get; set; } 
-        public string Description { get; set } 
+        public string Description { get; set; } 
         public decimal EntryValue { get; set; }
         public int GoalId { get; set; }
         public string GoalName {  get; set; }

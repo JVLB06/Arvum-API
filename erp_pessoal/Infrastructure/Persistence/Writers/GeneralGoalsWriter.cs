@@ -63,7 +63,7 @@ namespace Infrastructure.Persistence.Writers
             await conn.ExecuteAsync(sql, new {Id = id});
         }
 
-        public async Task EnfGoalAsync(int id)
+        public async Task EndGoalAsync(int id)
         {
             using var conn = MainRepository.CreateConnection();
 

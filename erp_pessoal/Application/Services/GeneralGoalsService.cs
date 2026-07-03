@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Application.Services
 {
-    public class GeneralGoalsService
+    public class GeneralGoalsService : IGeneralGoalsService
     {
         private readonly IGeneralGoalsReader _generalGoalsReader;
         private readonly IGeneralGoalsWriter _generalGoalsWriter;
@@ -78,4 +78,5 @@ namespace Application.Services
                 debt.Progress
             ));
         }
+    }
 }

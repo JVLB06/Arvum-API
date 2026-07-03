@@ -1,8 +1,6 @@
 ﻿using Application.Interfaces;
-using Infrastructure.BaseModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using Presentation.InputMappers;
 using Presentation.WebModels;
 using System.Security.Claims;
