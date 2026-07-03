@@ -169,7 +169,7 @@ namespace erp_pessoal.Controllers
             else
             {
                 updateCmd.Parameters.AddWithValue("@user", int.Parse(usuarioId));
-                updateCmd.Parameters.AddWithValue("@preferencia", preferenciaExistente.IdPreferencia);
+                updateCmd.Parameters.AddWithValue("@preferencia", int.Parse(preferenciaExistente.IdPreferencia));
                 updateCmd.Parameters.AddWithValue("@gasto", int.Parse(preferencias.IdGasto));
                 updateCmd.Parameters.AddWithValue("@excluir", preferencias.Excluir ? true : false); //Se verdadeiro exclusão bloqueada
                 updateCmd.Parameters.AddWithValue("@reduzir", preferencias.Excluir ? false : true); //Se falso redução bloqueada
@@ -205,7 +205,7 @@ namespace erp_pessoal.Controllers
             ", conn);
 
             cmd.Parameters.AddWithValue("@user", usuarioId);
-            cmd.Parameters.AddWithValue("@preferencia", preferenciaId);
+            cmd.Parameters.AddWithValue("@preferencia", int.Parse(preferenciaId));
 
             cmd.ExecuteNonQuery();
 
