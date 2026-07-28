@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static ExtractDTO ToInput(ExtractBaseModel model)
         {
+            if (model == null) return null;
+
             return new ExtractDTO
             {
                 Id = model.Id,

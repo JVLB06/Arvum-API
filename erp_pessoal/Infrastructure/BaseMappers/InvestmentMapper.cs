@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static InvestmentDTO ToDTO(InvestmentBaseModel model)
         {
+            if (model == null) return null;
+
             return new InvestmentDTO
             {
                 Id = model.Id,

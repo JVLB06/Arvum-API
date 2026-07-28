@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static ReceiptDTO ToInput(ReceiptBaseModel model)
         {
+            if (model == null) return null;
+
             return new ReceiptDTO
             {
                 Id = model.Id,

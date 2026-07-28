@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static PreferenceDTO ToDTO(PreferenceBaseModel model)
         {
+            if (model == null) return null;
+
             return new PreferenceDTO
             {
                 UserId = model.UserId,

@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static SpecificExpensesDTO ToDTO(SpecificExpensesBaseModel model)
         {
+            if (model == null) return null;
+
             return new SpecificExpensesDTO
             {
                 Id = model.Id,

@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static GeneralInfoDTO ToDTO(GeneralInfoBaseModel model)
         {
+            if (model == null) return null;
+
             return new GeneralInfoDTO
             {
                 Total = model.Total,
