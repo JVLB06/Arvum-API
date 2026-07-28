@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Presentation.InputMappers;
 using Presentation.WebModels;
 using System.Security.Claims;
+
 namespace Presentation.Controllers
 {
     [Authorize]
@@ -18,7 +19,7 @@ namespace Presentation.Controllers
         private readonly IGeneralExpensesService _expensesService;
 
         public GeneralRegistersController(
-            IGeneralReceiptsService receiptsService, 
+            IGeneralReceiptsService receiptsService,
             IGeneralInvestmentsService investmentsService,
             IGeneralDebtsService debtsService,
             IGeneralGoalsService goalsService,
@@ -35,16 +36,19 @@ namespace Presentation.Controllers
         [HttpGet("ler_renda")]
         public async Task<IActionResult> GetRenda()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             try
             {
-                return Ok(await _receiptsService.GetReceiptsAsync(int.Parse(userId)));
+                var result = await _receiptsService.GetReceiptsAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(new {message  = ex.Message});
+                return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPost("criar_renda")]
         public async Task<IActionResult> CreateReceipt([FromBody] RegisterReceiptModel receipt)
         {
@@ -52,16 +56,15 @@ namespace Presentation.Controllers
 
             try
             {
-                await _receiptsService.CreateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
-
+                await _receiptsService.CreateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId!));
                 return Ok(new { message = "Renda cadastrada com sucesso" });
             }
-
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut("atualizar_renda")]
         public async Task<IActionResult> AtualizarRenda([FromBody] RegisterReceiptModel receipt)
         {
@@ -69,32 +72,30 @@ namespace Presentation.Controllers
 
             try
             {
-                await _receiptsService.UpdateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId));
-
-                return Ok(new { message = "Renda cadastrada com sucesso" });
+                await _receiptsService.UpdateReceiptAsync(ReceiptMapper.ToDTO(receipt), int.Parse(userId!));
+                return Ok(new { message = "Renda atualizada com sucesso" });
             }
-
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpDelete("inativar_renda/{receiptId}")]
         public async Task<IActionResult> InativarRenda([FromRoute] string receiptId)
         {
             try
             {
                 await _receiptsService.DeleteReceiptAsync(int.Parse(receiptId));
-
-                return Ok(new { message = "Renda cadastrada com sucesso" });
+                return Ok(new { message = "Renda inativada com sucesso" });
             }
-
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
         #endregion
+
         #region Investimentos
         [HttpGet("ler_investimentos_ativos")]
         public async Task<IActionResult> GetInvestimentosAtivos()
@@ -103,13 +104,15 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _investmentsService.GetActiveInvestmentsAsync(int.Parse(userId)));
+                var result = await _investmentsService.GetActiveInvestmentsAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpGet("ler_investimentos_encerrados")]
         public async Task<IActionResult> GetInvestimentosEncerrados()
         {
@@ -117,13 +120,15 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _investmentsService.GetInactiveInvestmentsAsync(int.Parse(userId)));
+                var result = await _investmentsService.GetInactiveInvestmentsAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPost("criar_investimento")]
         public async Task<IActionResult> CriarInvestimento([FromBody] RegisterInvestmentModel investment)
         {
@@ -131,16 +136,15 @@ namespace Presentation.Controllers
 
             try
             {
-                await _investmentsService.CreateInvestmentAsync(InvestmentMapper.ToDTO(investment), int.Parse(userId));
-
+                await _investmentsService.CreateInvestmentAsync(InvestmentMapper.ToDTO(investment), int.Parse(userId!));
                 return Ok(new { message = "Investimento cadastrado com sucesso" });
             }
-
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut("atualizar_investimento")]
         public async Task<IActionResult> AtualizarInvestimento([FromBody] RegisterInvestmentModel investment)
         {
@@ -148,16 +152,15 @@ namespace Presentation.Controllers
 
             try
             {
-                await _investmentsService.UpdateInvestmentAsync(InvestmentMapper.ToDTO(investment), int.Parse(userId));
-
+                await _investmentsService.UpdateInvestmentAsync(InvestmentMapper.ToDTO(investment), int.Parse(userId!));
                 return Ok(new { message = "Investimento atualizado com sucesso" });
             }
-
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpDelete("inativar_investimento/{investmentId}")]
         public async Task<IActionResult> InativarInvestimento([FromRoute] int investmentId)
         {
@@ -165,51 +168,49 @@ namespace Presentation.Controllers
 
             try
             {
-                await _investmentsService.DeleteInvestmentAsync(investmentId, int.Parse(userId));
-
+                await _investmentsService.DeleteInvestmentAsync(investmentId, int.Parse(userId!));
                 return Ok(new { message = "Investimento excluído com sucesso" });
             }
-
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut("concluir_investimento")]
         public async Task<IActionResult> ConcluirInvestimento([FromBody] RegisterFinishInvestmentModel investment)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-
             try
             {
-                await _investmentsService.FinishInvestmentAsync(FinishInvestmentMapper.ToDTO(investment), int.Parse(userId));
-
+                await _investmentsService.FinishInvestmentAsync(FinishInvestmentMapper.ToDTO(investment), int.Parse(userId!));
                 return Ok(new { message = "Investimento finalizado com sucesso" });
             }
-
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
         #endregion
+
         #region Dividas
         [HttpGet("ler_dividas")]
         public async Task<IActionResult> GetDividas()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             try
             {
-                return Ok(await _debtsService.GetDebtsAsync(int.Parse(userId)));
+                var result = await _debtsService.GetDebtsAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
-
         }
+
         [HttpPost("criar_divida")]
         public async Task<IActionResult> CriarDivida([FromBody] RegisterDebtModel debt)
         {
@@ -217,7 +218,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _debtsService.RegisterDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId));
+                await _debtsService.RegisterDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId!));
                 return Ok(new { message = "Dívida criada com sucesso" });
             }
             catch (Exception ex)
@@ -225,6 +226,7 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut("atualizar_divida")]
         public async Task<IActionResult> AtualizarDivida([FromBody] RegisterDebtModel debt)
         {
@@ -232,7 +234,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _debtsService.UpdateDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId));
+                await _debtsService.UpdateDebtAsync(DebtMapper.ToDTO(debt), int.Parse(userId!));
                 return Ok(new { message = "Dívida atualizada com sucesso" });
             }
             catch (Exception ex)
@@ -240,6 +242,7 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpDelete("inativar_divida/{debtId}")]
         public async Task<IActionResult> InativarDivida([FromRoute] int debtId)
         {
@@ -253,7 +256,8 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpPut("pagar_divida/{dbtId}")]
+
+        [HttpPut("pagar_divida/{debtId}")]
         public async Task<IActionResult> PagarDivida([FromRoute] int debtId)
         {
             try
@@ -266,6 +270,7 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpGet("ler_dividas_quitadas")]
         public async Task<IActionResult> GetDividasQuitadas()
         {
@@ -273,7 +278,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _debtsService.GetPaidDebtsAsync(int.Parse(userId)));
+                var result = await _debtsService.GetPaidDebtsAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -281,6 +287,7 @@ namespace Presentation.Controllers
             }
         }
         #endregion
+
         #region Metas
         [HttpGet("ler_metas")]
         public async Task<IActionResult> GetMetas()
@@ -289,13 +296,15 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _goalsService.GetActiveGoalsAsync(int.Parse(userId)));
+                var result = await _goalsService.GetActiveGoalsAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPost("criar_meta")]
         public async Task<IActionResult> CriarMeta([FromBody] RegisterGoalModel goal)
         {
@@ -303,7 +312,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _goalsService.RegisterGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId));
+                await _goalsService.RegisterGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId!));
                 return Ok(new { message = "Meta criada com sucesso" });
             }
             catch (Exception ex)
@@ -311,6 +320,7 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut("atualizar_meta")]
         public async Task<IActionResult> AtualizarMeta([FromBody] RegisterGoalModel goal)
         {
@@ -318,7 +328,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _goalsService.UpdateGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId));
+                await _goalsService.UpdateGoalAsync(GoalMapper.ToDTO(goal), int.Parse(userId!));
                 return Ok(new { message = "Meta atualizada com sucesso" });
             }
             catch (Exception ex)
@@ -326,11 +336,10 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpDelete("inativar_meta/{goalId}")]
         public async Task<IActionResult> InativarMeta([FromRoute] int goalId)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             try
             {
                 await _goalsService.DeleteGoalAsync(goalId);
@@ -341,11 +350,10 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut("concluir_meta/{goalId}")]
         public async Task<IActionResult> ConcluirMeta([FromRoute] int goalId)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             try
             {
                 await _goalsService.EndGoalAsync(goalId);
@@ -356,6 +364,7 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpGet("ler_metas_concluidas")]
         public async Task<IActionResult> GetMetasConcluidas()
         {
@@ -363,7 +372,8 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _goalsService.GetDoneGoalsAsync(int.Parse(userId)));
+                var result = await _goalsService.GetDoneGoalsAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -371,8 +381,8 @@ namespace Presentation.Controllers
             }
         }
         #endregion
+
         #region Gastos
-        //Gastos
         [HttpGet("ler_gastos")]
         public async Task<IActionResult> GetGastos()
         {
@@ -380,20 +390,23 @@ namespace Presentation.Controllers
 
             try
             {
-                return Ok(await _expensesService.GetExpensesAsync(int.Parse(userId)));
+                var result = await _expensesService.GetExpensesAsync(int.Parse(userId!));
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPost("criar_gasto")]
         public async Task<IActionResult> CriarGasto([FromBody] RegisterExpenseModel expense)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
-            
-            try {                 
-                await _expensesService.RegisterExpenseAsync(ExpenseMapper.ToDTO(expense), int.Parse(userId));
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                await _expensesService.RegisterExpenseAsync(ExpenseMapper.ToDTO(expense), int.Parse(userId!));
                 return Ok(new { message = "Gasto cadastrado com sucesso" });
             }
             catch (Exception ex)
@@ -401,6 +414,7 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut("atualizar_gasto")]
         public async Task<IActionResult> AtualizarGasto([FromBody] RegisterExpenseModel expense)
         {
@@ -408,7 +422,7 @@ namespace Presentation.Controllers
 
             try
             {
-                await _expensesService.UpdateExpenseAsync(ExpenseMapper.ToDTO(expense), int.Parse(userId));
+                await _expensesService.UpdateExpenseAsync(ExpenseMapper.ToDTO(expense), int.Parse(userId!));
                 return Ok(new { message = "Gasto atualizado com sucesso" });
             }
             catch (Exception ex)
@@ -416,6 +430,7 @@ namespace Presentation.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpDelete("inativar_gasto/{expenseId}")]
         public async Task<IActionResult> InativarGasto([FromRoute] int expenseId)
         {
@@ -423,7 +438,7 @@ namespace Presentation.Controllers
             {
                 await _expensesService.DeleteExpenseAsync(expenseId);
                 return Ok(new { message = "Gasto inativado com sucesso" });
-            }   
+            }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });

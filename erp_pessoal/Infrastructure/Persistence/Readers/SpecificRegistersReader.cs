@@ -54,7 +54,7 @@ namespace Infrastructure.Persistence.Readers
                     endDate
                 });
 
-            if (extract is null)
+            if (extract is null || !extract.Any())
                 return Enumerable.Empty<ExtractDTO>();
 
             return extract.Select(item => ExtractMapper.ToInput(item));
@@ -98,7 +98,7 @@ namespace Infrastructure.Persistence.Readers
                 endDate
             });
 
-            if (extract is null)
+            if (extract is null || !extract.Any())
                 return Enumerable.Empty<SpecificGoalDTO>();
 
             return extract.Select(item => SpecificGoalMapper.ToDTO(item));
@@ -142,7 +142,7 @@ namespace Infrastructure.Persistence.Readers
                 endDate
             });
 
-            if (extract is null)
+            if (extract is null || !extract.Any())
                 return Enumerable.Empty<SpecificExpensesDTO>();
 
             return extract.Select(item => SpecificExpensesMapper.ToDTO(item));
@@ -186,7 +186,7 @@ namespace Infrastructure.Persistence.Readers
                 endDate
             });
 
-            if (extract is null)
+            if (extract is null || !extract.Any())
                 return Enumerable.Empty<SpecificDebtDTO>();
 
             return extract.Select(item => SpecificDebtMapper.ToDTO(item));
@@ -228,7 +228,7 @@ namespace Infrastructure.Persistence.Readers
                 endDate
             });
 
-            if (extract is null)
+            if (extract is null || !extract.Any())
                 return Enumerable.Empty<SpecificReceiptDTO>();
 
             return extract.Select(item => SpecificReceiptMapper.ToDTO(item));
@@ -271,7 +271,7 @@ namespace Infrastructure.Persistence.Readers
                 endDate
             });
 
-            if (extract is null)
+            if (extract is null || !extract.Any())
                 return Enumerable.Empty<SpecificInvestmentDTO>();
 
             return extract.Select(item => SpecificInvestmentMapper.ToDTO(item));
@@ -301,6 +301,9 @@ namespace Infrastructure.Persistence.Readers
                 ORDER BY data ASC, id_lcto ASC;";
 
             var extract = await conn.QueryAsync<ExtractBalanceBaseModel>(sql, new { userId, extractDate });
+
+            if (extract is null || !extract.Any())
+                return Enumerable.Empty<ExtractBalanceDTO>();
 
             return extract.Select(item => ExtractBalanceMapper.ToDTO(item));
         }
