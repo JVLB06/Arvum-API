@@ -58,7 +58,7 @@ namespace Infrastructure.Persistence.Writers
             const string sql = @"UPDATE 
                                     investimentos 
                                 SET 
-                                    ativo = FALSE 
+                                    ativo = FALSE, 
                                     resgate = NULL
                                 WHERE 1=1 
                                     AND id_invest = @Id 

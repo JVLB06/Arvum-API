@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static GoalDTO ToDTO(GoalBaseModel model)
         {
+            if (model == null) return null;
+
             return new GoalDTO
             {
                 Id = model.Id,

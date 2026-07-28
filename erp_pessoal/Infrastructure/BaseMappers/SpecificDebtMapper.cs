@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static SpecificDebtDTO ToDTO(SpecificDebtBaseModel model)
         {
+            if (model == null) return null;
+
             return new SpecificDebtDTO
             {
                 Id = model.Id,

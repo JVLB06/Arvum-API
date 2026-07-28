@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static LoginDTO ToInput(LoginBaseModel model)
         {
+            if (model == null) return null;
+
             return new LoginDTO
             {
                 Id = model.Id,

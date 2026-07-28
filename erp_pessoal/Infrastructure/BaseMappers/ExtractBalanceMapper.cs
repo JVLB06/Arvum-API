@@ -7,6 +7,8 @@ namespace Infrastructure.BaseMappers
     {
         public static ExtractBalanceDTO ToDTO (ExtractBalanceBaseModel model)
         {
+            if (model == null) return null;
+
             return new ExtractBalanceDTO
             {
                 Id = model.Id,
