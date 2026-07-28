@@ -45,19 +45,19 @@ namespace Infrastructure.Persistence.Readers
                     AND e.data BETWEEN @initialDate AND @endDate
                     AND e.user_id = @userId;";
 
-            var extract = await conn.QueryFirstOrDefaultAsync<ExtractBaseModel>(
+            var extract = await conn.QueryAsync<ExtractBaseModel>(
                 sql,
-            new
-            {
-                userId,
-                initialDate,
-                endDate
-            });
+                new
+                {
+                    userId,
+                    initialDate,
+                    endDate
+                });
 
             if (extract is null)
-                return null;
+                return Enumerable.Empty<ExtractDTO>();
 
-            return (IEnumerable<ExtractDTO>)ExtractMapper.ToInput(extract);
+            return extract.Select(item => ExtractMapper.ToInput(item));
         }
 
         public async Task<IEnumerable<SpecificGoalDTO>> ReadGoalEntryByUser(int userId, DateTime initialDate, DateTime endDate)
@@ -91,7 +91,7 @@ namespace Infrastructure.Persistence.Readers
                     AND e.data BETWEEN @initialDate AND @endDate
                 ORDER BY e.data desc";
 
-            var extract = await conn.QueryFirstOrDefaultAsync<SpecificGoalBaseModel>(sql, new
+            var extract = await conn.QueryAsync<SpecificGoalBaseModel>(sql, new
             {
                 userId,
                 initialDate,
@@ -99,9 +99,9 @@ namespace Infrastructure.Persistence.Readers
             });
 
             if (extract is null)
-                return null;
+                return Enumerable.Empty<SpecificGoalDTO>();
 
-            return (IEnumerable<SpecificGoalDTO>)SpecificGoalMapper.ToDTO(extract);
+            return extract.Select(item => SpecificGoalMapper.ToDTO(item));
         }
 
         public async Task<IEnumerable<SpecificExpensesDTO>> ReadExpenseEntryByUser(int userId, DateTime initialDate, DateTime endDate)
@@ -135,7 +135,7 @@ namespace Infrastructure.Persistence.Readers
                     AND e.ativo = TRUE
                 ORDER BY e.data desc;";
 
-            var extract = await conn.QueryFirstOrDefaultAsync<SpecificExpensesBaseModel>(sql, new
+            var extract = await conn.QueryAsync<SpecificExpensesBaseModel>(sql, new
             {
                 userId,
                 initialDate,
@@ -143,9 +143,9 @@ namespace Infrastructure.Persistence.Readers
             });
 
             if (extract is null)
-                return null;
+                return Enumerable.Empty<SpecificExpensesDTO>();
 
-            return (IEnumerable<SpecificExpensesDTO>)SpecificExpensesMapper.ToDTO(extract);
+            return extract.Select(item => SpecificExpensesMapper.ToDTO(item));
         }
 
         public async Task<IEnumerable<SpecificDebtDTO>> ReadDebtsEntryByUser(int userId, DateTime initialDate, DateTime endDate)
@@ -154,7 +154,7 @@ namespace Infrastructure.Persistence.Readers
 
             const string sql = @"
                     SELECT 
-                        e.id_lcto AS Id
+                        e.id_lcto AS Id,
                         dp.id_pgto_divida AS SpecificId, 
                         e.data AS ExtractDate, 
                         e.historico AS Description, 
@@ -179,7 +179,7 @@ namespace Infrastructure.Persistence.Readers
                         AND e.ativo = TRUE 
                     ORDER BY e.data desc;";
 
-            var extract = await conn.QueryFirstOrDefaultAsync<SpecificDebtBaseModel>(sql, new
+            var extract = await conn.QueryAsync<SpecificDebtBaseModel>(sql, new
             {
                 userId,
                 initialDate,
@@ -187,9 +187,9 @@ namespace Infrastructure.Persistence.Readers
             });
 
             if (extract is null)
-                return null;
+                return Enumerable.Empty<SpecificDebtDTO>();
 
-            return (IEnumerable<SpecificDebtDTO>)SpecificDebtMapper.ToDTO(extract);
+            return extract.Select(item => SpecificDebtMapper.ToDTO(item));
         }
 
         public async Task<IEnumerable<SpecificReceiptDTO>> ReadReceiptsEntryByUser(int userId, DateTime initialDate, DateTime endDate)
@@ -198,7 +198,7 @@ namespace Infrastructure.Persistence.Readers
 
             const string sql = @"
                 SELECT 
-                    e.id_lcto AS Id
+                    e.id_lcto AS Id,
                     rp.id_renda AS SpecificId, 
                     e.data AS ExtractDate, 
                     e.historico AS Description, 
@@ -214,14 +214,14 @@ namespace Infrastructure.Persistence.Readers
                 INNER JOIN 
                     extrato e ON e.id_lcto = rp.lcto_id
                 INNER JOIN 
-                    usuarios u ON u.id = @user_id
+                    usuarios u ON u.id = @userId
                 WHERE 1=1
                     AND rp.ativo = TRUE
                     AND e.data BETWEEN @initialDate AND @endDate
                     AND e.ativo = TRUE
                 ORDER BY e.data desc;";
 
-            var extract = await conn.QueryFirstOrDefaultAsync<SpecificReceiptBaseModel>(sql, new
+            var extract = await conn.QueryAsync<SpecificReceiptBaseModel>(sql, new
             {
                 userId,
                 initialDate,
@@ -229,9 +229,9 @@ namespace Infrastructure.Persistence.Readers
             });
 
             if (extract is null)
-                return null;
+                return Enumerable.Empty<SpecificReceiptDTO>();
 
-            return (IEnumerable<SpecificReceiptDTO>)SpecificReceiptMapper.ToDTO(extract);
+            return extract.Select(item => SpecificReceiptMapper.ToDTO(item));
         }
 
         public async Task<IEnumerable<SpecificInvestmentDTO>> ReadInvestmentsEntryByUser(int userId, DateTime initialDate, DateTime endDate)
@@ -240,7 +240,7 @@ namespace Infrastructure.Persistence.Readers
 
             const string sql = @"
                 SELECT 
-                    e.id_lcto AS Id
+                    e.id_lcto AS Id,
                     ip.id_invest AS SpecificId, 
                     e.data AS ExtractDate, 
                     e.historico AS Description, 
@@ -264,7 +264,7 @@ namespace Infrastructure.Persistence.Readers
                     AND e.ativo = TRUE
                 ORDER BY e.data desc;";
 
-            var extract = await conn.QueryFirstOrDefaultAsync<SpecificInvestmentBaseModel>(sql, new
+            var extract = await conn.QueryAsync<SpecificInvestmentBaseModel>(sql, new
             {
                 userId,
                 initialDate,
@@ -272,9 +272,9 @@ namespace Infrastructure.Persistence.Readers
             });
 
             if (extract is null)
-                return null;
+                return Enumerable.Empty<SpecificInvestmentDTO>();
 
-            return (IEnumerable<SpecificInvestmentDTO>)SpecificInvestmentMapper.ToDTO(extract);
+            return extract.Select(item => SpecificInvestmentMapper.ToDTO(item));
         }
 
         public async Task<decimal> GetLastBalanceAsync(int userId, DateTime extractDate)

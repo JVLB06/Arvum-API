@@ -21,15 +21,15 @@ namespace Infrastructure.Persistence.Readers
                                     progresso AS Progress
                                 FROM meta 
                                 WHERE 1=1
-                                    AND UserId = @user_id 
+                                    AND user_id = @userId 
                                     AND ativo = TRUE";
 
-            var results = await conn.QueryFirstOrDefaultAsync<GoalBaseModel>(sql, new { UserId = userId });
+            var results = await conn.QueryAsync<GoalBaseModel>(sql, new { userId });
 
-            if (results is null)
-                return null;
+            if (results is null || !results.Any())
+                return Enumerable.Empty<GoalDTO>();
 
-            return (IEnumerable<GoalDTO>)GoalMapper.ToDTO(results);
+            return results.Select(item => GoalMapper.ToDTO(item));
         }
 
         public async Task<IEnumerable<GoalDTO>> GetInactiveGoalsAsync(int userId)
@@ -44,16 +44,16 @@ namespace Infrastructure.Persistence.Readers
                                     progresso AS Progress
                                 FROM meta 
                                 WHERE 1=1
-                                    AND UserId = @user_id 
+                                    AND user_id = @userId 
                                     AND ativo = FALSE
                                     AND progresso >= 100";
 
-            var results = await conn.QueryFirstOrDefaultAsync<GoalBaseModel>(sql, new { UserId = userId });
+            var results = await conn.QueryAsync<GoalBaseModel>(sql, new { userId });
 
-            if (results is null)
-                return null;
+            if (results is null || !results.Any())
+                return Enumerable.Empty<GoalDTO>();
 
-            return (IEnumerable<GoalDTO>)GoalMapper.ToDTO(results);
+            return results.Select(item => GoalMapper.ToDTO(item));
         }
     }
 }
