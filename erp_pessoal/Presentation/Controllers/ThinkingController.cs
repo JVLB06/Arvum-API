@@ -22,10 +22,10 @@ namespace Presentation.Controllers
         [HttpGet("indicadores")]
         public async Task<IActionResult> GetIndicators()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             try
             {
-                return Ok(await _service.GeneratePreferencesAsync(int.Parse(userId)));
+                return Ok(await _service.GeneratePreferencesAsync(int.Parse(userId!)));
             }
             catch (Exception ex)
             {
@@ -36,10 +36,10 @@ namespace Presentation.Controllers
         [HttpGet("ler_preferencias")]
         public async Task<IActionResult> ReadPreferences()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             try
             {
-                return Ok(await _service.GetPreferences(int.Parse(userId)));
+                return Ok(await _service.GetPreferences(int.Parse(userId!)));
             }
             catch (Exception ex)
             {
@@ -50,12 +50,11 @@ namespace Presentation.Controllers
         [HttpPost("criar_preferencias")]
         public async Task<IActionResult> CreatePreferences([FromBody] PreferenceModel preference)
         {
-
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             try
             {
-                await _service.CreatePreference(PreferencesMapper.ToInput(preference), int.Parse(userId));
-                return Ok("Preferência criada com sucesso");
+                await _service.CreatePreference(PreferencesMapper.ToInput(preference), int.Parse(userId!));
+                return Ok(new { message = "Preferência criada com sucesso" });
             }
             catch (Exception ex)
             {
@@ -64,13 +63,13 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("deletar_preferencia/{id}")]
-        public async Task<IActionResult> DeletePreference([FromQuery] int id)
+        public async Task<IActionResult> DeletePreference([FromRoute] int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //User Id Obtainement
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             try
             {
-                await _service.DeletePreference(id, int.Parse(userId));
-                return Ok("Preferência excluída com sucesso");
+                await _service.DeletePreference(id, int.Parse(userId!));
+                return Ok(new { message = "Preferência excluída com sucesso" });
             }
             catch (Exception ex)
             {

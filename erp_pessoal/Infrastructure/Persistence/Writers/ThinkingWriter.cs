@@ -18,7 +18,7 @@ namespace Infrastructure.Persistence.Writers
                     GASTO_ID,
                     EXCLUIR,
                     REDUZIR,
-                    BLOQUEAR
+                    BLOQUEAR,
                     ATIVO)
                 VALUES
                 (
@@ -26,10 +26,10 @@ namespace Infrastructure.Persistence.Writers
                     @ExternalId,
                     @Exclude,
                     @Reduce,
-                    @Block
+                    @Block,
                     TRUE);";
 
-            await conn.ExecuteAsync(sql, new {preference.UserId, preference.ExternalId, preference.Exclude, preference.Reduce, preference.Block});
+            await conn.ExecuteAsync(sql, new { preference.UserId, preference.ExternalId, preference.Exclude, preference.Reduce, preference.Block });
         }
 
         public async Task PutPreferenceAsync(PreferenceEntity preference)
@@ -60,7 +60,7 @@ namespace Infrastructure.Persistence.Writers
                 SET 
                     ATIVO = FALSE,
                     EXCLUIR = FALSE,
-                    REDUZIR = FALSE,
+                    REDUZIR = FALSE
                 WHERE 
                     USER_ID = @userId
                     AND ID_PREF = @id;";
