@@ -25,14 +25,14 @@ namespace Infrastructure.Persistence.Readers
                     AND user_id = @user_id 
                     AND ativo = TRUE";
 
-            var results = await conn.QueryFirstOrDefaultAsync<ReceiptBaseModel>(
+            var results = await conn.QueryAsync<ReceiptBaseModel>(
                 sql,
-            new { user_id = id });
+                new { user_id = id });
 
             if (results is null)
-                return null;
+                return Enumerable.Empty<ReceiptDTO>();
 
-            return (IEnumerable<ReceiptDTO>)ReceiptMapper.ToInput(results);
+            return results.Select(item => ReceiptMapper.ToInput(item));
         }
     }
 }

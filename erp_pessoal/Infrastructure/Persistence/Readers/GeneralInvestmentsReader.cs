@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Readers
         {
             using var conn = MainRepository.CreateConnection();
 
-                const string sql = @"
+            const string sql = @"
                     SELECT 
                         id_invest AS Id,
                         nome AS Name,
@@ -27,13 +27,12 @@ namespace Infrastructure.Persistence.Readers
                         AND user_id = @id
                         AND ativo = TRUE";
 
-            var results = await conn.QueryFirstOrDefaultAsync<InvestmentBaseModel>(
-                sql,new { id = id });
+            var results = await conn.QueryAsync<InvestmentBaseModel>(sql, new { id });
 
-            if (results is null)
-                return null;
+            if (results is null || !results.Any())
+                return Enumerable.Empty<InvestmentDTO>();
 
-            return (IEnumerable<InvestmentDTO>)InvestmentMapper.ToDTO(results);
+            return results.Select(item => InvestmentMapper.ToDTO(item));
         }
 
         public async Task<IEnumerable<InvestmentDTO>> ReadInactivesInvestmentsAsync(int id)
@@ -55,13 +54,12 @@ namespace Infrastructure.Persistence.Readers
                         AND ativo = FALSE 
                         AND resgate IS NOT NULL";
 
-            var results = await conn.QueryFirstOrDefaultAsync<InvestmentBaseModel>(
-                sql, new { id = id });
+            var results = await conn.QueryAsync<InvestmentBaseModel>(sql, new { id });
 
-            if (results is null)
-                return null;
+            if (results is null || !results.Any())
+                return Enumerable.Empty<InvestmentDTO>();
 
-            return (IEnumerable<InvestmentDTO>)InvestmentMapper.ToDTO(results);
+            return results.Select(item => InvestmentMapper.ToDTO(item));
         }
     }
 }

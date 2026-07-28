@@ -4,7 +4,6 @@ using Dapper;
 using Infrastructure.BaseMappers;
 using Infrastructure.BaseModels;
 using Infrastructure.Repositories;
-using Npgsql;
 
 namespace Infrastructure.Persistence.Readers
 {
@@ -29,13 +28,14 @@ namespace Infrastructure.Persistence.Readers
                                 AND user_id = @userId
                                 AND ativo = TRUE;";
 
-            var results = await conn.QueryFirstOrDefaultAsync<ExpenseBaseModel>(
-                sql, userId);
+            var results = await conn.QueryAsync<ExpenseBaseModel>(
+                sql,
+                new { userId });
 
-            if (results is null)
-                return null;
+            if (results is null || !results.Any())
+                return Enumerable.Empty<ExpenseDTO>();
 
-            return (IEnumerable<ExpenseDTO>)ExpenseMapper.ToDTO(results);
+            return results.Select(item => ExpenseMapper.ToDTO(item));
         }
     }
 }

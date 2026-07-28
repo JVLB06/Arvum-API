@@ -4,6 +4,7 @@ using Dapper;
 using Infrastructure.BaseMappers;
 using Infrastructure.BaseModels;
 using Infrastructure.Repositories;
+
 namespace Infrastructure.Persistence.Readers
 {
     public class ThinkingReader : IThinkingReader
@@ -27,10 +28,13 @@ namespace Infrastructure.Persistence.Readers
                      INNER JOIN 
                         GASTOS G ON RU.GASTO_ID = G.ID_GASTO 
                      WHERE 1=1
-                        AND RU.USER_ID = @user
+                        AND RU.USER_ID = @userId
                         AND RU.ATIVO = TRUE;";
 
-            var query = await conn.QueryAsync<PreferenceBaseModel>(sql, new { userId});
+            var query = await conn.QueryAsync<PreferenceBaseModel>(sql, new { userId });
+
+            if (query is null || !query.Any())
+                return Enumerable.Empty<PreferenceDTO>();
 
             return query.Select(item => PreferenceMapper.ToDTO(item));
         }
@@ -50,8 +54,8 @@ namespace Infrastructure.Persistence.Readers
                 FROM 
                     RESTRICOES_USUARIO
                 WHERE 1=1
-                    AND USER_ID = @user
-                    AND GASTO_ID = @gasto
+                    AND USER_ID = @userId
+                    AND GASTO_ID = @mainId
                 LIMIT 1;";
 
             var query = await conn.QueryFirstOrDefaultAsync<PreferenceBaseModel>(sql, new
@@ -63,9 +67,10 @@ namespace Infrastructure.Persistence.Readers
             if (query is null)
                 return null;
 
-            return (PreferenceDTO)PreferenceMapper.ToDTO(query);
+            return PreferenceMapper.ToDTO(query);
         }
         #endregion
+
         #region Preferences_Utils
         public async Task<IEnumerable<GeneralInfoDTO>> ReadDebtTotalAsync(int userId)
         {
@@ -73,14 +78,17 @@ namespace Infrastructure.Persistence.Readers
 
             const string sql = @"
                 SELECT 
-                    COALESCE(SUM(vlr),0) AS Total
+                    COALESCE(SUM(vlr), 0) AS Total
                 FROM 
                     divida
                 WHERE 
                     user_id = @userId
                     AND ativo = TRUE;";
 
-            var query = await conn.QueryAsync<GeneralInfoBaseModel>(sql, new {userId});
+            var query = await conn.QueryAsync<GeneralInfoBaseModel>(sql, new { userId });
+
+            if (query is null || !query.Any())
+                return Enumerable.Empty<GeneralInfoDTO>();
 
             return query.Select(item => GeneralInfoMapper.ToDTO(item));
         }
@@ -91,7 +99,7 @@ namespace Infrastructure.Persistence.Readers
 
             const string sql = @"
                 SELECT 
-                    COALESCE(SUM((vlr_min + vlr_max)/2),0) AS Total
+                    COALESCE(SUM((vlr_min + vlr_max) / 2), 0) AS Total
                 FROM 
                     rendas
                 WHERE 
@@ -99,6 +107,9 @@ namespace Infrastructure.Persistence.Readers
                     AND ativo = TRUE;";
 
             var query = await conn.QueryAsync<GeneralInfoBaseModel>(sql, new { userId });
+
+            if (query is null || !query.Any())
+                return Enumerable.Empty<GeneralInfoDTO>();
 
             return query.Select(item => GeneralInfoMapper.ToDTO(item));
         }
@@ -109,7 +120,7 @@ namespace Infrastructure.Persistence.Readers
 
             const string sql = @"
                 SELECT
-                    COALESCE(SUM(vlr_min + vlr_max)/2),0) AS Total,
+                    COALESCE(SUM((vlr_min + vlr_max) / 2), 0) AS Total,
                     CASE fixvar 
                         WHEN TRUE THEN 'Fix'
                         WHEN FALSE THEN 'Var'
@@ -122,6 +133,9 @@ namespace Infrastructure.Persistence.Readers
                 GROUP BY fixvar;";
 
             var query = await conn.QueryAsync<GeneralInfoBaseModel>(sql, new { userId });
+
+            if (query is null || !query.Any())
+                return Enumerable.Empty<GeneralInfoDTO>();
 
             return query.Select(item => GeneralInfoMapper.ToDTO(item));
         }
@@ -142,11 +156,14 @@ namespace Infrastructure.Persistence.Readers
                     RESTRICOES_USUARIO RU ON RU.gasto_id = G.id_gasto
                 WHERE 
                     G.user_id = @userId
-                    AND RU.excluir <> TRUE OR RU.excluir is null
+                    AND (RU.excluir IS NOT TRUE)
                     AND G.ativo = TRUE
                     AND G.prioridade >= 4;";
 
             var query = await conn.QueryAsync<PreferencesInfoBaseModel>(sql, new { userId });
+
+            if (query is null || !query.Any())
+                return Enumerable.Empty<PreferencesInfoDTO>();
 
             return query.Select(item => PreferencesInfoMapper.ToDTO(item));
         }
@@ -168,10 +185,13 @@ namespace Infrastructure.Persistence.Readers
                 WHERE 
                     G.user_id = @userId
                     AND G.ativo = TRUE
-                    AND RU.reduzir <> TRUE OR RU.reduzir is null
+                    AND (RU.reduzir IS NOT TRUE)
                     AND G.prioridade >= 4;";
 
             var query = await conn.QueryAsync<PreferencesInfoBaseModel>(sql, new { userId });
+
+            if (query is null || !query.Any())
+                return Enumerable.Empty<PreferencesInfoDTO>();
 
             return query.Select(item => PreferencesInfoMapper.ToDTO(item));
         }
