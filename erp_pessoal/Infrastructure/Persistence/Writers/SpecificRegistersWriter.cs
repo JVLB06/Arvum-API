@@ -14,14 +14,14 @@ namespace Infrastructure.Persistence.Writers
             using var conn = MainRepository.CreateConnection();
 
             const string sql = @"
-                INSERT INTO 
-                    extrato 
+                INSERT INTO
+                    extrato
                     (data, historico, vlr, saldo, ativo, user_id)
-                VALUES 
+                VALUES
                     (@ExtractDate, @Name, @Value, 0, TRUE, @UserId)
                 RETURNING id_lcto;";
 
-            return await conn.ExecuteAsync(sql, new
+            return await conn.QueryFirstOrDefaultAsync<int>(sql, new
             {
                 extract.ExtractDate,
                 extract.Name,
@@ -34,14 +34,14 @@ namespace Infrastructure.Persistence.Writers
         {
             using var conn = MainRepository.CreateConnection();
             const string sql = @"
-                        INSERT INTO 
-                            pagamentos 
+                        INSERT INTO
+                            pagamentos
                             (historico, vlr, data, gasto_id, user_id, lcto_id)
-                        VALUES 
+                        VALUES
                             (@Name, @Value, @ExtractDate, @ExternalId, @UserId, @entryId)
                         RETURNING id_gasto_geral;";
 
-            return await conn.ExecuteAsync(sql, new
+            return await conn.QueryFirstOrDefaultAsync<int>(sql, new
             {
                 extract.Name,
                 extract.Value,
@@ -56,14 +56,14 @@ namespace Infrastructure.Persistence.Writers
         {
             using var conn = MainRepository.CreateConnection();
             const string sql = @"
-                        INSERT INTO 
-                            divida_pgto 
-                            (historico, vlr, data, invest_id, user_id, lcto_id)
-                        VALUES 
+                        INSERT INTO
+                            divida_pgto
+                            (historico, vlr, data, divida_id, user_id, lcto_id)
+                        VALUES
                             (@Name, @Value, @ExtractDate, @ExternalId, @UserId, @entryId)
                         RETURNING id_pgto_divida;";
 
-            return await conn.ExecuteAsync(sql, new
+            return await conn.QueryFirstOrDefaultAsync<int>(sql, new
             {
                 extract.Name,
                 extract.Value,
@@ -78,14 +78,14 @@ namespace Infrastructure.Persistence.Writers
         {
             using var conn = MainRepository.CreateConnection();
             const string sql = @"
-                        INSERT INTO 
-                            meta_pgto 
+                        INSERT INTO
+                            meta_pgto
                             (historico, vlr, data, meta_invest_id, user_id, lcto_id)
-                        VALUES 
+                        VALUES
                             (@Name, @Value, @ExtractDate, @ExternalId, @UserId, @entryId)
                         RETURNING id_pgto_meta;";
 
-            return await conn.ExecuteAsync(sql, new
+            return await conn.QueryFirstOrDefaultAsync<int>(sql, new
             {
                 extract.Name,
                 extract.Value,
@@ -100,14 +100,14 @@ namespace Infrastructure.Persistence.Writers
         {
             using var conn = MainRepository.CreateConnection();
             const string sql = @"
-                        INSERT INTO 
-                            investimento_pgto 
+                        INSERT INTO
+                            investimento_pgto
                             (historico, vlr, data, invest_id, user_id, lcto_id)
-                        VALUES 
+                        VALUES
                             (@Name, @Value, @ExtractDate, @ExternalId, @UserId, @entryId)
                         RETURNING id_invest;";
 
-            return await conn.ExecuteAsync(sql, new
+            return await conn.QueryFirstOrDefaultAsync<int>(sql, new
             {
                 extract.Name,
                 extract.Value,
@@ -122,14 +122,14 @@ namespace Infrastructure.Persistence.Writers
         {
             using var conn = MainRepository.CreateConnection();
             const string sql = @"
-                        INSERT INTO 
-                            renda_pgto 
+                        INSERT INTO
+                            renda_pgto
                             (historico, vlr, data, renda_id, user_id, lcto_id)
-                        VALUES 
+                        VALUES
                             (@Name, @Value, @ExtractDate, @ExternalId, @UserId, @entryId)
                         RETURNING id_renda;";
 
-            return await conn.ExecuteAsync(sql, new
+            return await conn.QueryFirstOrDefaultAsync<int>(sql, new
             {
                 extract.Name,
                 extract.Value,

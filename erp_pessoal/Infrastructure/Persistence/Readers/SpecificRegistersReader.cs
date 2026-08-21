@@ -239,29 +239,30 @@ namespace Infrastructure.Persistence.Readers
             using var conn = MainRepository.CreateConnection();
 
             const string sql = @"
-                SELECT 
+                SELECT
                     e.id_lcto AS Id,
-                    ip.id_invest AS SpecificId, 
-                    e.data AS ExtractDate, 
-                    e.historico AS Description, 
-                    ip.vlr AS Value, 
+                    ip.id_invest AS SpecificId,
+                    e.data AS ExtractDate,
+                    e.historico AS Description,
+                    ip.vlr AS Value,
                     i.id_invest as InvestId,
-                    i.nome AS InvestName, 
-                    i.vlr AS InvestValue, 
-                    i.juro AS Interest, 
-                    i.data_init AS InvestDate, 
+                    i.nome AS InvestName,
+                    i.vlr AS InvestValue,
+                    i.juro AS Interest,
+                    i.data_init AS InvestDate,
                     e.saldo AS Balance
-                FROM 
+                FROM
                     investimento_pgto ip
-                INNER JOIN 
+                INNER JOIN
                     extrato e ON e.id_lcto = ip.lcto_id
-                INNER JOIN 
+                INNER JOIN
                     investimentos i ON i.id_invest = ip.invest_id
-                INNER JOIN 
+                INNER JOIN
                     usuarios u ON u.id = @userId
                 WHERE 1=1
                     AND ip.ativo = TRUE
                     AND e.ativo = TRUE
+                    AND e.data BETWEEN @initialDate AND @endDate
                 ORDER BY e.data desc;";
 
             var extract = await conn.QueryAsync<SpecificInvestmentBaseModel>(sql, new

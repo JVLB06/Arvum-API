@@ -10,10 +10,10 @@ namespace Infrastructure.Persistence.Writers
         public async Task CreateGoalAsync(GoalEntity goal)
         {
             using var conn = MainRepository.CreateConnection();
-    
-            const string sql = @"INSERT INTO meta (UserId, nome, vlr, data_meta, progresso, ativo) 
+
+            const string sql = @"INSERT INTO meta (user_id, nome, vlr, data_meta, progresso, ativo)
                                 VALUES (@UserId, @Description, @Value, @GoalDate, @Progress, TRUE)";
-    
+
             await conn.ExecuteAsync(sql, new
             {
                 UserId = goal.UserId,
@@ -67,10 +67,10 @@ namespace Infrastructure.Persistence.Writers
         {
             using var conn = MainRepository.CreateConnection();
 
-            const string sql = @"UPDATE 
-                                    meta 
-                                SET 
-                                    ativo = FALSE
+            const string sql = @"UPDATE
+                                    meta
+                                SET
+                                    ativo = FALSE,
                                     progresso = 100
                                 WHERE 1=1
                                     AND id_meta = @Id;";

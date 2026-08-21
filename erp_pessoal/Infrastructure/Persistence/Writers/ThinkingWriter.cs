@@ -18,7 +18,7 @@ namespace Infrastructure.Persistence.Writers
                     GASTO_ID,
                     EXCLUIR,
                     REDUZIR,
-                    BLOQUEAR,
+                    BLOQUEADO,
                     ATIVO)
                 VALUES
                 (
@@ -41,7 +41,7 @@ namespace Infrastructure.Persistence.Writers
                 SET
                     EXCLUIR = @Exclude,
                     REDUZIR = @Reduce,
-                    BLOQUEAR = @Block,
+                    BLOQUEADO = @Block,
                     ATIVO = TRUE
                 WHERE
                     USER_ID = @UserId
