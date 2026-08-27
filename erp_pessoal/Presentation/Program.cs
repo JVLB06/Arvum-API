@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
                 ?.Split(";", StringSplitOptions.RemoveEmptyEntries)
             ?? new[]
             {
-                "https://arvum-site.netlify.app",
+                "https://arvum-erp.netlify.app",
                 "http://localhost:5173",
                 "http://localhost:3000"
             };
