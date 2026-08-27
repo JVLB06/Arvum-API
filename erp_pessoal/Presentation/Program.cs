@@ -16,14 +16,25 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")
+                ?.Split(";", StringSplitOptions.RemoveEmptyEntries)
+            ?? new[]
+            {
+                "https://arvum-site.netlify.app",
+                "http://localhost:5173",
+                "http://localhost:3000"
+            };
+
         policy
-            .AllowAnyOrigin()
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
-// --- AQUELA LINHA ÚNICA PARA CADA CAMADA ---
+// --- AQUELA LINHA ï¿½NICA PARA CADA CAMADA ---
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();   // Registra tudo da Application
 // -------------------------------------------
