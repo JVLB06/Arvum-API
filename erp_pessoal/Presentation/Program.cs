@@ -12,29 +12,6 @@ var key = Encoding.ASCII.GetBytes(jwtChaveSecreta);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Frontend", policy =>
-    {
-        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")
-                ?.Split(";", StringSplitOptions.RemoveEmptyEntries)
-            ?? new[]
-            {
-                "https://arvum-erp.netlify.app",
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "https://adaptive-telephony-bikes-pressed.trycloudflare.com"
-            };
-
-        policy
-            .WithOrigins(allowedOrigins)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
-
 // --- AQUELA LINHA �NICA PARA CADA CAMADA ---
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();   // Registra tudo da Application
@@ -66,13 +43,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("Frontend");
-
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.Urls.Add("http://0.0.0.0:5000");
 
 app.Run();
