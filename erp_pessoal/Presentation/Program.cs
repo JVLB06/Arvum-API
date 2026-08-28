@@ -23,7 +23,8 @@ builder.Services.AddCors(options =>
             {
                 "https://arvum-erp.netlify.app",
                 "http://localhost:5173",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://adaptive-telephony-bikes-pressed.trycloudflare.com"
             };
 
         policy
