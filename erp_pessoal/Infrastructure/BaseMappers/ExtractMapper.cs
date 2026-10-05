@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Infrastructure.BaseModels;
 
 namespace Infrastructure.BaseMappers
@@ -16,7 +16,10 @@ namespace Infrastructure.BaseMappers
                 Value = model.Value,
                 ExtractDate = model.ExtractDate,
                 Kind = model.Kind,
-                Balance = model.Balance
+                Balance = model.Balance,
+                ExternalId = model.ExternalId,
+                GoalId = model.GoalId,
+                GoalName = model.GoalName
             };
         }
     }

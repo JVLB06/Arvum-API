@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 
@@ -22,14 +22,25 @@ namespace Application.Services
         {
             var connect = await _generalGoalsReader.GetActiveGoalsAsync(userId);
 
-            return connect.Select(debt => new GoalEntity(
-                debt.Id,
-                debt.UserId,
-                debt.Description,
-                debt.Value,
-                debt.GoalDate,
-                debt.Progress
+            return connect.Select(goal => new GoalEntity(
+                goal.UserId,
+                goal.Id,
+                goal.Description,
+                goal.Value,
+                goal.GoalDate,
+                goal.Progress,
+                goal.GoalPaid
             ));
+        }
+
+        public async Task<IEnumerable<GoalEntity>> GetGoalsProgressAsync(int userId)
+        {
+            return await GetActiveGoalsAsync(userId);
+        }
+
+        public async Task<GoalCompositionDTO?> GetGoalCompositionAsync(int userId, int goalId)
+        {
+            return await _generalGoalsReader.GetGoalCompositionAsync(userId, goalId);
         }
 
         public async Task RegisterGoalAsync(GoalDTO goal, int userId)

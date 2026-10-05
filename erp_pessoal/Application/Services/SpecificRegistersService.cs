@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 
@@ -45,7 +45,9 @@ namespace Application.Services
                 extract.FullGoalValue,
                 extract.GoalDate,
                 extract.Progress,
-                extract.Balance
+                extract.Balance,
+                extract.OriginType,
+                extract.OriginName
             ));
         }
 
@@ -129,7 +131,8 @@ namespace Application.Services
                 main.ExtractDate,
                 main.Kind,
                 0,
-                main.ExternalId);
+                main.ExternalId,
+                main.GoalId);
 
             int newId = await _writer.CreateMainExtractAsync(payload);
             int newSpecificId;
@@ -137,16 +140,29 @@ namespace Application.Services
             switch (main.Kind)
             {
                 case "gasto":
-                    newSpecificId =  await _writer.CreateExpenseExtractAsync(payload, newId);
+                    newSpecificId = await _writer.CreateExpenseExtractAsync(payload, newId);
                     break;
                 case "divida":
                     newSpecificId = await _writer.CreateDebtExtractAsync(payload, newId);
+                    if (main.GoalId.HasValue && main.GoalId.Value > 0)
+                    {
+                        await _writer.UpsertGoalExtractAsync(payload, main.GoalId.Value, newId);
+                    }
                     break;
                 case "meta":
+                    int goalId = main.GoalId ?? main.ExternalId ?? 0;
                     newSpecificId = await _writer.CreateGoalExtractAsync(payload, newId);
+                    if (goalId > 0 && payload.ExternalId != goalId)
+                    {
+                        await _writer.UpsertGoalExtractAsync(payload, goalId, newId);
+                    }
                     break;
                 case "investimento":
                     newSpecificId = await _writer.CreateInvestmentExtractAsync(payload, newId);
+                    if (main.GoalId.HasValue && main.GoalId.Value > 0)
+                    {
+                        await _writer.UpsertGoalExtractAsync(payload, main.GoalId.Value, newId);
+                    }
                     break;
                 case "renda":
                     newSpecificId = await _writer.CreateReceiptExtractAsync(payload, newId);
@@ -155,7 +171,7 @@ namespace Application.Services
                     return 500;       
             }
 
-            await this.CalculateBalancesAsync(userId, newSpecificId);
+            await this.CalculateBalancesAsync(userId, newId);
             return newSpecificId;
         }
 
@@ -169,7 +185,8 @@ namespace Application.Services
                 main.ExtractDate,
                 main.Kind,
                 0,
-                main.ExternalId);
+                main.ExternalId,
+                main.GoalId);
 
             await _writer.UpdateMainExtractAsync(payload);
 
@@ -180,12 +197,36 @@ namespace Application.Services
                     break;
                 case "divida":
                     await _writer.UpdateDebtExtractAsync(payload);
+                    if (main.GoalId.HasValue && main.GoalId.Value > 0)
+                    {
+                        await _writer.UpsertGoalExtractAsync(payload, main.GoalId.Value, main.Id);
+                    }
+                    else
+                    {
+                        await _writer.DeleteGoalExtractAsync(main.Id, userId);
+                    }
                     break;
                 case "meta":
-                    await _writer.UpdateGoalExtractAsync(payload);
+                    int targetGoalId = main.GoalId ?? main.ExternalId ?? 0;
+                    if (targetGoalId > 0)
+                    {
+                        await _writer.UpsertGoalExtractAsync(payload, targetGoalId, main.Id);
+                    }
+                    else
+                    {
+                        await _writer.UpdateGoalExtractAsync(payload);
+                    }
                     break;
                 case "investimento":
                     await _writer.UpdateInvestmentExtractAsync(payload);
+                    if (main.GoalId.HasValue && main.GoalId.Value > 0)
+                    {
+                        await _writer.UpsertGoalExtractAsync(payload, main.GoalId.Value, main.Id);
+                    }
+                    else
+                    {
+                        await _writer.DeleteGoalExtractAsync(main.Id, userId);
+                    }
                     break;
                 case "renda":
                     await _writer.UpdateReceiptExtractAsync(payload);
@@ -204,12 +245,14 @@ namespace Application.Services
                     break;
                 case "divida":
                     await _writer.DeleteDebtExtractAsync(main.Id, userId);
+                    await _writer.DeleteGoalExtractAsync(main.Id, userId);
                     break;
                 case "meta":
                     await _writer.DeleteGoalExtractAsync(main.Id, userId);
                     break;
                 case "investimento":
                     await _writer.DeleteInvestmentExtractAsync(main.Id, userId);
+                    await _writer.DeleteGoalExtractAsync(main.Id, userId);
                     break;
                 case "renda":
                     await _writer.DeleteReceiptExtractAsync(main.Id, userId);

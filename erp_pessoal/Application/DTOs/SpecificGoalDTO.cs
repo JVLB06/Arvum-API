@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs
+namespace Application.DTOs
 {
     public class SpecificGoalDTO
     {
@@ -13,5 +13,7 @@
         public DateTime GoalDate { get; set; }
         public float Progress { get; set; }
         public decimal Balance { get; set; }
+        public string? OriginType { get; set; }
+        public string? OriginName { get; set; }
     }
 }

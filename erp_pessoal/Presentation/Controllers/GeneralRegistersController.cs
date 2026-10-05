@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.InputMappers;
@@ -345,6 +345,41 @@ namespace Presentation.Controllers
             try
             {
                 var result = await _goalsService.GetActiveGoalsAsync(int.Parse(userId!));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("ler_metas_view")]
+        public async Task<IActionResult> GetMetasProgresso()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var result = await _goalsService.GetGoalsProgressAsync(int.Parse(userId!));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("ler_composicao_meta/{goalId}")]
+        public async Task<IActionResult> GetComposicaoMeta([FromRoute] int goalId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var result = await _goalsService.GetGoalCompositionAsync(int.Parse(userId!), goalId);
+                if (result is null)
+                    return NotFound(new { message = "Meta não encontrada" });
+
                 return Ok(result);
             }
             catch (Exception ex)

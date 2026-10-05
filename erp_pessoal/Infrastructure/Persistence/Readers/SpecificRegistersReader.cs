@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Application.Interfaces;
 using Dapper;
 using Infrastructure.BaseMappers;
@@ -22,12 +22,15 @@ namespace Infrastructure.Persistence.Readers
                     CASE 
                         WHEN p.lcto_id IS NOT NULL THEN 'gasto'
                         WHEN dp.lcto_id IS NOT NULL THEN 'divida'
-                        WHEN mp.lcto_id IS NOT NULL THEN 'meta'
                         WHEN ip.lcto_id IS NOT NULL THEN 'investimento'
                         WHEN rp.lcto_id IS NOT NULL THEN 'renda'
+                        WHEN mp.lcto_id IS NOT NULL THEN 'meta'
                         ELSE 'desconhecido'
                     END AS Kind,
-                    e.saldo AS Balance
+                    e.saldo AS Balance,
+                    COALESCE(dp.divida_id, ip.invest_id, p.gasto_id, rp.renda_id, mp.meta_invest_id) AS ExternalId,
+                    mp.meta_invest_id AS GoalId,
+                    m.nome AS GoalName
                 FROM 
                     extrato e
                 LEFT JOIN 
@@ -35,11 +38,13 @@ namespace Infrastructure.Persistence.Readers
                 LEFT JOIN 
                     divida_pgto dp ON dp.lcto_id = e.id_lcto AND dp.ativo = TRUE
                 LEFT JOIN 
-                    meta_pgto mp ON mp.lcto_id = e.id_lcto AND mp.ativo = TRUE
-                LEFT JOIN 
                     investimento_pgto ip ON ip.lcto_id = e.id_lcto AND ip.ativo = TRUE
                 LEFT JOIN 
                     renda_pgto rp ON rp.lcto_id = e.id_lcto AND rp.ativo = TRUE
+                LEFT JOIN 
+                    meta_pgto mp ON mp.lcto_id = e.id_lcto AND mp.ativo = TRUE
+                LEFT JOIN 
+                    meta m ON m.id_meta = mp.meta_invest_id AND m.ativo = TRUE
                 WHERE 1=1
                     AND e.ativo = TRUE
                     AND e.data BETWEEN @initialDate AND @endDate
@@ -76,13 +81,27 @@ namespace Infrastructure.Persistence.Readers
                     m.vlr AS FullGoalValue, 
                     m.data_meta AS GoalDate, 
                     m.progresso AS Progress, 
-                    e.saldo AS Balance
+                    e.saldo AS Balance,
+                    CASE 
+                        WHEN dp.lcto_id IS NOT NULL THEN 'divida'
+                        WHEN ip.lcto_id IS NOT NULL THEN 'investimento'
+                        ELSE 'meta'
+                    END AS OriginType,
+                    COALESCE(d.nome, i.nome, m.nome) AS OriginName
                 FROM 
                     meta_pgto mp
                 INNER JOIN 
                     extrato e ON e.id_lcto = mp.lcto_id
                 INNER JOIN 
                     meta m ON m.id_meta = mp.meta_invest_id
+                LEFT JOIN 
+                    divida_pgto dp ON dp.lcto_id = e.id_lcto AND dp.ativo = TRUE
+                LEFT JOIN 
+                    divida d ON d.id_invest = dp.divida_id
+                LEFT JOIN 
+                    investimento_pgto ip ON ip.lcto_id = e.id_lcto AND ip.ativo = TRUE
+                LEFT JOIN 
+                    investimentos i ON i.id_invest = ip.invest_id
                 INNER JOIN 
                     usuarios u ON u.id = @userId
                 WHERE 1=1 

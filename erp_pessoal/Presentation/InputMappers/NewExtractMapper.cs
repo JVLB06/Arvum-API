@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Presentation.WebModels;
 
 namespace Presentation.InputMappers
@@ -15,7 +15,8 @@ namespace Presentation.InputMappers
                 ExtractDate = model.ExtractDate,
                 Kind = model.Kind,
                 Balance = model.Balance,
-                ExternalId = model.ExternalId
+                ExternalId = model.ExternalId,
+                GoalId = model.GoalId
             };
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+namespace Domain.Entities
 {
     public class GoalEntity
     {
@@ -8,8 +8,9 @@
         public decimal Value { get; private set; }
         public DateTime GoalDate { get; private set; }
         public decimal Progress { get; private set; }
+        public decimal? GoalPaid { get; private set; }
 
-        public GoalEntity(int? userId, int? id, string description, decimal value, DateTime goalDate, decimal progress)
+        public GoalEntity(int? userId, int? id, string description, decimal value, DateTime goalDate, decimal progress, decimal? goalPaid = null)
         {
             UserId = userId;
             Id = id;
@@ -17,6 +18,7 @@
             Value = value;
             GoalDate = goalDate;
             Progress = progress;
+            GoalPaid = goalPaid;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+namespace Domain.Entities
 {
     public class SpecificGoalEntity
     {
@@ -14,8 +14,10 @@
         public DateTime GoalDate { get; private set; }
         public float Progress { get; private set; }
         public decimal Balance { get; private set; }
+        public string? OriginType { get; private set; }
+        public string? OriginName { get; private set; }
         
-        public SpecificGoalEntity(int id, int userId, int specificId, DateTime extractDate, string description, decimal entryValue, int goalId, string goalName, decimal fullGoalValue, DateTime goalDate, float progress, decimal balance)
+        public SpecificGoalEntity(int id, int userId, int specificId, DateTime extractDate, string description, decimal entryValue, int goalId, string goalName, decimal fullGoalValue, DateTime goalDate, float progress, decimal balance, string? originType = null, string? originName = null)
         {
             Id = id;
             UserId = userId;
@@ -29,6 +31,8 @@
             GoalDate = goalDate;
             Progress = progress;
             Balance = balance;
+            OriginType = originType;
+            OriginName = originName;
         }
     }
 }
