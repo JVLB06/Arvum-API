@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Application.Interfaces;
 using Dapper;
 using Domain.Entities;
@@ -82,18 +82,66 @@ namespace Infrastructure.Persistence.Writers
                             meta_pgto
                             (historico, vlr, data, meta_invest_id, user_id, lcto_id)
                         VALUES
-                            (@Name, @Value, @ExtractDate, @ExternalId, @UserId, @entryId)
+                            (@Name, @Value, @ExtractDate, @GoalId, @UserId, @entryId)
                         RETURNING id_pgto_meta;";
 
             return await conn.QueryFirstOrDefaultAsync<int>(sql, new
             {
                 extract.Name,
-                extract.Value,
+                Value = Math.Abs(extract.Value),
                 extract.ExtractDate,
-                extract.ExternalId,
+                GoalId = extract.GoalId ?? extract.ExternalId,
                 extract.UserId,
                 entryId
             });
+        }
+
+        public async Task UpsertGoalExtractAsync(ExtractEntity extract, int goalId, int entryId)
+        {
+            using var conn = MainRepository.CreateConnection();
+
+            const string sqlCheck = @"SELECT COUNT(1) FROM meta_pgto WHERE lcto_id = @entryId AND user_id = @UserId;";
+            int exists = await conn.ExecuteScalarAsync<int>(sqlCheck, new { entryId, extract.UserId });
+
+            if (exists > 0)
+            {
+                const string sqlUpdate = @"
+                    UPDATE meta_pgto
+                    SET historico = @Name,
+                        vlr = @Value,
+                        data = @ExtractDate,
+                        meta_invest_id = @GoalId,
+                        ativo = TRUE
+                    WHERE lcto_id = @entryId AND user_id = @UserId;";
+
+                await conn.ExecuteAsync(sqlUpdate, new
+                {
+                    extract.Name,
+                    Value = Math.Abs(extract.Value),
+                    extract.ExtractDate,
+                    GoalId = goalId,
+                    entryId,
+                    extract.UserId
+                });
+            }
+            else
+            {
+                const string sqlInsert = @"
+                    INSERT INTO meta_pgto
+                        (historico, vlr, data, meta_invest_id, user_id, lcto_id, ativo)
+                    VALUES
+                        (@Name, @Value, @ExtractDate, @GoalId, @UserId, @entryId, TRUE);";
+
+                await conn.ExecuteAsync(sqlInsert, new
+                {
+                    extract.Name,
+                    Value = Math.Abs(extract.Value),
+                    extract.ExtractDate,
+                    GoalId = goalId,
+                    extract.UserId,
+                    entryId
+                });
+            }
         }
 
         public async Task<int> CreateInvestmentExtractAsync(ExtractEntity extract, int entryId)
@@ -220,7 +268,11 @@ namespace Infrastructure.Persistence.Writers
                     UPDATE 
                         meta_pgto 
                     SET 
-                        historico = @Name, vlr = @Value, data = @ExtractDate 
+                        historico = @Name, 
+                        vlr = @Value, 
+                        data = @ExtractDate,
+                        meta_invest_id = COALESCE(@GoalId, meta_invest_id),
+                        ativo = TRUE
                     WHERE 1=1 
                         AND lcto_id = @Id 
                         AND user_id = @UserId;";
@@ -229,7 +281,8 @@ namespace Infrastructure.Persistence.Writers
             {
                 extract.ExtractDate,
                 extract.Name,
-                extract.Value,
+                Value = Math.Abs(extract.Value),
+                GoalId = extract.GoalId ?? extract.ExternalId,
                 extract.Id,
                 extract.UserId
             });

@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Domain.Entities;
 
 namespace Application.Interfaces
@@ -6,6 +6,8 @@ namespace Application.Interfaces
     public interface IGeneralGoalsService
     {
             Task<IEnumerable<GoalEntity>> GetActiveGoalsAsync(int userId);
+            Task<IEnumerable<GoalEntity>> GetGoalsProgressAsync(int userId);
+            Task<GoalCompositionDTO?> GetGoalCompositionAsync(int userId, int goalId);
             Task RegisterGoalAsync(GoalDTO goal, int userId);
             Task UpdateGoalAsync(GoalDTO goal, int userId);
             Task DeleteGoalAsync(int id);

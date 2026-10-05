@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Domain.Entities;
 
 namespace Application.Interfaces
@@ -15,6 +15,7 @@ namespace Application.Interfaces
         Task UpdateExpenseExtractAsync(ExtractEntity extract);
         Task UpdateDebtExtractAsync(ExtractEntity extract);
         Task UpdateGoalExtractAsync(ExtractEntity extract);
+        Task UpsertGoalExtractAsync(ExtractEntity extract, int goalId, int entryId);
         Task UpdateInvestmentExtractAsync(ExtractEntity extract);
         Task UpdateReceiptExtractAsync(ExtractEntity extract);
         Task DeleteMainExtractAsync(int id, int userId);

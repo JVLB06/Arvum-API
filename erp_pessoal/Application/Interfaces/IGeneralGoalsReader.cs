@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 
 namespace Application.Interfaces
 {
@@ -6,5 +6,6 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<GoalDTO>> GetActiveGoalsAsync(int userId);
         Task<IEnumerable<GoalDTO>> GetInactiveGoalsAsync(int userId);
+        Task<GoalCompositionDTO?> GetGoalCompositionAsync(int userId, int goalId);
     }
 }

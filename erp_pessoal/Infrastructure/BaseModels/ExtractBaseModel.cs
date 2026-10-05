@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.BaseModels
+namespace Infrastructure.BaseModels
 {
     public class ExtractBaseModel
     {
@@ -8,5 +8,8 @@
         public DateTime ExtractDate { get; set; }
         public string Kind { get; set; }
         public decimal Balance { get; set; }
+        public int? ExternalId { get; set; }
+        public int? GoalId { get; set; }
+        public string? GoalName { get; set; }
     }
 }

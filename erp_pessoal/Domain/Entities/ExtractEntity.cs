@@ -1,4 +1,4 @@
-﻿using Domain.Helpers;
+using Domain.Helpers;
 
 namespace Domain.Entities
 {
@@ -12,8 +12,9 @@ namespace Domain.Entities
         public string Kind { get; private set; }
         public decimal? Balance { get; private set; }
         public int? ExternalId { get; private set; }
+        public int? GoalId { get; private set; }
 
-        public ExtractEntity(int? id, int? userId, string name, decimal value, DateTime extractDate, string kind, decimal? balance, int? externalId) { 
+        public ExtractEntity(int? id, int? userId, string name, decimal value, DateTime extractDate, string kind, decimal? balance, int? externalId, int? goalId = null) { 
             Id = id;
             UserId = userId;
             Name = name;
@@ -22,6 +23,7 @@ namespace Domain.Entities
             Kind = kind;
             Balance = balance is null ? 0 : balance;
             ExternalId = externalId;
+            GoalId = goalId;
         }
     }
 }

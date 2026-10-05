@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.BaseModels
+namespace Infrastructure.BaseModels
 {
     public class SpecificGoalBaseModel
     {
@@ -13,5 +13,7 @@
         public DateTime GoalDate {  get; set; }
         public float Progress {  get; set; }
         public decimal Balance {  get; set; }
+        public string? OriginType { get; set; }
+        public string? OriginName { get; set; }
     }
 }

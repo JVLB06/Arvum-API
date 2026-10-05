@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Infrastructure.BaseModels;
 
 namespace Infrastructure.BaseMappers
@@ -16,7 +16,8 @@ namespace Infrastructure.BaseMappers
                 GoalDate = model.GoalDate,
                 Progress = model.Progress,
                 UserId = model.UserId,
-                Value = model.Value
+                Value = model.Value,
+                GoalPaid = model.GoalPaid
             };
         }
     }

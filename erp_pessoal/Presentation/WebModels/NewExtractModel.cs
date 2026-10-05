@@ -1,4 +1,4 @@
-﻿namespace Presentation.WebModels
+namespace Presentation.WebModels
 {
     public class NewExtractModel
     {
@@ -9,5 +9,6 @@
         public string Kind { get; set; }
         public decimal Balance { get; set; }
         public int? ExternalId { get; set; }
+        public int? GoalId { get; set; }
     }
 }

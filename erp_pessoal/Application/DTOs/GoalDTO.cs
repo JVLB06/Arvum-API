@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs
+namespace Application.DTOs
 {
     public class GoalDTO
     {
@@ -8,5 +8,6 @@
         public decimal Value { get; set; }
         public DateTime GoalDate { get; set; }
         public decimal Progress { get; set; }
+        public decimal? GoalPaid { get; set; }
     }
 }

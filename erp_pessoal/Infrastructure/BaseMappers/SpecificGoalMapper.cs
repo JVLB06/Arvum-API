@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Infrastructure.BaseModels;
 
 namespace Infrastructure.BaseMappers
@@ -21,7 +21,9 @@ namespace Infrastructure.BaseMappers
                 FullGoalValue = model.FullGoalValue,
                 GoalDate = model.GoalDate,
                 Progress = model.Progress,
-                Balance = model.Balance
+                Balance = model.Balance,
+                OriginType = model.OriginType,
+                OriginName = model.OriginName
             };
         }
     }
