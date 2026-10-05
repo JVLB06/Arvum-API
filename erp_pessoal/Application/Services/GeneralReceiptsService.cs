@@ -58,5 +58,19 @@ namespace Application.Services
         {
             await _writer.DeleteReceiptAsync(receiptId);
         }
+
+        public async Task<IEnumerable<ReceiptEntity>> GetReceiptsPerMonthAsync(int id)
+        {
+            var connect = await _reader.ReadReceiptsPerMonthAsync(id);
+
+            return connect.Select(receipt => new ReceiptEntity(
+                receipt.Id,
+                receipt.Description,
+                receipt.MinValue,
+                receipt.MaxValue,
+                receipt.PaymentDate,
+                null
+            ));
+        }
     }
 }

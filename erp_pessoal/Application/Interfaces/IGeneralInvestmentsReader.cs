@@ -6,5 +6,6 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<InvestmentDTO>> ReadActivesInvestmentsAsync(int id);
         Task<IEnumerable<InvestmentDTO>> ReadInactivesInvestmentsAsync(int id);
+        Task<IEnumerable<InvestmentDTO>> ReadActivesInvestmentsProgressAsync(int id);
     }
 }

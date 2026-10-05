@@ -9,8 +9,9 @@
         public DateTime InitialDate { get; private set; }
         public DateTime ReceiveDate { get; private set; }
         public bool Paid { get; private set; }
+        public decimal? DebtPaid { get; private set; }
 
-        public DebtEntity(int? id,string name,decimal value,DateTime initialDate,DateTime receiveDate,bool paid, int? userId)
+        public DebtEntity(int? id,string name,decimal value,DateTime initialDate,DateTime receiveDate,bool paid, int? userId, decimal? debtPaid)
         {
             UserId = userId;
             Id = id;
@@ -19,6 +20,7 @@
             InitialDate = initialDate;
             ReceiveDate = receiveDate;
             Paid = paid;
+            DebtPaid = debtPaid;
         }
     }
 }

@@ -28,7 +28,8 @@ namespace Application.Services
                 debt.InitialDate,
                 debt.ReceiveDate,
                 debt.Paid,
-                null
+                null,
+                debt.DebtPaid
             ));
         }
 
@@ -41,7 +42,8 @@ namespace Application.Services
                 debt.InitialDate,
                 debt.ReceiveDate,
                 debt.Paid,
-                userId
+                userId,
+                debt.DebtPaid
             ));
         }
 
@@ -54,7 +56,8 @@ namespace Application.Services
                 debt.InitialDate,
                 debt.ReceiveDate,
                 debt.Paid,
-                userId
+                userId,
+                debt.DebtPaid
             ));
         }
         public async Task DeleteDebtAsync(int id)
@@ -77,7 +80,23 @@ namespace Application.Services
                 debt.InitialDate,
                 debt.ReceiveDate,
                 debt.Paid,
-                userId
+                userId,
+                debt.DebtPaid
+            ));
+        }
+
+        public async Task<IEnumerable<DebtEntity>> GetDebtsProgressAsync(int id)
+        {
+            var connect = await _reader.ReadDebtsProgressAsync(id);
+            return connect.Select(debt => new DebtEntity(
+                debt.Id,
+                debt.Name,
+                debt.Value,
+                debt.InitialDate,
+                debt.ReceiveDate,
+                debt.Paid,
+                null,
+                debt.DebtPaid
             ));
         }
     }

@@ -9,5 +9,6 @@ namespace Application.Interfaces
         Task RegisterExpenseAsync(ExpenseDTO expense, int userId);
         Task UpdateExpenseAsync(ExpenseDTO expense, int userId);
         Task DeleteExpenseAsync(int id);
+        Task<IEnumerable<ProcessedExpenseEntity>> GetExpensesComparativeAsync(int userId);
     }
 }

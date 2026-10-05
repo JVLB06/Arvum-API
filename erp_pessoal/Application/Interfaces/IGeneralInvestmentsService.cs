@@ -11,5 +11,6 @@ namespace Application.Interfaces
         Task UpdateInvestmentAsync(InvestmentDTO investment, int userId);
         Task DeleteInvestmentAsync(int id, int userId);
         Task FinishInvestmentAsync(FinishInvestmentDTO investment, int userId);
+        Task<IEnumerable<InvestmentEntity>> GetActiveInvestmentsProgressAsync(int id);
     }
 }
