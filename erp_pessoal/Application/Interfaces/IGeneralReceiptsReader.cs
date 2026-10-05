@@ -5,5 +5,6 @@ namespace Application.Interfaces
     public interface IGeneralReceiptsReader
     {
         Task<IEnumerable<ReceiptDTO>> ReadReceiptsAsync(int id);
+        Task<IEnumerable<ReceiptDTO>> ReadReceiptsPerMonthAsync(int id);
     }
 }

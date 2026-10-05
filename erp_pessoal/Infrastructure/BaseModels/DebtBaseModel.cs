@@ -8,5 +8,6 @@
         public DateTime InitialDate { get; set; }
         public DateTime ReceiveDate { get; set; }
         public bool Paid { get; set; }
+        public decimal? DebtPaid { get; set; }
     }
 }

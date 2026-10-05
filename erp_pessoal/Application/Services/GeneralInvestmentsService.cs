@@ -90,5 +90,21 @@ namespace Application.Services
                 investment.ReceiveDate,
                 investment.ReceivedValue));
         }
+
+        public async Task<IEnumerable<InvestmentEntity>> GetActiveInvestmentsProgressAsync(int id)
+        {
+            var connect = await _reader.ReadActivesInvestmentsProgressAsync(id);
+
+            return connect.Select(investment => new InvestmentEntity(
+                investment.Id,
+                investment.Description,
+                investment.Value,
+                investment.Interest,
+                investment.InitialDate,
+                investment.ReceiveDate,
+                investment.ReceivedValue,
+                null
+            ));
+        }
     }
 }

@@ -49,6 +49,22 @@ namespace Presentation.Controllers
             }
         }
 
+        [HttpGet("ler_renda_view")]
+        public async Task<IActionResult> GetRendaPorMes()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var result = await _receiptsService.GetReceiptsPerMonthAsync(int.Parse(userId!));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("criar_renda")]
         public async Task<IActionResult> CreateReceipt([FromBody] RegisterReceiptModel receipt)
         {
@@ -105,6 +121,22 @@ namespace Presentation.Controllers
             try
             {
                 var result = await _investmentsService.GetActiveInvestmentsAsync(int.Parse(userId!));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("ler_investimentos_ativos_view")]
+        public async Task<IActionResult> GetInvestimentosAtivosProgresso()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var result = await _investmentsService.GetActiveInvestmentsProgressAsync(int.Parse(userId!));
                 return Ok(result);
             }
             catch (Exception ex)
@@ -203,6 +235,22 @@ namespace Presentation.Controllers
             try
             {
                 var result = await _debtsService.GetDebtsAsync(int.Parse(userId!));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("ler_dividas_view")]
+        public async Task<IActionResult> GetDividasProgress()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var result = await _debtsService.GetDebtsProgressAsync(int.Parse(userId!));
                 return Ok(result);
             }
             catch (Exception ex)
@@ -391,6 +439,22 @@ namespace Presentation.Controllers
             try
             {
                 var result = await _expensesService.GetExpensesAsync(int.Parse(userId!));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("ler_gastos_view")]
+        public async Task<IActionResult> GetGastosProcessed()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            try
+            {
+                var result = await _expensesService.GetExpensesComparativeAsync(int.Parse(userId!));
                 return Ok(result);
             }
             catch (Exception ex)

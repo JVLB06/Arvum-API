@@ -11,5 +11,6 @@ namespace Application.Interfaces
         Task DeleteDebtAsync(int id);
         Task PayDebtAsync(int id);
         Task<IEnumerable<DebtEntity>> GetPaidDebtsAsync(int userId);
+        Task<IEnumerable<DebtEntity>> GetDebtsProgressAsync(int id);
     }
 }

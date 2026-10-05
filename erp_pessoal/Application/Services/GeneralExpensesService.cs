@@ -64,5 +64,16 @@ namespace Application.Services
         {
             await _writer.DeleteExpenseAsync(id);
         }
+
+        public async Task<IEnumerable<ProcessedExpenseEntity>> GetExpensesComparativeAsync(int userId)
+        {
+            var connect = await _reader.ReadExpensesComparativeAsync(userId);
+            return connect.Select(expense => new ProcessedExpenseEntity(
+                expense.Month,
+                expense.TotalIncomes,
+                expense.TotalExpenses,
+                expense.ExpensesLimit
+                ));
+        }
     }
 }

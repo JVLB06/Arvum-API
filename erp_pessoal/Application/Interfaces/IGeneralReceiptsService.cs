@@ -9,5 +9,6 @@ namespace Application.Interfaces
         Task CreateReceiptAsync(ReceiptDTO receipt, int userId);
         Task UpdateReceiptAsync(ReceiptDTO receipt, int userId);
         Task DeleteReceiptAsync(int receiptId);
+        Task<IEnumerable<ReceiptEntity>> GetReceiptsPerMonthAsync(int id);
     }
 }
