@@ -74,8 +74,8 @@ namespace Infrastructure.Persistence.Readers
                                 FROM divida d
                                 INNER JOIN divida_pgto dp ON d.id_invest = dp.divida_id
                                 WHERE 1=1
-                                    AND user_id = @Id 
-                                    AND ativo = TRUE
+                                    AND d.user_id = @Id 
+                                    AND d.ativo = TRUE
                                 GROUP BY d.id_invest";
 
             var results = await conn.QueryAsync<DebtBaseModel>(

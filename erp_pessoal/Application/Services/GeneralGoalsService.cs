@@ -58,8 +58,8 @@ namespace Application.Services
         public async Task UpdateGoalAsync(GoalDTO goal, int userId)
         {
             await _generalGoalsWriter.UpdateGoalAsync(new GoalEntity(
-                goal.Id,
                 userId,
+                goal.Id,
                 goal.Description,
                 goal.Value,
                 goal.GoalDate,
