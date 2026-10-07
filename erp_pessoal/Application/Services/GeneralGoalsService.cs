@@ -46,8 +46,8 @@ namespace Application.Services
         public async Task RegisterGoalAsync(GoalDTO goal, int userId)
         {
             await _generalGoalsWriter.CreateGoalAsync(new GoalEntity(
-                null,
                 userId,
+                null,
                 goal.Description,
                 goal.Value,
                 goal.GoalDate,
