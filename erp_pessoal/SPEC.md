@@ -118,3 +118,19 @@ Camada de apresentação com controllers ASP.NET Core.
 - Soft deletes: Registros deletados apenas marcam ativo = FALSE
 - Connection pool: MainRepository cria novas conexões por operação
 - Dapper mapping: Aliases no SQL mapeiam colunas para properties
+
+
+## 7. Problemas Conhecidos Corrigidos
+
+### 7.1. Erro de ambiguidade SQL em consulta de dívidas
+**PROBLEMA:** Erro "42702: column reference 'user_id' is ambiguous" em `ler_dividas_view`.
+**SOLUÇÃO:** Qualificar colunas com alias de tabela na query SQL do `ReadDebtsProgressAsync` (d.user_id, d.ativo).
+
+### 7.2. Meta não atualiza no banco
+**PROBLEMA:** Atualização de meta retorna sucesso mas não persiste no banco.
+**SOLUÇÃO:** Corrigir ordem de parâmetros no `UpdateGoalAsync` - o construtor de GoalEntity espera (userId, id, ...) e não (id, userId, ...).
+
+### 7.3. Campos de dívida incompatíveis
+**PROBLEMA:** Erro "the description field is required" ao atualizar dívida.
+**SOLUÇÃO:** Backend espera `Description`, `InitDate` e `EndDate` mas frontend enviava `name`, `initialDate` e `receiveDate`.
+
