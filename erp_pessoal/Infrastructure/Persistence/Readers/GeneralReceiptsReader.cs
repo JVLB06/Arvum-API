@@ -45,7 +45,7 @@ namespace Infrastructure.Persistence.Readers
                     MIN(r.nome) AS Name,
                     SUM(rp.vlr) AS MinValue,
                     SUM(rp.vlr) AS MaxValue,
-                    DATE_TRUNC('month', rp.data_pag) AS PaymentDate
+                    DATE_TRUNC('month', rp.data) AS PaymentDate
                 FROM rendas r
                     INNER JOIN renda_pgto rp ON rp.renda_id = r.id_renda
                 WHERE r.user_id = @user_id 
