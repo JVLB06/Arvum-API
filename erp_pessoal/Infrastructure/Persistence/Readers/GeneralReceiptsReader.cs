@@ -50,8 +50,8 @@ namespace Infrastructure.Persistence.Readers
                     INNER JOIN renda_pgto rp ON rp.renda_id = r.id_renda
                 WHERE r.user_id = @user_id 
                     AND r.ativo = TRUE
-                    AND rp.data_pag >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '12 months'
-                GROUP BY DATE_TRUNC('month', rp.data_pag)
+                    AND rp.data >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '12 months'
+                GROUP BY DATE_TRUNC('month', rp.data)
                 ORDER BY PaymentDate DESC;";
 
             var results = await conn.QueryAsync<ReceiptBaseModel>(

@@ -45,7 +45,8 @@ namespace Infrastructure.Persistence.Writers
                 Description = goal.Description,
                 Value = goal.Value,
                 GoalDate = goal.GoalDate,
-                Progress = goal.Progress
+                Progress = goal.Progress,
+                Id = goal.Id
             });
         }
 
