@@ -156,9 +156,10 @@ namespace Application.Services
                 .Distinct()
                 .ToList();
 
-            // Seleciona 5 a 8 pensamentos com variação determinística por data (evita flutuar a cada refresh)
+            // Seleciona 5 a 8 pensamentos com variação determinística por dia (evita flutuar a cada refresh)
             var seed = DateTime.Today.DayOfYear;
-            todas = todas.OrderBy(x => Guid.Parse(x.GetHashCode().ToString().Substring(0, 8) + seed.ToString("D3"))).ToList();
+            var random = new Random(seed);
+            todas = todas.OrderBy(x => random.Next()).ToList();
 
             return todas.Skip(0).Take(Math.Min(8, Math.Max(5, todas.Count))).ToList();
         }
