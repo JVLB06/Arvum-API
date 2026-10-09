@@ -134,3 +134,11 @@ Camada de apresentação com controllers ASP.NET Core.
 **PROBLEMA:** Erro "the description field is required" ao atualizar dívida.
 **SOLUÇÃO:** Backend espera `Description`, `InitDate` e `EndDate` mas frontend enviava `name`, `initialDate` e `receiveDate`.
 
+### 8.1. Thinking - endpoint desalinhado e falta de precisão
+**PROBLEMA:** O endpoint `/thinking/indicadores` retornava estrutura com campos em inglês (`ExclusionSugestions`, `ReductionSugestions`) incompatível com o frontend, que consome `pensamentos`, `reducoes` e `exclusoes`. Resultado: a tela de recomendações não exibia nenhum dado real. Também não havia comparação de gastos x renda e os pensamentos eram estáticos.
+**SOLUÇÃO:** `ThinkingService.GeneratePreferencesAsync` reestruturado para retornar `pensamentos` (gerados dinamicamente com base no indicador de saúde financeira, situação do caixa e endividamento), `reducoes` e `exclusoes` no formato `{gastoId, nome, valorAtual, valorSugerido}`, e um comparativo `{renda, gastos, gastosFixos, gastosVariaveis, saldoPositivo, razaoGastosRenda, mensagem}` que informa se o usuário precisa mesmo reduzir.
+
+### 8.2. Investimentos - juros não enviados para o front
+**PROBLEMA:** O mapper `InvestmentMapper.ToDTO` omitia o campo `Interest`. A taxa de juros, embora salva no banco, não era enviada ao frontend, e a projeção de valor futuro (calculada com base na taxa) ficava igual ao valor aplicado.
+**SOLUÇÃO:** Campo `Interest` incluído no mapeamento de retorno (`Infrastructure/BaseMappers/InvestmentMapper.cs`), corrigindo a exibição da taxa na listagem e o cálculo da previsão de rendimentos.
+

@@ -254,4 +254,29 @@ O banco de dados relacional utiliza o PostgreSQL. Principais tabelas e seus rela
 | **Presentation** | [`NewExtractMapper.cs`](file:///C:/Users/User/Documents/Arvum-API/erp_pessoal/Presentation/InputMappers/NewExtractMapper.cs) | Mapeamento de `GoalId` para `ExtractDTO`. |
 | **Presentation** | [`GeneralRegistersController.cs`](file:///C:/Users/User/Documents/Arvum-API/erp_pessoal/Presentation/Controllers/GeneralRegistersController.cs) | Novos endpoints `ler_metas_view` e `ler_composicao_meta/{goalId}`. |
 | **Raiz** | [`README.md`](file:///C:/Users/User/Documents/Arvum-API/README.md) | Guia completo de build para testes e publicação para runtime/produção. |
-| **Raiz** | [`SPEC.md`](file:///C:/Users/User/Documents/Arvum-API/SPEC.md) | Especificação técnica completa do sistema e das regras de negócio implementadas. |
+
+---
+
+## 8. Correções Recentes - Thinking e Investimentos
+
+### 8.1. Thinking (Sugestões e Pensamentos)
+
+**PROBLEMA:** O endpoint `GET /thinking/indicadores` retornava uma estrutura incompatível com o frontend: as sugestões vinham com campos em inglês (`ExclusionSugestions`, `ReductionSugestions`) e o frontend consumia `pensamentos`, `reducoes` e `exclusoes`. O resultado era que a tela de 'Pensando' sempre exibia os textos de fallback e nunca mostrava os dados reais.
+
+**SOLUÇÃO:** O `ThinkingService.GeneratePreferencesAsync` agora retorna um objeto com a estrutura esperada pelo frontend:
+- `pensamentos`: array de reflexões personalizadas, geradas dinamicamente com base na saúde financeira do usuário (relação gastos/renda, endividamento e situação do caixa).
+- `reducoes`: `[{ gastoId, nome, valorAtual, valorSugerido }]` — sugestões de cortes com o valor atual médio e o valor sugerido após redução.
+- `exclusoes`: `[{ gastoId, nome, valorAtual, valorSugerido }]` — itens sugeridos para eliminação total (valor sugerido 0).
+- `comparativo`: `{ renda, gastos, gastosFixos, gastosVariaveis, saldoPositivo, razaoGastosRenda, mensagem }` — comparação entre rendas e gastos para validar se o usuário realmente precisa reduzir, com uma mensagem contextualizada (atenção quando os gastos superam a renda ou consomem mais de 70% da renda).
+
+Os pensamentos são gerados com maior precisão: consideram o indicador de saúde financeira, o saldo positivo/negativo, a razão gastos/renda e o volume de dívidas, combinando frases padrão com insights específicos para a situação atual do usuário.
+
+**ARQUIVOS ALTERADOS:** `Application/Interfaces/IThinkingService.cs`, `Application/Services/ThinkingService.cs`.
+
+### 8.2. Investimentos - Juros não enviados e previsão
+
+**PROBLEMA:** O `InvestmentMapper.ToDTO` não incluía o campo `Interest` na resposta de leitura dos investimentos, por isso a taxa de juros, embora salva corretamente no banco, nunca chegava ao frontend. Como a projeção de valor futuro (endpoint `/user_plan/ler_investimentos_ativos_view`) é calculada usando essa taxa, a previsão aparecia igual ao valor aplicado, sem nenhum rendimento.
+
+**SOLUÇÃO:** Adicionado `Interest = model.Interest` no mapeamento `ToDTO` do `InvestmentBaseModel` para `InvestmentDTO`. Com a taxa chegando ao frontend, a projeção de valores futuros é calculada corretamente e a lista de investimentos agora exibe a taxa de juros ao lado de cada aplicação.
+
+**ARQUIVOS ALTERADOS:** `Infrastructure/BaseMappers/InvestmentMapper.cs`.

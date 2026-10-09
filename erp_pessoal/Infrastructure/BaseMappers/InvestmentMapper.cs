@@ -14,6 +14,7 @@ namespace Infrastructure.BaseMappers
                 Id = model.Id,
                 Description = model.Name,
                 Value = model.Value,
+                Interest = model.Interest,
                 InitialDate = model.InitialDate,
                 ReceiveDate = model.ReceiveDate,
                 ReceivedValue = model.ReceivedValue
