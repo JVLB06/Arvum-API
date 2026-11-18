@@ -1,13 +1,16 @@
 ﻿using Application.Interfaces;
 using Infrastructure.Persistence.Readers;
 using Infrastructure.Persistence.Writers;
+using Infrastructure.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IAuthReader, AuthReader>();
             services.AddScoped<IAuthWriter, AuthWriter>();
@@ -25,6 +28,24 @@ namespace Infrastructure
             services.AddScoped<ISpecificRegistersWriter, SpecificRegistersWriter>();
             services.AddScoped<IThinkingReader, ThinkingReader>();
             services.AddScoped<IThinkingWriter, ThinkingWriter>();
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' not configured"
+                );
+            }
+
+            services.AddSingleton(
+                NpgsqlDataSource.Create(connectionString)
+            );
+
+            services.AddScoped<
+                IDbConnectionFactory,
+                NpgsqlConnectionFactory
+            >();
 
             return services;
         }
