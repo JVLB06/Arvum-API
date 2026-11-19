@@ -12,7 +12,32 @@ var key = Encoding.ASCII.GetBytes(jwtChaveSecreta);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-// --- AQUELA LINHA �NICA PARA CADA CAMADA ---
+// Configuração do CORS lendo a URL do Frontend via variável de ambiente
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("NetlifyPolicy", policy =>
+    {
+        var allowedOrigins = builder.Configuration["FRONTEND_URL"]?
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(url => url.TrimEnd('/'))
+            .ToArray() ?? Array.Empty<string>();
+
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+    });
+});
+
+// --- AQUELA LINHA ÚNICA PARA CADA CAMADA ---
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();   // Registra tudo da Application
 // -------------------------------------------
