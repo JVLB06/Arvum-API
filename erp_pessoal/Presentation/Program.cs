@@ -12,27 +12,33 @@ var key = Encoding.ASCII.GetBytes(jwtChaveSecreta);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-// Configuração do CORS lendo a URL do Frontend via variável de ambiente
+// Configuração de CORS compatível com credenciais/cookies e variáveis de ambiente
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("NetlifyPolicy", policy =>
     {
-        var allowedOrigins = builder.Configuration["FRONTEND_URL"]?
+        var rawOrigins = builder.Configuration["FRONTEND_URL"]
+                      ?? builder.Configuration["Cors_AllowedOrigins"];
+
+        var allowedOrigins = rawOrigins?
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(url => url.TrimEnd('/'))
+            .Where(url => !string.IsNullOrWhiteSpace(url))
             .ToArray() ?? Array.Empty<string>();
 
         if (allowedOrigins.Length > 0)
         {
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         }
         else
         {
-            policy.AllowAnyOrigin()
+            policy.SetIsOriginAllowed(_ => true)
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         }
     });
 });
