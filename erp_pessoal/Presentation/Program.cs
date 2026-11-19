@@ -13,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
 // --- AQUELA LINHA �NICA PARA CADA CAMADA ---
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();   // Registra tudo da Application
 // -------------------------------------------
 builder.Services.AddAuthentication(options =>
@@ -43,12 +43,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// CORS deve ficar antes da autenticação e autorização
+app.UseCors("NetlifyPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.Urls.Add("http://0.0.0.0:5000");
 
 app.Run();

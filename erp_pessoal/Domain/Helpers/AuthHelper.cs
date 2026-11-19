@@ -7,8 +7,10 @@ namespace Domain.Helpers
 {
     public class AuthHelper
     {
-        public static readonly string _jwtSecret = "DFr9@27!KmLp38_ZxYQwErTyUiOp12345"; // mesma do Program.cs
-
+        public static readonly string _jwtSecret =
+            Environment.GetEnvironmentVariable("Jwt__Secret")
+            ?? throw new InvalidOperationException("Jwt__Secret não configurada.");
+        
         // Função auxiliar para gerar o JWT
         public static string GenerateJwt(int? idUsuario, string nomeUsuario)
         {
